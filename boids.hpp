@@ -16,14 +16,23 @@ struct BoidState {
   double y{};
   double v_x{};
   double v_y{};
+
   // BoidState(double x, double y, double vx, double vy) : x{x}, y{y}, v_x{vx},
   // v_y{vy} {};
+
+  
+
   BoidState& operator+=(BoidState const& other) {
     x += other.x;
     y += other.y;
     v_x += other.v_x;
     v_y += other.v_y;
     return *this;
+  }
+  double norm(BoidState const& other) {
+    auto result = (x - other.x) * (x - other.x) + (y - other.y) * (y - other.y);
+    assert(!(result < 0));
+    return std::sqrt(result);
   }
 };
 
@@ -107,20 +116,73 @@ class SeparationRule {
 
   VelocityComponents operator()(BoidState const& b1,
                                 BoidState const& b2) const;  // only declaration
-};
 
-class AllignmentRule {
-  int const n_;
-  double const allignment_const_;
+  double const distance_s_;
+  // valutare un valore che viene deciso da noi
 
  public:
-  AllignmentRule(int const n, double const a) : n_{n}, allignment_const_{a} {}
+  SeparationRule(int const n, double const s, double d_s)
+      : n_{n}, separation_const_{s}, distance_s_{d_s} {
+    if (n_ <= 1) {
+      throw std::runtime_error{"Number of boids must be >1"};
+    }
+  }
+  auto operator()(std::vector<BoidState> boids, BoidState const& b1) const {
+    auto boid_it = boids.begin();
+    auto boid_it_next = std::next(boids.begin());
+    auto boid_it_last = std::prev(boids.end());
 
-  VelocityComponents operator()(BoidState const& b1,
-                                BoidState const& b2) const {
-    return {};
+    for (; boid_it_next != boid_it_last; ++boid_it_next) {
+      double diff = norm(*boid_it, *boid_it_next);
+      if (diff < distance_s_) {
+        std::vector<BoidState> boids;
+
+        std::vector<double> boidsdiff_x;
+        std::vector<double> boidsdiff_y;
+
+        for (; boid_it_next != boid_it_last; ++boid_it_next) {
+          double diff_x = (boid_it->x - boid_it_next->x);
+          double diff_y = (boid_it->y - boid_it_next->y);
+
+          boidsdiff_x.push_back(diff_x);
+          boidsdiff_y.push_back(diff_y);
+        }
+
+        double sum_x =
+            std::accumulate(boidsdiff_x.begin(), boidsdiff_x.end(), 0.);
+        double sum_y =
+            std::accumulate(boidsdiff_y.begin(), boidsdiff_y.end(), 0.);
+
+        return VelocityComponents{-separation_const_ * sum_x,
+                                  -separation_const_ * sum_y};
+      }
+    }
   }
 };
+
+ class AllignmentRule {
+  int const n_;
+  double const a_;
+
+ public:
+  AllignmentRule(int const n, double const a) : n_{n}, a_{a} {}
+AllignmentRule(int const n, double const a) : n_{n}, a_{a} {
+    if (a == 1. || a > 1.) {
+      throw std::runtime_error{"a must be < than 0"};
+    }
+  };
+  VelocityComponents operator()(BoidState const& b1,
+                                std::vector<BoidState> boids) const {
+    // boids = std::remove_if(boids.begin(), boids.end(), [b1, double
+    // d](BoidState b){return norm(b1, b) > d;}); // work in progress
+    BoidState sum =
+        std::accumulate(boids.begin(), boids.end(), BoidState{0., 0., 0., 0.});
+    return VelocityComponents{((sum.v_x - b1.v_x) / (n_ - 1)) * a_,
+                              ((sum.v_y - b1.v_y) / (n_ - 1)) * a_};
+  }
+  
+  }; 
+  
 
 VelocityComponents COM(int const n, std::vector<BoidState> b) {
   auto cboid_it = b.begin();
@@ -136,7 +198,10 @@ VelocityComponents COM(int const n, std::vector<BoidState> b) {
   }
 }
 
-class CohesionRule {
+
+
+ class CohesionRule {
+
   int const n_;
   double const cohesion_const_;
 
@@ -189,9 +254,14 @@ class Boids {
     boids_.push_back(boid);
   }
 
-  void evolution(double const delta_t) {}
+  void evolution(double const delta_t);
+
 
   std::vector<BoidState> const& state() const;
 };
+
+  
+
+
 
 #endif
