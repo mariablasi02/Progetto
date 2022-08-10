@@ -72,16 +72,17 @@ struct VelocityComponents {
 class SeparationRule {
   int const n_;
   double const separation_const_;
+  double const distance_s_;
 
  public:
-  double const distance_s{};  // valutare un valore che viene deciso da noi->
-                              // valutare se mettere pubblico o privato
+  // valutare un valore che viene deciso da noi->
+  // valutare se mettere pubblico o privato
 
-  SeparationRule(int const n, double const s) : n_{n}, separation_const_{s} {}
+  SeparationRule(int const n, double const s, double const ds)
+      : n_{n}, separation_const_{s}, distance_s_{ds} {}
 
-
-  VelocityComponents operator()(BoidState const &b1,
-                                BoidState const &b2) const {
+  VelocityComponents operator()(BoidState const& b1,
+                                BoidState const& b2) const {
     return {};
   }
 };
@@ -93,10 +94,9 @@ class AllignmentRule {
  public:
   AllignmentRule(int const n, double const a) : n_{n}, allignment_const_{a} {}
 
-  VelocityComponents operator()(BoidState const &b1,
-                                BoidState const &b2) const {
+  VelocityComponents operator()(BoidState const& b1,
+                                BoidState const& b2) const {
     return {};
-
   }
 };
 
@@ -107,10 +107,10 @@ class CohesionRule {
  public:
   CohesionRule(int const n, double const c) : n_{n}, cohesion_const_{c} {}
 
-  VelocityComponents COM(int const n_, BoidState const &b1) { return {}; }
+  VelocityComponents COM(int const n_, BoidState const& b1) { return {}; }
 
-  VelocityComponents operator()(BoidState const &b1,
-                                BoidState const &b2) const {
+  VelocityComponents operator()(BoidState const& b1,
+                                BoidState const& b2) const {
     return {};
   }
 };
@@ -129,22 +129,22 @@ class Boids {
       boids_;  // ho provato a mettere quella n sopra come definizione ma
                // non funziona non ho capito perchè quindi boh -> faccio
                // fatica a definire un numero fisso di entrate del vettore
-  BoidState solve(BoidState const &b1, VelocityComponents const &v1,
-                  VelocityComponents const &v2, VelocityComponents const &v3,
+  BoidState solve(BoidState const& b1, VelocityComponents const& v1,
+                  VelocityComponents const& v2, VelocityComponents const& v3,
                   double const delta_t) const {
     return {};
   }
 
  public:
-  Boids(int const n, double const d, SeparationRule const &s,
-        AllignmentRule const &a, CohesionRule const &c)
+  Boids(int const n, double const d, SeparationRule const& s,
+        AllignmentRule const& a, CohesionRule const& c)
       : n_{n}, distance_{d}, s_{s}, a_{a}, c_{c} {}
 
   bool empty() { return boids_.empty(); }
 
   std::size_t size() const { return boids_.size(); }
 
-  void push_back(BoidState const &boid) {
+  void push_back(BoidState const& boid) {
     // da mettere controllo che non ci siano boid con la stessa posizione e,
     // fare loop fino a n_ perch avere vettore di quella dimensione e mettere
     // assert su tutto / eccezioni -> comunque questo è l'invariante
@@ -154,7 +154,7 @@ class Boids {
 
   void evolution(double const delta_t) {}
 
-  std::vector<BoidState> const &state() const {
+  std::vector<BoidState> const& state() const {
     return boids_;
   }  // non capisco perchè dia errore qui
 };
