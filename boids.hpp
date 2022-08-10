@@ -14,6 +14,8 @@ struct BoidState {
   double y{};
   double v_x{};
   double v_y{};
+  // BoidState(double x, double y, double vx, double vy) : x{x}, y{y}, v_x{vx},
+  // v_y{vy} {};
   BoidState& operator+=(BoidState const& other) {
     x += other.x;
     y += other.y;
@@ -21,13 +23,14 @@ struct BoidState {
     v_y += other.v_y;
     return *this;
   }
+  
 };
 
-BoidState operator==(BoidState const& b1, BoidState const& b2) {
-  return {b1.x == b2.x, b1.y == b2.y, b1.v_x == b2.v_x, b1.v_y == b2.v_y};
+bool operator==(BoidState const& b1, BoidState const& b2) {
+  return {b1.x == b2.x && b1.y == b2.y && b1.v_x == b2.v_x && b1.v_y == b2.v_y};
 }
 
-BoidState operator!=(BoidState const& b1, BoidState const& b2) {
+bool operator!=(BoidState const& b1, BoidState const& b2) {
   return {b1.x != b2.x || b1.y != b2.y || b1.v_x != b2.v_x ||
           b1.v_y != b2.v_y};  // così basta che solo una delle quattro
                               // condizioni non sia vera
@@ -39,23 +42,24 @@ BoidState operator+(BoidState const& b1, BoidState const& b2) {
 }
 
 BoidState operator-(BoidState const& b1, BoidState const& b2) {
-  return {b1.x - b2.x, b1.y - b2.y, b1.v_x - b2.v_x, b1.v_y - b2.v_y};
+  return {b1.x - b2.x, b1.y- b2.y ,b1.v_x - b2.v_x, b1.v_y - b2.v_y};
+  
 }
 BoidState operator*(BoidState const& b1, BoidState const& b2) {
-  return {b1.x * b2.x, b1.y * b2.y, b1.v_x * b2.v_x, b1.v_y * b2.v_y};
+   return {b1.x * b2.x, b1.y* b2.y ,b1.v_x * b2.v_x, b1.v_y * b2.v_y};
+ 
 }
 BoidState operator/(BoidState const& b1, BoidState const& b2) {
   if (b2.x == 0 || b2.y == 0 || b2.v_x == 0 || b2.v_y == 0) {
     throw std::runtime_error{"Denominator is zero"};
+     return {b1.x / b2.x, b1.y / b2.y ,b1.v_x / b2.v_x, b1.v_y / b2.v_y};
   }
-  return {b1.x / b2.x, b1.y / b2.y, b1.v_x / b2.v_x, b1.v_y / b2.v_y};
+ 
 }
 
 double norm(BoidState const& b1, BoidState const& b2) {
-  auto result =
-      std::abs((b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y));
-  assert(result > 0);  // non so se abbia senso ora mantenere questo assert
-                       // visto che ho messo ||
+  auto result = (b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y);
+  assert(!(result < 0));
   return std::sqrt(result);
 }
 
@@ -66,23 +70,28 @@ struct VelocityComponents {
   double vel_y;
 };
 
+
 // idea : si potrebbero implementare le classi delle regole già con dei vettori
 // che restituiscono le regole -> dopo mando audio
 
 class SeparationRule {
   int const n_;
   double const separation_const_;
+  double const distance_s_;  // valutare un valore che viene deciso da noi
 
  public:
-  double const distance_s{};  // valutare un valore che viene deciso da noi->
-                              // valutare se mettere pubblico o privato
+  SeparationRule(int const n, double const s, double const d_s ) : n_{n}, separation_const_{s}, distance_s_{d_s} {}
 
-  SeparationRule(int const n, double const s) : n_{n}, separation_const_{s} {}
+
 
   VelocityComponents operator()(BoidState const& b1,
+
                                 BoidState const& b2) const {
     return {};
   }
+=======
+                                BoidState const& b2) const; //  only declaration
+>>>>>>> 4fe104e7fdd944d4d0c93c1ba0e76a99de75549e
 };
 
 class AllignmentRule {
@@ -105,10 +114,15 @@ class CohesionRule {
  public:
   CohesionRule(int const n, double const c) : n_{n}, cohesion_const_{c} {}
 
-  VelocityComponents COM(int const n_, BoidState const& b1) { return {}; }
+  VelocityComponents COM(int const n_, BoidState const& b1) { 
+
+   
+    return {}; }
 
   VelocityComponents operator()(BoidState const& b1,
                                 BoidState const& b2) const {
+
+    
     return {};
   }
 };
@@ -152,9 +166,13 @@ class Boids {
 
   void evolution(double const delta_t) {}
 
+<<<<<<< HEAD
   std::vector<BoidState> const& state() const {
     return boids_;
   }  // non capisco perchè dia errore qui
+=======
+  std::vector<BoidState> const& state() const;
+>>>>>>> 4fe104e7fdd944d4d0c93c1ba0e76a99de75549e
 };
 
 #endif
