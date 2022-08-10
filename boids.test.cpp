@@ -3,13 +3,22 @@
 #include "boids.hpp"
 #include "doctest.h"
 
+<<<<<<< HEAD
 TEST_CASE("Check norm2 <= 0") {
   BoidState b1{2., 3., 5., 5.};
   BoidState b2{2., 3., 4., 4.};
   CHECK(((b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y)) == 0.);
 }
 
+=======
+>>>>>>> 087ecd171d1ede81d14468e2358f5b1dcf0a6f2a
 TEST_CASE("Testing operators") {
+  SUBCASE("Check norm2 <= 0") {
+    BoidState b1{2., 3., 5., 5.};
+    BoidState b2{2., 3., 4., 4.};
+    CHECK(((b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y)) ==
+          0.);
+  }
   SUBCASE("Check operator == on identical boids") {
     BoidState b1{2., 3., 4., 0.};
     BoidState b2{2., 3., 4., 0.};
