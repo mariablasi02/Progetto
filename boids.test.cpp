@@ -3,7 +3,7 @@
 #include "boids.hpp"
 #include "doctest.h"
 
-SUBCASE("Check norm2 <= 0") {
+TEST_CASE("Check norm2 <= 0") {
   BoidState b1{2., 3., 5., 5.};
   BoidState b2{2., 3., 4., 4.};
   CHECK(((b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y)) == 0.);
@@ -80,11 +80,66 @@ TEST_CASE("Testing operators") {
   SUBCASE("Check denominator == 0") {
     BoidState b1{2., 0., 5., 5.};
     BoidState b2{2., 3., 4., 0.};
-    CHECK(operator/(b1, b2));
+    CHECK_FALSE((b1/b2) == 0.);
   }
   SUBCASE("Check multiplication with zero") {
     BoidState b1{2., 0., 5., 5.};
     BoidState b2{2., 3., 4., 0.};
     CHECK((b1 * b2) == {4., 0., 20., 0});
   }
+}
+
+TEST_CASE("Testing Rules"){
+
+  SUBCASE("Check SeparationRule ")
+   BoidState b1{2., 2., 5., 5.};
+   BoidState b2{2., 3., 4., 0.};
+   int n {2};
+   double const separation_const_ {0.5};
+   double const distance_s {2.};
+   CHECK(v_1 == -0.5);    
+   
+   
+   
+  SUBCASE("Check SeparationRule with the same boid ")
+   BoidState b1{2., 2., 5., 5.};
+   BoidState b2{2., 2., 5., 5.};
+   int n {2};
+   double const separation_const_ {0.5};
+   double const distance_s {2.};
+   CHECK_FALSE(v_1 == 0.);         
+  
+
+
+
+SUBCASE("Check SeparationRule with norm > distance_s ")
+   BoidState b1{1., 2., 7., 5.};
+   BoidState b2{2., 1.5, 5., 4.};
+   int n {2};
+   double const separation_const_ {0.5};
+   double const distance_s {2.};
+   CHECK_FALSE(v_1 == doctest::Approx(0.6));  
+   
+
+
+SUBCASE("Check AllignementRule, boids have the same velocity")
+   BoidState b1{8., 2., 5., 5.};
+   BoidState b2{2., 5., 5., 5.};
+   int n {2};
+   double const allignement_const_ {0.7};
+   CHECK(v_2 ==);      //da implementare
+
+
+
+
+SUBCASE("Check CohesionRule, two boids have the same position")
+   BoidState b1{2., 2., 5., 5.};
+   BoidState b2{2., 2., 4., 0.};
+   int n {2};
+   double const allignement_const_ {1.};
+   CHECK(v_3 == );      //da implementare
+ 
+
+
+
 }
