@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <iterator>
+#include <numeric>
 #include <stdexcept>
 #include <vector>
 
@@ -14,6 +16,8 @@ struct BoidState {
   double y{};
   double v_x{};
   double v_y{};
+  // BoidState(double x, double y, double vx, double vy) : x{x}, y{y}, v_x{vx},
+  // v_y{vy} {};
   BoidState& operator+=(BoidState const& other) {
     x += other.x;
     y += other.y;
@@ -23,11 +27,11 @@ struct BoidState {
   }
 };
 
-BoidState operator==(BoidState const& b1, BoidState const& b2) {
-  return {b1.x == b2.x, b1.y == b2.y, b1.v_x == b2.v_x, b1.v_y == b2.v_y};
+bool operator==(BoidState const& b1, BoidState const& b2) {
+  return {b1.x == b2.x && b1.y == b2.y && b1.v_x == b2.v_x && b1.v_y == b2.v_y};
 }
 
-BoidState operator!=(BoidState const& b1, BoidState const& b2) {
+bool operator!=(BoidState const& b1, BoidState const& b2) {
   return {b1.x != b2.x || b1.y != b2.y || b1.v_x != b2.v_x ||
           b1.v_y != b2.v_y};  // così basta che solo una delle quattro
                               // condizioni non sia vera
@@ -41,6 +45,10 @@ BoidState operator+(BoidState const& b1, BoidState const& b2) {
 BoidState operator-(BoidState const& b1, BoidState const& b2) {
   return {b1.x - b2.x, b1.y - b2.y, b1.v_x - b2.v_x, b1.v_y - b2.v_y};
 }
+
+BoidState operator*(BoidState const& b1, double const d) {
+  return {b1.x * d, b1.y * d, b1.v_x * d, b1.v_y * d};
+}
 BoidState operator*(BoidState const& b1, BoidState const& b2) {
   return {b1.x * b2.x, b1.y * b2.y, b1.v_x * b2.v_x, b1.v_y * b2.v_y};
 }
@@ -52,10 +60,8 @@ BoidState operator/(BoidState const& b1, BoidState const& b2) {
 }
 
 double norm(BoidState const& b1, BoidState const& b2) {
-  auto result =
-      std::abs((b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y));
-  assert(result > 0);  // non so se abbia senso ora mantenere questo assert
-                       // visto che ho messo ||
+  auto result = (b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y);
+  assert(!(result < 0));
   return std::sqrt(result);
 }
 
@@ -65,6 +71,24 @@ struct VelocityComponents {
   double vel_x;
   double vel_y;
 };
+
+VelocityComponents operator+(VelocityComponents const& c1,
+                             VelocityComponents const& c2) {
+  return {c1.vel_x + c2.vel_x, c2.vel_y + c2.vel_y};
+}
+
+VelocityComponents operator-(VelocityComponents const& c1,
+                             VelocityComponents const& c2) {
+  return {c1.vel_x - c2.vel_x, c2.vel_y - c2.vel_y};
+}
+
+VelocityComponents operator*(VelocityComponents const& c1, double const d) {
+  return {c1.vel_x * d, c1.vel_y * d};
+}
+
+bool operator==(VelocityComponents const& c1, VelocityComponents const& c2) {
+  return {c1.vel_x == c2.vel_x && c1.vel_y == c2.vel_y};
+}
 
 // idea : si potrebbero implementare le classi delle regole già con dei vettori
 // che restituiscono le regole -> dopo mando audio
@@ -82,9 +106,7 @@ class SeparationRule {
       : n_{n}, separation_const_{s}, distance_s_{ds} {}
 
   VelocityComponents operator()(BoidState const& b1,
-                                BoidState const& b2) const {
-    return {};
-  }
+                                BoidState const& b2) const;  // only declaration
 };
 
 class AllignmentRule {
@@ -100,6 +122,20 @@ class AllignmentRule {
   }
 };
 
+VelocityComponents COM(int const n, std::vector<BoidState> b) {
+  auto cboid_it = b.begin();
+  auto cboid_it_next = std::next(b.begin());
+  // auto cboid_last = std::prev(b_.end());
+  if (n > 1) {
+    BoidState sum =
+        std::accumulate(cboid_it_next, b.end(), BoidState{0., 0., 0., 0.});
+    sum = sum * (1 / (n - 1));
+    return {sum.x, sum.y};
+  } else {
+    throw std::runtime_error{"Error: must be n>1"};
+  }
+}
+
 class CohesionRule {
   int const n_;
   double const cohesion_const_;
@@ -107,11 +143,12 @@ class CohesionRule {
  public:
   CohesionRule(int const n, double const c) : n_{n}, cohesion_const_{c} {}
 
-  VelocityComponents COM(int const n_, BoidState const& b1) { return {}; }
-
-  VelocityComponents operator()(BoidState const& b1,
-                                BoidState const& b2) const {
-    return {};
+  VelocityComponents operator()(std::vector<BoidState> cboids) const {
+    auto bi = *cboids.begin();
+    VelocityComponents position_of_c = COM(n_, cboids);
+    BoidState com{position_of_c.vel_x, position_of_c.vel_y, 0., 0.};
+    BoidState result = (com - bi) * cohesion_const_;
+    return {result.x, result.y};
   }
 };
 
@@ -154,9 +191,7 @@ class Boids {
 
   void evolution(double const delta_t) {}
 
-  std::vector<BoidState> const& state() const {
-    return boids_;
-  }  // non capisco perchè dia errore qui
+  std::vector<BoidState> const& state() const;
 };
 
 #endif
