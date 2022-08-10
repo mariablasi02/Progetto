@@ -11,16 +11,14 @@ TEST_CASE("Check norm2 <= 0") {
   CHECK(((b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y)) == 0.);
 }
 
-=======
->>>>>>> 087ecd171d1ede81d14468e2358f5b1dcf0a6f2a
-=======
+
 TEST_CASE("Testing norm function"){
   BoidState b1{2., 3., 5., 5.};
   BoidState b2{2., 3., 4., 4.};
   CHECK(norm(b1, b2) == 0.);
 }
 
->>>>>>> 4fe104e7fdd944d4d0c93c1ba0e76a99de75549e
+
 TEST_CASE("Testing operators") {
     SUBCASE("Check operator == on identical boids") {
     BoidState b1{2., 3., 4., 0.};
@@ -124,10 +122,10 @@ TEST_CASE("Testing Rules"){
   SUBCASE("Check SeparationRule ")
    BoidState b1{2., 2., 5., 5.};
    BoidState b2{2., 3., 4., 0.};
-   int n {2};
+   int n_ {2};
    double const separation_const_ {0.5};
-   double const distance_s {2.};
-   CHECK(v_1 == -0.5);    
+   double const distance_s_ {2.};
+   CHECK()
    
    
    
