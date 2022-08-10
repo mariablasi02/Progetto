@@ -10,7 +10,7 @@ TEST_CASE("Testing norm function"){
 }
 
 TEST_CASE("Testing operators") {
-  SUBCASE("Check operator == on identical boids") {
+    SUBCASE("Check operator == on identical boids") {
     BoidState b1{2., 3., 4., 0.};
     BoidState b2{2., 3., 4., 0.};
     CHECK((b1 == b2) == true);
