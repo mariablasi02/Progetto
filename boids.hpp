@@ -12,6 +12,7 @@ struct BoidState {
   double y{};
   double v_x{};
   double v_y{};
+  //BoidState(double x, double y, double vx, double vy) : x{x}, y{y}, v_x{vx}, v_y{vy} {};
   BoidState& operator+=(BoidState const& other) {
     x += other.x;
     y += other.y;
@@ -21,11 +22,11 @@ struct BoidState {
   }
 };
 
-BoidState operator==(BoidState const& b1, BoidState const& b2) {
-  return {b1.x == b2.x, b1.y == b2.y, b1.v_x == b2.v_x, b1.v_y == b2.v_y};
+bool operator==(BoidState const& b1, BoidState const& b2) {
+  return {b1.x == b2.x && b1.y == b2.y && b1.v_x == b2.v_x && b1.v_y == b2.v_y};
 }
 
-BoidState operator!=(BoidState const& b1, BoidState const& b2) {
+bool operator!=(BoidState const& b1, BoidState const& b2) {
   return {b1.x != b2.x || b1.y != b2.y || b1.v_x != b2.v_x ||
           b1.v_y != b2.v_y};  // così basta che solo una delle quattro
                               // condizioni non sia vera
@@ -50,10 +51,8 @@ BoidState operator/(BoidState const& b1, BoidState const& b2) {
 }
 
 double norm(BoidState const& b1, BoidState const& b2) {
-  auto result =
-      std::abs((b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y));
-  assert(result > 0);  // non so se abbia senso ora mantenere questo assert
-                       // visto che ho messo ||
+  auto result = (b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y);
+  assert(!(result < 0)); 
   return std::sqrt(result);
 }
 
@@ -75,9 +74,7 @@ class SeparationRule {
   SeparationRule(int const n, double const s) : n_{n}, separation_const_{s} {}
 
   VelocityComponents operator()(BoidState const& b1,
-                                BoidState const& b2) const {
-    return;
-  }
+                                BoidState const& b2) const; //only declaration
 };
 
 class AllignmentRule {};
