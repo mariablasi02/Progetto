@@ -4,9 +4,10 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <iterator>
+#include <numeric>
 #include <stdexcept>
 #include <vector>
-#include <numeric>
 
 // manca il controllo degli errori su tutto
 
@@ -15,7 +16,8 @@ struct BoidState {
   double y{};
   double v_x{};
   double v_y{};
-  BoidState(double x, double y, double vx, double vy) : x{x}, y{y}, v_x{vx}, v_y{vy} {};
+  BoidState(double x, double y, double vx, double vy)
+      : x{x}, y{y}, v_x{vx}, v_y{vy} {};
   BoidState& operator+=(BoidState const& other) {
     x += other.x;
     y += other.y;
@@ -25,8 +27,8 @@ struct BoidState {
   }
   double norm(BoidState const& other) {
     auto result = (x - other.x) * (x - other.x) + (y - other.y) * (y - other.y);
-  assert(!(result < 0)); 
-  return std::sqrt(result);
+    assert(!(result < 0));
+    return std::sqrt(result);
   }
 };
 
@@ -60,7 +62,7 @@ BoidState operator/(BoidState const& b1, BoidState const& b2) {
 
 double norm(BoidState const& b1, BoidState const& b2) {
   auto result = (b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y);
-  assert(!(result < 0)); 
+  assert(!(result < 0));
   return std::sqrt(result);
 }
 
@@ -71,22 +73,52 @@ struct VelocityComponents {
   double vel_y;
 };
 
-// idea : si potrebbero implementare le classi delle regole già con dei vettori
-// che restituiscono le regole -> dopo mando audio
-
-/*class SeparationRule {
+class SeparationRule {
   int const n_;
   double const separation_const_;
 
+  double const distance_s_;
+  // valutare un valore che viene deciso da noi
+
  public:
-  double const distance_s{};  // valutare un valore che viene deciso da noi->
-                              // valutare se mettere pubblico o privato
+  SeparationRule(int const n, double const s, double d_s)
+      : n_{n}, separation_const_{s}, distance_s_{d_s} {
+    if (n_ <= 1) {
+      throw std::runtime_error{"Number of boids must be >1"};
+    }
+  }
+  auto operator()(std::vector<BoidState> boids, BoidState const& b1) const {
+    auto boid_it = boids.begin();
+    auto boid_it_next = std::next(boids.begin());
+    auto boid_it_last = std::prev(boids.end());
 
-  SeparationRule(int const n, double const s) : n_{n}, separation_const_{s} {}
+    for (; boid_it_next != boid_it_last; ++boid_it_next) {
+      double diff = norm(*boid_it, *boid_it_next);
+      if (diff < distance_s_) {
+        std::vector<BoidState> boids;
 
-  VelocityComponents operator()(BoidState const& b1,
-                                BoidState const& b2) const; //only declaration
-};*/
+        std::vector<double> boidsdiff_x;
+        std::vector<double> boidsdiff_y;
+
+        for (; boid_it_next != boid_it_last; ++boid_it_next) {
+          double diff_x = (boid_it->x - boid_it_next->x);
+          double diff_y = (boid_it->y - boid_it_next->y);
+
+          boidsdiff_x.push_back(diff_x);
+          boidsdiff_y.push_back(diff_y);
+        }
+
+        double sum_x =
+            std::accumulate(boidsdiff_x.begin(), boidsdiff_x.end(), 0.);
+        double sum_y =
+            std::accumulate(boidsdiff_y.begin(), boidsdiff_y.end(), 0.);
+
+        return VelocityComponents{-separation_const_ * sum_x,
+                                  -separation_const_ * sum_y};
+      }
+    }
+  }
+};
 
 class AllignmentRule {
   int const n_;
@@ -94,12 +126,18 @@ class AllignmentRule {
 
  public:
   AllignmentRule(int const n, double const a) : n_{n}, a_{a} {
-  if(a == 1. || a > 1.) {throw std::runtime_error{"a must be < than 0"};}
+    if (a == 1. || a > 1.) {
+      throw std::runtime_error{"a must be < than 0"};
+    }
   };
-  VelocityComponents operator()(BoidState const& b1, std::vector<BoidState> boids) const {
-    //boids = std::remove_if(boids.begin(), boids.end(), [b1, double d](BoidState b){return norm(b1, b) > d;}); // work in progress
-    BoidState sum = std::accumulate( boids.begin(), boids.end(), BoidState{0.,0.,0.,0.} );
-    return VelocityComponents{((sum.v_x - b1.v_x)/(n_ - 1)) * a_, ((sum.v_y - b1.v_y)/(n_ - 1)) * a_};
+  VelocityComponents operator()(BoidState const& b1,
+                                std::vector<BoidState> boids) const {
+    // boids = std::remove_if(boids.begin(), boids.end(), [b1, double
+    // d](BoidState b){return norm(b1, b) > d;}); // work in progress
+    BoidState sum =
+        std::accumulate(boids.begin(), boids.end(), BoidState{0., 0., 0., 0.});
+    return VelocityComponents{((sum.v_x - b1.v_x) / (n_ - 1)) * a_,
+                              ((sum.v_y - b1.v_y) / (n_ - 1)) * a_};
   }
 };
 
