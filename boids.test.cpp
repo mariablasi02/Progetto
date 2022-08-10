@@ -103,10 +103,10 @@ TEST_CASE("Testing Rules"){
   SUBCASE("Check SeparationRule ")
    BoidState b1{2., 2., 5., 5.};
    BoidState b2{2., 3., 4., 0.};
-   int n {2};
+   int n_ {2};
    double const separation_const_ {0.5};
-   double const distance_s {2.};
-   CHECK(v_1 == -0.5);    
+   double const distance_s_ {2.};
+   CHECK()
    
    
    
