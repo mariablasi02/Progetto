@@ -6,7 +6,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <vector>
-
+#include <numeric>
 // manca il controllo degli errori su tutto
 
 struct BoidState {
@@ -72,24 +72,51 @@ struct VelocityComponents {
 class SeparationRule {
   int const n_;
   double const separation_const_;
+  double const distance_s; 
+  // valutare un valore che viene deciso da noi
+                            
+ public :
+ 
+  SeparationRule(int const n, double const s, double d_s) : n_{n}, separation_const_{s}, distance_s{d_s} {
 
- public:
-  double const distance_s{};  // valutare un valore che viene deciso da noi->
-                              // valutare se mettere pubblico o privato
-
-  SeparationRule(int const n, double const s) : n_{n}, separation_const_{s} {}
-
-  VelocityComponents operator()(BoidState const& b1,
-                                BoidState const& b2) const {
-    return {};
+    if (n_ <= 1) {
+      throw std::runtime_error{"Number of boids must be >1"};
+    }
   }
-};
+  
 
-class AllignmentRule {
-  int const n_;
-  double const allignment_const_;
+  std::vector<BoidState> boids;
 
- public:
+  auto boid_it = boids.begin();
+  auto boid_it_next = std::next(boids.begin());
+  auto boid_it_last = std::prev(boids.end());
+
+ std::vector<double> boidsdiff_x;
+ std::vector<double> boidsdiff_y;
+
+  for ( ; boid_it_next != boid_it_last ; ++boid_it_next){
+    
+   double diff_x = (boid_it->x - boid_it_next->x);
+   double diff_y = (boid_it->y - boid_it_next->y);
+
+   boidsdiff_x.push_back(diff_x);
+   boidsdiff_y.push_back(diff_y);
+
+  }
+
+ double sum_x = std::accumulate(boidsdiff_x.begin(), boidsdiff_x.end(), 0.);
+ double sum_y = std::accumulate(boidsdiff_y.begin(), boidsdiff_y.end(), 0.);
+
+
+  auto operator()(std::vector<BoidState> boids ,BoidState const& b1 ) const {
+
+    for ( ; boid_it_next != boid_it_last ; ++boid_it_next){
+      double diff = norm(*boid_it, *boid_it_next);
+      if(diff < distance_s){
+    return VelocityComponents {-separation_const_* sum_x,-separation_const_*sum_y};
+  }}
+  }
+
   AllignmentRule(int const n, double const a) : n_{n}, allignment_const_{a} {}
 
   VelocityComponents operator()(BoidState const& b1,
