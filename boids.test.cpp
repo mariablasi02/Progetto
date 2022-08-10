@@ -114,40 +114,6 @@ TEST_CASE("Testing operators") {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-TEST_CASE("Testing Cohesion rule") {
-  SUBCASE("testing with a vector of three") {
-    CohesionRule c1{3, 4};
-    BoidState b1{1., 2., 3., 4.};
-    BoidState b2{2., 3., 4., 5.};
-    BoidState b3{-1., -1., -1., -1.};
-    std::vector<BoidState> v1{b1, b2, b3};
-
-    CHECK(c1(v1).vel_x == -2.0);
-    CHECK(c1(v1).vel_y == -4.0);
-  }
-
-  SUBCASE("testing with a vector of four") {
-    CohesionRule c1{4, 1};
-    BoidState b1{1., 2., 3., 4.};
-    BoidState b2{2., 3., 4., 5.};
-    BoidState b3{-1., -1., -1., -1.};
-    BoidState b4{0., -1., 3., -2.};
-    std::vector<BoidState> v1{b1, b2, b3};
-
-    CHECK(c1(v1).vel_x == doctest::Approx(-0.67).epsilon(0.01));
-    CHECK(c1(v1).vel_y == doctest::Approx(-1.67).epsilon(0.01));
-  }
-}
 TEST_CASE("Testing alignment rule") {
   SUBCASE("General tests") {
   BoidState b1 = {0.,0.,2.,3.};
@@ -169,4 +135,33 @@ TEST_CASE("Testing alignment rule") {
     //non ho idee per ora
   }*/
 
+}
+
+
+/*TEST_CASE("Testing Cohesion rule") {
+  SUBCASE("testing with a vector of three") {
+    CohesionRule c1{3, 4};
+    BoidState b1{1., 2., 3., 4.};
+    BoidState b2{2., 3., 4., 5.};
+    BoidState b3{-1., -1., -1., -1.};
+    std::vector<BoidState> v1{b1, b2, b3};
+
+    CHECK(c1(v1).vel_x == -2.0);
+    CHECK(c1(v1).vel_y == -4.0);
+  }
+
+  SUBCASE("testing with a vector of four") {
+    CohesionRule c1{4, 1};
+    BoidState b1{1., 2., 3., 4.};
+    BoidState b2{2., 3., 4., 5.};
+    BoidState b3{-1., -1., -1., -1.};
+    BoidState b4{0., -1., 3., -2.};
+    std::vector<BoidState> v1{b1, b2, b3, b4};
+    CHECK(c1(v1).vel_x == doctest::Approx(-0.67).epsilon(0.01));
+    CHECK(c1(v1).vel_y == doctest::Approx(-1.67).epsilon(0.01));
+  }
+}*/
+
+TEST_CASE("Testing Neighbor-Control function"){
+  //work in progress
 }
