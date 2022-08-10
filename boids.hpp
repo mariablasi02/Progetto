@@ -2,6 +2,7 @@
 #define BOIDS_HPP
 
 #include <cmath>
+#include <stdexcept>
 
 // manca il controllo degli errori su tutto
 
@@ -11,6 +12,10 @@ struct BoidState {
   double v_x{};
   double v_y{};
 };
+
+BoidState operator==(BoidState const &b1, BoidState const &b2) {
+  return {b1.x == b2.x, b1.y == b2.y, b1.v_x == b2.v_x, b1.v_y == b2.v_y};
+}
 
 BoidState operator+(BoidState const &b1, BoidState const &b2) {
   return {b1.x + b2.x, b1.y + b2.y, b1.v_x + b2.v_x, b1.v_y + b2.v_y};
@@ -24,10 +29,14 @@ BoidState operator*(BoidState const &b1, BoidState const &b2) {
 }
 BoidState operator/(BoidState const &b1, BoidState const &b2) {
   return {b1.x / b2.x, b1.y / b2.y, b1.v_x / b2.v_x, b1.v_y / b2.v_y};
+  if (b2.x == 0, b2.y == 0, b2.v_x == 0, b2.v_y == 0) {
+    throw std::runtime_error{"Denominator is zero"};
+  }
 }
 
 double norm(BoidState const &b1, BoidState const &b2) {
   auto result = (b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y);
+  assert(result > 0);
   return std::sqrt(result);
 }
 
