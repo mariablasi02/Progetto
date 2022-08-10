@@ -6,6 +6,8 @@
 TEST_CASE("Testing norm function"){
   BoidState b1{2., 3., 5., 5.};
   BoidState b2{2., 3., 4., 4.};
+  BoidState b3{5., 6., 0., 0.};
+  CHECK(norm(b1, b3) == doctest::Approx(4.24).epsilon(0.01));
   CHECK(norm(b1, b2) == 0.);
 }
 
