@@ -6,6 +6,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <vector>
+#include <numeric>
 
 // manca il controllo degli errori su tutto
 
@@ -14,13 +15,18 @@ struct BoidState {
   double y{};
   double v_x{};
   double v_y{};
-  //BoidState(double x, double y, double vx, double vy) : x{x}, y{y}, v_x{vx}, v_y{vy} {};
+  BoidState(double x, double y, double vx, double vy) : x{x}, y{y}, v_x{vx}, v_y{vy} {};
   BoidState& operator+=(BoidState const& other) {
     x += other.x;
     y += other.y;
     v_x += other.v_x;
     v_y += other.v_y;
     return *this;
+  }
+  double norm(BoidState const& other) {
+    auto result = (x - other.x) * (x - other.x) + (y - other.y) * (y - other.y);
+  assert(!(result < 0)); 
+  return std::sqrt(result);
   }
 };
 
@@ -68,7 +74,7 @@ struct VelocityComponents {
 // idea : si potrebbero implementare le classi delle regole già con dei vettori
 // che restituiscono le regole -> dopo mando audio
 
-class SeparationRule {
+/*class SeparationRule {
   int const n_;
   double const separation_const_;
 
@@ -80,23 +86,24 @@ class SeparationRule {
 
   VelocityComponents operator()(BoidState const& b1,
                                 BoidState const& b2) const; //only declaration
-};
+};*/
 
 class AllignmentRule {
   int const n_;
-  double const allignment_const_;
+  double const a_;
 
  public:
-  AllignmentRule(int const n, double const a) : n_{n}, allignment_const_{a} {}
-
-  VelocityComponents operator()(BoidState const &b1,
-                                BoidState const &b2) const {
-    return {};
-
+  AllignmentRule(int const n, double const a) : n_{n}, a_{a} {
+  if(a == 1. || a > 1.) {throw std::runtime_error{"a must be < than 0"};}
+  };
+  VelocityComponents operator()(BoidState const& b1, std::vector<BoidState> boids) const {
+    //boids = std::remove_if(boids.begin(), boids.end(), [b1, double d](BoidState b){return norm(b1, b) > d;}); // work in progress
+    BoidState sum = std::accumulate( boids.begin(), boids.end(), BoidState{0.,0.,0.,0.} );
+    return VelocityComponents{((sum.v_x - b1.v_x)/(n_ - 1)) * a_, ((sum.v_y - b1.v_y)/(n_ - 1)) * a_};
   }
 };
 
-class CohesionRule {
+/*class CohesionRule {
   int const n_;
   double const cohesion_const_;
 
@@ -148,9 +155,9 @@ class Boids {
     boids_.push_back(boid);
   }
 
-  void evolution(double const delta_t) {}
+  void evolution(double const delta_t);
 
   std::vector<BoidState> const &state() const;
-};
+};*/
 
 #endif
