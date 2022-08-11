@@ -171,8 +171,8 @@ class AllignmentRule {
       throw std::runtime_error{"a must be < than 0"};
     }
   };
-  VelocityComponents operator()(BoidState const& b1,
-                                std::vector<BoidState> boids) const {
+  VelocityComponents operator()(std::vector<BoidState> boids,
+                                BoidState const& b1) const {
     BoidState sum =
         std::accumulate(boids.begin(), boids.end(), BoidState{0., 0., 0., 0.});
     return VelocityComponents{((sum.v_x - b1.v_x) / (n_ - 1)) * a_,
@@ -202,17 +202,17 @@ class CohesionRule {
       throw std::runtime_error{"Error: must be n>1"};
     }
   }
-  VelocityComponents operator()(std::vector<BoidState> cboids) const {
-    auto bi = *(cboids.begin());
+
+  VelocityComponents operator()(std::vector<BoidState> const& cboids) const {
     VelocityComponents position_of_c = COM(n_, cboids);
     BoidState com{position_of_c.vel_x, position_of_c.vel_y, 0., 0.};
+    auto bi = *cboids.begin();
     BoidState result = (com - bi) * cohesion_const_;
     return {result.x, result.y};
   }
 };
 // dubbio : mettere la vaiabile n solo in boids e non  nelle classi delle
 // regole così sono tutte uguali ?
-
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
                                         BoidState b1, double d) {
   auto p = pesci;
@@ -252,7 +252,7 @@ class Boids {
                        double const delta_t) const {
     VelocityComponents v_old = {b1.v_x, b1.v_y};
     auto v_1 = s_(vec, b1);
-    auto v_2 = a_(b1, vec);
+    auto v_2 = a_(vec, b1);
     auto v_3 = c_(vec);
     auto v_new = v_old + v_1 + v_2 + v_3;
     return {b1.x + v_new.vel_x * delta_t, b1.y + v_new.vel_y * delta_t,
@@ -300,9 +300,9 @@ class Boids {
       std::transform(nearfishes.begin(), nearfishes.end(),
                      std::next(nearfishes.begin()), std::prev(nearfishes.end()),
                      rules);  // devo capire come fare la lambda
+
     }
   } */
-  
 
   std::vector<BoidState> const& state() const;
 };
