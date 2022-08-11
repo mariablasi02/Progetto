@@ -42,7 +42,7 @@ TEST_CASE("Testing operators") {
     CHECK((b1 + b2).x == 5.);
     CHECK((b1 + b2).y == 5.);
     CHECK((b1 + b2).v_x == 5.);
-    CHECK((b1 + b2).v_y == 5.); 
+    CHECK((b1 + b2).v_y == 5.);
   }
 
   SUBCASE("Check addition with three points") {
@@ -108,6 +108,25 @@ TEST_CASE("Testing operators") {
     BoidState b2{2., 3., 4., 0.};
     CHECK((b1 * b2) == {4., 0., 20., 0});
   }*/ //commentati perché non credo ci serviranno
+}
+
+TEST_CASE("Testing Separation rule") {
+  SUBCASE("General test ") {
+    BoidState b1 = {0., 1., 2., 3.};
+    BoidState b2 = {0., 3., 5., 1.};
+    BoidState b3 = {2., 3., -2., 3.};
+    std::vector<BoidState> a{b1, b2, b3};
+    BoidState b = {2., 3., 1., 2.};
+    SeparationRule sr{4, 0.5, 6.};
+
+    CHECK(sr(a, b).vel_x == doctest::Approx(-2.));
+    CHECK(sr(a, b).vel_y == doctest::Approx(-1.));
+
+    BoidState b_ = {0., 0., 0., 0.};
+
+    CHECK(sr(a, b_).vel_x == doctest::Approx(1.));
+    CHECK(sr(a, b_).vel_y == doctest::Approx(3.5));
+  }
 }
 
 TEST_CASE("Testing alignment rule") {
@@ -177,4 +196,24 @@ TEST_CASE("Testing Neighbor-Control function") {
   pesci.push_back(b4);
   auto b = NeighborsControl(pesci, 3.);
   CHECK(static_cast<int>(b.size()) == 2);
+}
+
+TEST_CASE("Testing singleboid function") {
+  SUBCASE("boid in a group of three") {
+    BoidState b1{0., 1., 2., 3.};
+    BoidState b2{-1., 2., 3., 2.};
+    BoidState b3{3., -1., 5., 2.};
+    SeparationRule s{3, 2., 2.};
+    AllignmentRule a{3, 0.5};
+    CohesionRule c{3, 3};
+    std::vector<BoidState> v1{b1, b2, b3};
+    Boids b{3, 4., s, a, c};
+    double const delta_t{0.1};
+    CHECK((b.singleboid(b1, delta_t).x) == (0.8));
+    // CHECK((b.singleboid(b1, s(v1, b1), a(b1, v1), c(v1), delta_t).y) ==
+    // (1.05)); CHECK((b.singleboid(b1, s(v1, b1), a(b1, v1), c(v1),
+    // delta_t).v_x) == (8)); CHECK((b.singleboid(b1, s(v1, b1), a(b1, v1),
+    // c(v1), delta_t).v_y) ==
+    //     (0.5));
+  }
 }
