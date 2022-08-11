@@ -191,6 +191,7 @@ VelocityComponents COM(int const n, std::vector<BoidState> b) {
 
   return {sum.x * den, sum.y * den};
 }
+
 class CohesionRule {
   int const n_;
   double const cohesion_const_;
@@ -209,9 +210,27 @@ class CohesionRule {
     return {result.x, result.y};
   }
 };
-
 // dubbio : mettere la vaiabile n solo in boids e non  nelle classi delle
 // regole così sono tutte uguali ?
+
+std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
+                                        BoidState b1, double d) {
+  auto p = pesci;
+  // auto b1 = *p.begin();
+  p.erase(std::remove_if(p.begin(), p.end(),
+                         [b1, d](BoidState b) { return (norm(b1, b) > d); }),
+          p.end());
+  // assert(static_cast<int> pesci.size() == pesci.n());
+  return p;
+}
+
+void same_position(BoidState const& b1, std::vector<BoidState> boids) {
+  for (; boids.begin() != boids.end(); ++boids.begin()) {
+    if (b1.x == boids.begin()->x && b1.y == boids.begin()->y) {
+      boids.erase(boids.begin());
+    }
+  }
+}
 
 class Boids {
   int const n_;
@@ -229,19 +248,25 @@ class Boids {
         AllignmentRule const& a, CohesionRule const& c)
       : n_{n}, d_{d}, s_{s}, a_{a}, c_{c} {}
 
-  BoidState singleboid(BoidState const& b1, double const delta_t) const {
-    auto velocityi = VelocityComponents{b1.v_x, b1.v_y} + s_(boids_, b1) +
-                           a_(b1, boids_) + c_(boids_);
-    auto positioni = velocityi * delta_t + VelocityComponents{b1.x, b1.y};
-    BoidState newposition{positioni.vel_x, positioni.vel_y, velocityi.vel_x,
-                          velocityi.vel_y};
-    return newposition;
+  BoidState singleboid(std::vector<BoidState> const& vec, BoidState const& b1,
+                       double const delta_t) const {
+    VelocityComponents v_old = {b1.v_x, b1.v_y};
+    auto v_1 = s_(vec, b1);
+    auto v_2 = a_(b1, vec);
+    auto v_3 = c_(vec);
+    auto v_new = v_old + v_1 + v_2 + v_3;
+    return {b1.x + v_new.vel_x * delta_t, b1.y + v_new.vel_y * delta_t,
+            v_new.vel_x, v_new.vel_y};
   }
 
   bool empty() { return boids_.empty(); }
   double distance() const { return d_; }
   std::vector<BoidState> TotalBoids() const { return boids_; }
   int n() const { return n_; }
+  double d() const { return d_; }
+  SeparationRule s() const { return s_; }
+  AllignmentRule a() const { return a_; }
+  CohesionRule c() const { return c_; }
 
   int size() const {
     /*if (boids_.size() > static_cast<size_t>(std::numeric_limits<int>::max()))
@@ -259,19 +284,27 @@ class Boids {
     boids_.push_back(boid);
   }
 
-  void evolution(double const delta_t);
+  /* void evolution(double const delta_t) {
+    for (auto fish : boids_) {
+      auto nearfishes = NeighborsControl(boids_, fish, d_);
+      auto fishes = n();
+      auto dist = d();
+      auto sconst = s();
+      auto aconst = a();
+      auto cconst = c();
+      auto rules = [fishes, dist, sconst, aconst, cconst,
+                    delta_t](BoidState const& b) {
+        Boids b1{fishes, dist, sconst, aconst, cconst};
+        return b1.singleboid(b, delta_t);
+      };
+      std::transform(nearfishes.begin(), nearfishes.end(),
+                     std::next(nearfishes.begin()), std::prev(nearfishes.end()),
+                     rules);  // devo capire come fare la lambda
+    }
+  } */
+  
 
   std::vector<BoidState> const& state() const;
 };
-
-std::vector<BoidState> NeighborsControl(Boids const& pesci, double d) {
-  auto p = pesci.TotalBoids();
-  auto b1 = *(p.begin());
-  p.erase(std::remove_if(p.begin(), p.end(),
-                         [b1, d](BoidState b) { return (norm(b1, b) > d); }),
-          p.end());
-  assert(pesci.size() == pesci.n());
-  return p;
-}
 
 #endif
