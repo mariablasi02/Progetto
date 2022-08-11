@@ -284,27 +284,17 @@ class Boids {
     boids_.push_back(boid);
   }
 
-  /* void evolution(double const delta_t) {
+  void evolution(double const delta_t) {
+    Boids b{n(), d(), s(), a(), c()};
+    std::vector<BoidState> fishes;
     for (auto fish : boids_) {
       auto nearfishes = NeighborsControl(boids_, fish, d_);
-      auto fishes = n();
-      auto dist = d();
-      auto sconst = s();
-      auto aconst = a();
-      auto cconst = c();
-      auto rules = [fishes, dist, sconst, aconst, cconst,
-                    delta_t](BoidState const& b) {
-        Boids b1{fishes, dist, sconst, aconst, cconst};
-        return b1.singleboid(b, delta_t);
-      };
-      std::transform(nearfishes.begin(), nearfishes.end(),
-                     std::next(nearfishes.begin()), std::prev(nearfishes.end()),
-                     rules);  // devo capire come fare la lambda
-
+      fishes.push_back(b.singleboid(nearfishes, fish, delta_t));
     }
-  } */
+    boids_ = fishes;
+  }
 
-  std::vector<BoidState> const& state() const;
+  std::vector<BoidState> const& state() const{return boids_;}
 };
 
 #endif
