@@ -202,7 +202,7 @@ class CohesionRule {
     }
   }
   VelocityComponents operator()(std::vector<BoidState> cboids) const {
-    auto bi = *cboids.begin();
+    auto bi = *(cboids.begin());
     VelocityComponents position_of_c = COM(n_, cboids);
     BoidState com{position_of_c.vel_x, position_of_c.vel_y, 0., 0.};
     BoidState result = (com - bi) * cohesion_const_;
@@ -229,11 +229,10 @@ class Boids {
         AllignmentRule const& a, CohesionRule const& c)
       : n_{n}, d_{d}, s_{s}, a_{a}, c_{c} {}
 
-    
   BoidState singleboid(BoidState const& b1, double const delta_t) const {
-    auto const velocityi = VelocityComponents{b1.v_x, b1.v_y} + s_(boids_, b1) +
+    auto velocityi = VelocityComponents{b1.v_x, b1.v_y} + s_(boids_, b1) +
                            a_(b1, boids_) + c_(boids_);
-    auto const positioni = velocityi * delta_t + VelocityComponents{b1.x, b1.y};
+    auto positioni = velocityi * delta_t + VelocityComponents{b1.x, b1.y};
     BoidState newposition{positioni.vel_x, positioni.vel_y, velocityi.vel_x,
                           velocityi.vel_y};
     return newposition;
@@ -241,8 +240,8 @@ class Boids {
 
   bool empty() { return boids_.empty(); }
   double distance() const { return d_; }
-  std::vector<BoidState> TotalBoids() const {return boids_; }
-  int n() const {return n_; }
+  std::vector<BoidState> TotalBoids() const { return boids_; }
+  int n() const { return n_; }
 
   int size() const {
     /*if (boids_.size() > static_cast<size_t>(std::numeric_limits<int>::max()))
@@ -252,7 +251,7 @@ class Boids {
     return (static_cast<int>(boids_.size()));
   }
 
-    void push_back(BoidState const& boid) {
+  void push_back(BoidState const& boid) {
     // da mettere controllo che non ci siano boid con la stessa posizione e,
     // fare loop fino a n_ perch avere vettore di quella dimensione e mettere
     // assert su tutto / eccezioni -> comunque questo è l'invariante
@@ -266,14 +265,13 @@ class Boids {
 };
 
 std::vector<BoidState> NeighborsControl(Boids const& pesci, double d) {
-    auto p = pesci.TotalBoids();
-    auto b1 = *(p.begin());
-    p.erase(
-        std::remove_if(p.begin(), p.end(),
-                       [b1, d](BoidState b) { return (norm(b1, b) > d); }),
-        p.end());
-    assert(pesci.size() == pesci.n());
-    return p;
+  auto p = pesci.TotalBoids();
+  auto b1 = *(p.begin());
+  p.erase(std::remove_if(p.begin(), p.end(),
+                         [b1, d](BoidState b) { return (norm(b1, b) > d); }),
+          p.end());
+  assert(pesci.size() == pesci.n());
+  return p;
 }
 
 #endif

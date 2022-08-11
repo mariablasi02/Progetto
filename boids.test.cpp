@@ -185,11 +185,14 @@ TEST_CASE("Testing Cohesion rule") {
 }
 
 TEST_CASE("Testing Neighbor-Control function") {
-  Boids pesci = {4};
   BoidState b1{1., 2., 3., 4.};
   BoidState b2{2., 3., 4., 5.};
   BoidState b3{-1., -1., -1., -1.};
   BoidState b4{0., -1., 3., -2.};
+  SeparationRule s{3, 2., 2.};
+  AllignmentRule a{3, 0.5};
+  CohesionRule c{3, 3};
+  Boids pesci = {4, 3., s, a, c};
   pesci.push_back(b1);
   pesci.push_back(b2);
   pesci.push_back(b3);
@@ -203,13 +206,13 @@ TEST_CASE("Testing singleboid function") {
     BoidState b1{0., 1., 2., 3.};
     BoidState b2{-1., 2., 3., 2.};
     BoidState b3{3., -1., 5., 2.};
-    SeparationRule s{3, 2., 2.};
+    SeparationRule s{3, 2., 4.};
     AllignmentRule a{3, 0.5};
-    CohesionRule c{3, 3};
+    CohesionRule c{3, 4.};
     std::vector<BoidState> v1{b1, b2, b3};
-    Boids b{3, 4., s, a, c};
+    Boids b{3, 10., s, a, c};
     double const delta_t{0.1};
-    CHECK((b.singleboid(b1, delta_t).x) == (0.8));
+    CHECK((b.singleboid(b1, delta_t).v_x) == (3.0));
     // CHECK((b.singleboid(b1, s(v1, b1), a(b1, v1), c(v1), delta_t).y) ==
     // (1.05)); CHECK((b.singleboid(b1, s(v1, b1), a(b1, v1), c(v1),
     // delta_t).v_x) == (8)); CHECK((b.singleboid(b1, s(v1, b1), a(b1, v1),
