@@ -3,7 +3,6 @@
 #include "boids.hpp"
 #include "doctest.h"
 
-
 TEST_CASE("Testing norm function") {
   BoidState b1{2., 3., 5., 5.};
   BoidState b2{2., 3., 4., 4.};
@@ -14,9 +13,7 @@ TEST_CASE("Testing norm function") {
 }
 
 TEST_CASE("Testing operators") {
-
   SUBCASE("Check operator == on identical boids") {
-
     BoidState b1{2., 3., 4., 0.};
     BoidState b2{2., 3., 4., 0.};
     CHECK((b1 == b2) == true);
@@ -113,32 +110,27 @@ TEST_CASE("Testing operators") {
   }*/ //commentati perché non credo ci serviranno
 }
 
-
 TEST_CASE("Testing alignment rule") {
   SUBCASE("General tests") {
-  BoidState b1 = {0.,0.,2.,3.};
-  BoidState b2 = {0.,0.,5.,1.};
-  BoidState b3 = {0.,0.,-2.,3.};
-  std::vector<BoidState> a{b1,b2,b3};
-  BoidState b = {0.,0.,1.,-1};
-  AllignmentRule ar{4, 0.8};
-  CHECK(ar(b, a).vel_x == doctest::Approx(1.064).epsilon(0.01));
-  CHECK(ar(b, a).vel_y == doctest::Approx(2.136).epsilon(0.01));
-  BoidState b_ = {0.,0.,5.,7.};
-  CHECK(ar(b_ , a).vel_x == 0.);
-  CHECK(ar(b_ , a).vel_y == 0.);
+    BoidState b1 = {0., 0., 2., 3.};
+    BoidState b2 = {0., 0., 5., 1.};
+    BoidState b3 = {0., 0., -2., 3.};
+    std::vector<BoidState> a{b1, b2, b3};
+    BoidState b = {0., 0., 1., -1};
+    AllignmentRule ar{4, 0.8};
+    CHECK(ar(b, a).vel_x == doctest::Approx(1.064).epsilon(0.01));
+    CHECK(ar(b, a).vel_y == doctest::Approx(2.136).epsilon(0.01));
+    BoidState b_ = {0., 0., 5., 7.};
+    CHECK(ar(b_, a).vel_x == 0.);
+    CHECK(ar(b_, a).vel_y == 0.);
   }
-  SUBCASE("a greater than 1"){
-  CHECK_THROWS(AllignmentRule {5,1.2});
-  }
+  SUBCASE("a greater than 1") { CHECK_THROWS(AllignmentRule{5, 1.2}); }
   /*SUBCASE("Trying to break the code"){
     //non ho idee per ora
   }*/
-
 }
 
-
-/*TEST_CASE("Testing Cohesion rule") {
+TEST_CASE("Testing Cohesion rule") {
   SUBCASE("testing with a vector of three") {
     CohesionRule c1{3, 4};
     BoidState b1{1., 2., 3., 4.};
@@ -160,8 +152,19 @@ TEST_CASE("Testing alignment rule") {
     CHECK(c1(v1).vel_x == doctest::Approx(-0.67).epsilon(0.01));
     CHECK(c1(v1).vel_y == doctest::Approx(-1.67).epsilon(0.01));
   }
-}*/
 
-TEST_CASE("Testing Neighbor-Control function"){
-  //work in progress
+  /* SUBCASE("try single functions") {
+    //CohesionRule c1{3, 4};
+    BoidState b1{1., 2., 3., 4.};
+    BoidState b2{2., 3., 4., 5.};
+    BoidState b3{-1., -1., -1., -1.};
+    std::vector<BoidState> v1{b1, b2, b3};
+    int n = 3;
+    CHECK(COM(n, v1).vel_y == 0.5);
+    //CHECK(c1(v1).vel_y == 2.);
+  } */
+}
+
+TEST_CASE("Testing Neighbor-Control function") {
+  // work in progress
 }

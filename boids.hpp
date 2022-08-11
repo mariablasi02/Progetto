@@ -5,10 +5,10 @@
 #include <cassert>
 #include <cmath>
 #include <iterator>
+#include <limits>
 #include <numeric>
 #include <stdexcept>
 #include <vector>
-#include <limits>
 
 // manca il controllo degli errori su tutto
 
@@ -20,8 +20,6 @@ struct BoidState {
 
   // BoidState(double x, double y, double vx, double vy) : x{x}, y{y}, v_x{vx},
   // v_y{vy} {};
-
-  
 
   BoidState& operator+=(BoidState const& other) {
     x += other.x;
@@ -110,12 +108,14 @@ class SeparationRule {
   // valutare un valore che viene deciso da noi
 
  public:
-  SeparationRule(int const n, double const s, double d_s): n_{n}, separation_const_{s}, distance_s_{d_s} {
-    if (n_ <= 1) { 
+  SeparationRule(int const n, double const s, double d_s)
+      : n_{n}, separation_const_{s}, distance_s_{d_s} {
+    if (n_ <= 1) {
       throw std::runtime_error{"Number of boids must be >1"};
     }
   }
-  auto operator()(std::vector<BoidState> boids, BoidState const& b1) const { //per Mari dà un warning perché b1 non viene usato
+  auto operator()(std::vector<BoidState> boids, BoidState const& b1)
+      const {  // per Mari dà un warning perché b1 non viene usato
     auto boid_it = boids.begin();
     auto boid_it_next = std::next(boids.begin());
     auto boid_it_last = std::prev(boids.end());
@@ -148,7 +148,7 @@ class SeparationRule {
   }
 };
 
- class AllignmentRule {
+class AllignmentRule {
   int const n_;
   double const a_;
 
@@ -158,34 +158,34 @@ class SeparationRule {
       throw std::runtime_error{"a must be < than 0"};
     }
   };
-  VelocityComponents operator()(BoidState const& b1, std::vector<BoidState> boids) const {
+  VelocityComponents operator()(BoidState const& b1,
+                                std::vector<BoidState> boids) const {
     BoidState sum =
         std::accumulate(boids.begin(), boids.end(), BoidState{0., 0., 0., 0.});
     return VelocityComponents{((sum.v_x - b1.v_x) / (n_ - 1)) * a_,
                               ((sum.v_y - b1.v_y) / (n_ - 1)) * a_};
   }
-  
-  }; 
-  
+};
 
 VelocityComponents COM(int const n, std::vector<BoidState> b) {
   auto cboid_it_next = std::next(b.begin());
   // auto cboid_last = std::prev(b_.end());
-  if (n > 1) {
-    BoidState sum = std::accumulate(cboid_it_next, b.end(), BoidState{0., 0., 0., 0.}) * (1 / (n - 1));
-    return {sum.x, sum.y};
-  } 
-  else {
-    throw std::runtime_error{"Error: must be n>1"};
-  }
-}
- class CohesionRule {
 
+  BoidState sum =
+    std::accumulate(cboid_it_next, b.end(), BoidState{0., 0., 0., 0.});
+  double den = 1./(static_cast<double>(n)-1.);
+  return {sum.x * den, sum.y * den};
+}
+class CohesionRule {
   int const n_;
   double const cohesion_const_;
 
  public:
-  CohesionRule(int const n, double const c) : n_{n}, cohesion_const_{c} {}
+  CohesionRule(int const n, double const c) : n_{n}, cohesion_const_{c} {
+    if (n <= 1) {
+      throw std::runtime_error{"Error: must be n>1"};
+    }
+  }
 
   VelocityComponents operator()(std::vector<BoidState> cboids) const {
     auto bi = *cboids.begin();
@@ -205,33 +205,39 @@ class Boids {
   SeparationRule s_;
   AllignmentRule a_;
   CohesionRule c_;
-  std::vector<BoidState> boids_;  // ho provato a mettere quella n sopra come definizione ma
+  std::vector<BoidState>
+      boids_;  // ho provato a mettere quella n sopra come definizione ma
                // non funziona non ho capito perchè quindi boh -> faccio
                // fatica a definire un numero fisso di entrate del vettore
   BoidState solve(BoidState const& b1, VelocityComponents const& v1,
                   VelocityComponents const& v2, VelocityComponents const& v3,
-                  double const delta_t) const; //only declaration    
+                  double const delta_t) const;  // only declaration
 
  public:
-  Boids(int const n, double const d, SeparationRule const& s, AllignmentRule const& a, CohesionRule const& c)
+  Boids(int const n, double const d, SeparationRule const& s,
+        AllignmentRule const& a, CohesionRule const& c)
       : n_{n}, d_{d}, s_{s}, a_{a}, c_{c} {}
 
   bool empty() { return boids_.empty(); }
-  double distance() const {return d_; }
+  double distance() const { return d_; }
 
-  int size() const { 
-    /*if (boids_.size() > static_cast<size_t>(std::numeric_limits<int>::max())) {
-      throw std::overflow_error("size_t value cannot be stored in a variable of type int.");
+  int size() const {
+    /*if (boids_.size() > static_cast<size_t>(std::numeric_limits<int>::max()))
+    { throw std::overflow_error("size_t value cannot be stored in a variable of
+    type int.");
     }*/
-    return (static_cast<int>(boids_.size())); }
-  
-  void NeighborsControl(){
-    auto d = distance();
-    auto b1 = *(boids_.begin());          
-    boids_.erase(std::remove_if(boids_.begin(), boids_.end(), [b1, d](BoidState b){return (norm(b1,b) > d); }), boids_.end()); 
-    }
-  //assert(Boids.size() == n_); 
+    return (static_cast<int>(boids_.size()));
+  }
 
+  void NeighborsControl() {
+    auto d = distance();
+    auto b1 = *(boids_.begin());
+    boids_.erase(
+        std::remove_if(boids_.begin(), boids_.end(),
+                       [b1, d](BoidState b) { return (norm(b1, b) > d); }),
+        boids_.end());
+  }
+  // assert(Boids.size() == n_);
 
   void push_back(BoidState const& boid) {
     // da mettere controllo che non ci siano boid con la stessa posizione e,
@@ -243,12 +249,7 @@ class Boids {
 
   void evolution(double const delta_t);
 
-
   std::vector<BoidState> const& state() const;
 };
-
-
-
-
 
 #endif
