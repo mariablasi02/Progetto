@@ -112,7 +112,8 @@ class SeparationRule {
   // valutare un valore che viene deciso da noi
 
  public:
-  SeparationRule(int const n, double const s, double d_s): n_{n}, s_{s}, distance_s_{d_s} {
+  SeparationRule(int const n, double const s, double d_s)
+      : n_{n}, s_{s}, distance_s_{d_s} {
     if (n_ <= 1) {
       throw std::runtime_error{"Number of boids must be >1"};
     }
@@ -170,7 +171,8 @@ class AllignmentRule {
       throw std::runtime_error{"a must be < than 0"};
     }
   };
-  VelocityComponents operator()(std::vector<BoidState> boids, BoidState const& b1) const {
+  VelocityComponents operator()(std::vector<BoidState> boids,
+                                BoidState const& b1) const {
     BoidState sum =
         std::accumulate(boids.begin(), boids.end(), BoidState{0., 0., 0., 0.});
     return VelocityComponents{((sum.v_x - b1.v_x) / (n_ - 1)) * a_,
@@ -200,6 +202,7 @@ class CohesionRule {
       throw std::runtime_error{"Error: must be n>1"};
     }
   }
+
   VelocityComponents operator()(std::vector<BoidState> const& cboids) const {
     VelocityComponents position_of_c = COM(n_, cboids);
     BoidState com{position_of_c.vel_x, position_of_c.vel_y, 0., 0.};
@@ -223,8 +226,10 @@ std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
 
 void same_position(BoidState const& b1, std::vector<BoidState> boids) {
   for (; boids.begin() != boids.end(); ++boids.begin()) {
-     if(b1.x == boids.begin()->x && b1.y == boids.begin()->y){
-      boids.erase(boids.begin());} }
+    if (b1.x == boids.begin()->x && b1.y == boids.begin()->y) {
+      boids.erase(boids.begin());
+    }
+  }
 }
 
 class Boids {
@@ -233,7 +238,8 @@ class Boids {
   SeparationRule s_;
   AllignmentRule a_;
   CohesionRule c_;
-  std::vector<BoidState> boids_;  // ho provato a mettere quella n sopra come definizione ma
+  std::vector<BoidState>
+      boids_;  // ho provato a mettere quella n sopra come definizione ma
                // non funziona non ho capito perchè quindi boh -> faccio
                // fatica a definire un numero fisso di entrate del vettore
 
@@ -242,20 +248,25 @@ class Boids {
         AllignmentRule const& a, CohesionRule const& c)
       : n_{n}, d_{d}, s_{s}, a_{a}, c_{c} {}
 
-    
-  BoidState singleboid(std::vector<BoidState> const& vec, BoidState const& b1, double const delta_t) const {
+  BoidState singleboid(std::vector<BoidState> const& vec, BoidState const& b1,
+                       double const delta_t) const {
     VelocityComponents v_old = {b1.v_x, b1.v_y};
     auto v_1 = s_(vec, b1);
     auto v_2 = a_(vec, b1);
     auto v_3 = c_(vec);
     auto v_new = v_old + v_1 + v_2 + v_3;
-    return {b1.x + v_new.vel_x * delta_t, b1.y + v_new.vel_y * delta_t, v_new.vel_x, v_new.vel_y};
+    return {b1.x + v_new.vel_x * delta_t, b1.y + v_new.vel_y * delta_t,
+            v_new.vel_x, v_new.vel_y};
   }
 
   bool empty() { return boids_.empty(); }
   double distance() const { return d_; }
-  std::vector<BoidState> TotalBoids() const {return boids_; }
-  int n() const {return n_; }
+  std::vector<BoidState> TotalBoids() const { return boids_; }
+  int n() const { return n_; }
+  double d() const { return d_; }
+  SeparationRule s() const { return s_; }
+  AllignmentRule a() const { return a_; }
+  CohesionRule c() const { return c_; }
 
   int size() const {
     /*if (boids_.size() > static_cast<size_t>(std::numeric_limits<int>::max()))
@@ -265,7 +276,7 @@ class Boids {
     return (static_cast<int>(boids_.size()));
   }
 
-    void push_back(BoidState const& boid) {
+  void push_back(BoidState const& boid) {
     // da mettere controllo che non ci siano boid con la stessa posizione e,
     // fare loop fino a n_ perch avere vettore di quella dimensione e mettere
     // assert su tutto / eccezioni -> comunque questo è l'invariante
@@ -273,15 +284,27 @@ class Boids {
     boids_.push_back(boid);
   }
 
-  /*void evolution(double const delta_t) {
-    for(auto fish : boids_) {
-    auto nearfishes = NeighborsControl(boids_, fish, d_);
-    }
+  /* void evolution(double const delta_t) {
+    for (auto fish : boids_) {
+      auto nearfishes = NeighborsControl(boids_, fish, d_);
+      auto fishes = n();
+      auto dist = d();
+      auto sconst = s();
+      auto aconst = a();
+      auto cconst = c();
+      auto rules = [fishes, dist, sconst, aconst, cconst,
+                    delta_t](BoidState const& b) {
+        Boids b1{fishes, dist, sconst, aconst, cconst};
+        return b1.singleboid(b, delta_t);
+      };
+      std::transform(nearfishes.begin(), nearfishes.end(),
+                     std::next(nearfishes.begin()), std::prev(nearfishes.end()),
+                     rules);  // devo capire come fare la lambda
 
-  }*/
+    }
+  } */
 
   std::vector<BoidState> const& state() const;
 };
-
 
 #endif

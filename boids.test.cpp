@@ -216,21 +216,20 @@ TEST_CASE("Testing singleboid function") {
     CHECK(((b.singleboid(v1, b1, delta_t)).x) == 1.2);
     CHECK(((b.singleboid(v1, b1, delta_t)).y) == 1.);
     CHECK(((b.singleboid(v1, b1, delta_t)).v_x) == 12.);
-    CHECK(((b.singleboid(v1, b1, delta_t)).v_y) == 0.);    
+    CHECK(((b.singleboid(v1, b1, delta_t)).v_y) == 0.);
   }
 }
 
-TEST_CASE("Testing Boids with the same position"){
-  SUBCASE("Testing Boids"){
+TEST_CASE("Testing Boids with the same position") {
+  SUBCASE("Testing Boids") {
+    BoidState b1{7., 2., 2., 3.};
+    BoidState b2{3., 2., 3., 4.};
+    BoidState b3{6., 2., 3., 3.};
+    std::vector<BoidState> a{b1, b2, b3};
+    BoidState b{1., 2., 2., 3.};
+    same_position(b, a);
 
-      BoidState b1{7., 2., 2., 3.};
-      BoidState b2{3., 2., 3.,4.};
-      BoidState b3{6., 2., 3., 3.}; 
-      std::vector<BoidState> a {b1, b2, b3};
-      BoidState b{1., 2., 2.,3.};
-      same_position(b,a);
-    
-      CHECK(static_cast<int>(a.size()) == 3);
+    CHECK(static_cast<int>(a.size()) == 3);
   }
 }
 
