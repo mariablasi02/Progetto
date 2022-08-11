@@ -42,7 +42,7 @@ TEST_CASE("Testing operators") {
     CHECK((b1 + b2).x == 5.);
     CHECK((b1 + b2).y == 5.);
     CHECK((b1 + b2).v_x == 5.);
-    CHECK((b1 + b2).v_y == 5.); 
+    CHECK((b1 + b2).v_y == 5.);
   }
 
   SUBCASE("Check addition with three points") {
