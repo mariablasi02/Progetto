@@ -201,10 +201,10 @@ class CohesionRule {
 
 class Boids {
   int const n_;
-  double const d_;
-  SeparationRule s_;
+  double const d_ = 1.;
+  /*SeparationRule s_;
   AllignmentRule a_;
-  CohesionRule c_;
+  CohesionRule c_;*/
   std::vector<BoidState>
       boids_;  // ho provato a mettere quella n sopra come definizione ma
                // non funziona non ho capito perchè quindi boh -> faccio
@@ -214,30 +214,26 @@ class Boids {
                   double const delta_t) const;  // only declaration
 
  public:
-  Boids(int const n, double const d, SeparationRule const& s,
+  /*Boids(int const n, double const d, SeparationRule const& s,
         AllignmentRule const& a, CohesionRule const& c)
-      : n_{n}, d_{d}, s_{s}, a_{a}, c_{c} {}
+      : n_{n}, d_{d}, s_{s}, a_{a}, c_{c} {}*/ 
+  Boids(int const n) : n_{n} {}; // for testing purpose
 
-  bool empty() { return boids_.empty(); }
+  bool empty() const { return boids_.empty(); }
   double distance() const { return d_; }
+  std::vector<BoidState> TotalBoids() const {return boids_; }
+  int n() const {return n_; }
 
   int size() const {
     /*if (boids_.size() > static_cast<size_t>(std::numeric_limits<int>::max()))
-    { throw std::overflow_error("size_t value cannot be stored in a variable of
-    type int.");
+    { 
+      throw std::overflow_error( 
+        "size_t value cannot be stored in a variable of
+        type int.");
     }*/
-    return (static_cast<int>(boids_.size()));
+    return static_cast<int>(boids_.size());
   }
 
-  void NeighborsControl() {
-    auto d = distance();
-    auto b1 = *(boids_.begin());
-    boids_.erase(
-        std::remove_if(boids_.begin(), boids_.end(),
-                       [b1, d](BoidState b) { return (norm(b1, b) > d); }),
-        boids_.end());
-  }
-  // assert(Boids.size() == n_);
 
   void push_back(BoidState const& boid) {
     // da mettere controllo che non ci siano boid con la stessa posizione e,
@@ -251,5 +247,16 @@ class Boids {
 
   std::vector<BoidState> const& state() const;
 };
+
+std::vector<BoidState> NeighborsControl(Boids const& pesci, double d) {
+    auto p = pesci.TotalBoids();
+    auto b1 = *(p.begin());
+    p.erase(
+        std::remove_if(p.begin(), p.end(),
+                       [b1, d](BoidState b) { return (norm(b1, b) > d); }),
+        p.end());
+    assert(pesci.size() == pesci.n());
+    return p;
+}
 
 #endif

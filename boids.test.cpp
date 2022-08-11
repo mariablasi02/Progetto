@@ -43,7 +43,7 @@ TEST_CASE("Testing operators") {
     CHECK((b1 + b2).x == 5.);
     CHECK((b1 + b2).y == 5.);
     CHECK((b1 + b2).v_x == 5.);
-    CHECK((b1 + b2).v_y == 5.);  // mi dà errore sui check non capisco perchè
+    CHECK((b1 + b2).v_y == 5.); 
   }
   SUBCASE("Check addition with three points") {
     BoidState b1{1., 2., 3., 4.};
@@ -166,5 +166,15 @@ TEST_CASE("Testing Cohesion rule") {
 }
 
 TEST_CASE("Testing Neighbor-Control function") {
-  // work in progress
+  Boids pesci = {4};
+  BoidState b1{1., 2., 3., 4.};
+  BoidState b2{2., 3., 4., 5.};
+  BoidState b3{-1., -1., -1., -1.};
+  BoidState b4{0., -1., 3., -2.};
+  pesci.push_back(b1);
+  pesci.push_back(b2);
+  pesci.push_back(b3);
+  pesci.push_back(b4);
+  auto b = NeighborsControl(pesci, 3.);
+  CHECK(static_cast<int>(b.size()) == 2);
 }
