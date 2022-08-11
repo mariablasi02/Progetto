@@ -201,6 +201,7 @@ TEST_CASE("Testing Neighbor-Control function") {
   CHECK(static_cast<int>(b.size()) == 2);
 }
 
+
 TEST_CASE("Testing singleboid function") {
   SUBCASE("boid in a group of three") {
     BoidState b1{0., 1., 2., 3.};
@@ -232,3 +233,4 @@ TEST_CASE("Testing Boids with the same position"){
       CHECK(static_cast<int>(a.size()) == 3);
   }
 }
+
