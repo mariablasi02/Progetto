@@ -168,3 +168,23 @@ TEST_CASE("Testing Cohesion rule") {
 TEST_CASE("Testing Neighbor-Control function") {
   // work in progress
 }
+
+TEST_CASE("Testing singleboid function") {
+  SUBCASE("boid in a group of three") {
+    BoidState b1{0., 1., 2., 3.};
+    BoidState b2{-1., 2., 3., 2.};
+    BoidState b3{3., -1., 5., 2.};
+    SeparationRule s{3, 2., 1.};
+    AllignmentRule a{3, 0.5};
+    CohesionRule c{3, 3};
+    std::vector<BoidState> v1{b1, b2, b3};
+    Boids b{3, 4., s, a, c};
+    double const delta_t{0.1};
+
+    CHECK((b.singleboid(b1,  delta_t).x) == (0.8));
+   // CHECK((b.singleboid(b1, s(v1, b1), a(b1, v1), c(v1), delta_t).y) == (1.05));
+   // CHECK((b.singleboid(b1, s(v1, b1), a(b1, v1), c(v1), delta_t).v_x) == (8));
+   // CHECK((b.singleboid(b1, s(v1, b1), a(b1, v1), c(v1), delta_t).v_y) ==
+     //     (0.5));
+  }
+}

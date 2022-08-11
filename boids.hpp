@@ -144,6 +144,7 @@ class SeparationRule {
         return VelocityComponents{-separation_const_ * sum_x,
                                   -separation_const_ * sum_y};
       }
+      
     }
   }
 };
@@ -172,8 +173,8 @@ VelocityComponents COM(int const n, std::vector<BoidState> b) {
   // auto cboid_last = std::prev(b_.end());
 
   BoidState sum =
-    std::accumulate(cboid_it_next, b.end(), BoidState{0., 0., 0., 0.});
-  double den = 1./(static_cast<double>(n)-1.);
+      std::accumulate(cboid_it_next, b.end(), BoidState{0., 0., 0., 0.});
+  double den = 1. / (static_cast<double>(n) - 1.);
   return {sum.x * den, sum.y * den};
 }
 class CohesionRule {
@@ -209,14 +210,23 @@ class Boids {
       boids_;  // ho provato a mettere quella n sopra come definizione ma
                // non funziona non ho capito perchè quindi boh -> faccio
                // fatica a definire un numero fisso di entrate del vettore
-  BoidState solve(BoidState const& b1, VelocityComponents const& v1,
-                  VelocityComponents const& v2, VelocityComponents const& v3,
-                  double const delta_t) const;  // only declaration
 
  public:
   Boids(int const n, double const d, SeparationRule const& s,
         AllignmentRule const& a, CohesionRule const& c)
       : n_{n}, d_{d}, s_{s}, a_{a}, c_{c} {}
+
+  BoidState singleboid(BoidState const& b1, 
+                       double const delta_t) const {
+    auto const velocityi = VelocityComponents{b1.v_x, b1.v_y} + s_(boids_, b1) +
+                           a_(b1, boids_) + c_(boids_);
+    auto const positioni = velocityi * delta_t + VelocityComponents{b1.x, b1.y};
+
+    BoidState newposition{positioni.vel_x, positioni.vel_y, velocityi.vel_x,
+                          velocityi.vel_y};
+
+    return newposition;
+  }
 
   bool empty() { return boids_.empty(); }
   double distance() const { return d_; }
