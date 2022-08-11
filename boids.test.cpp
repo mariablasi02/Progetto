@@ -15,6 +15,8 @@ TEST_CASE("Check norm2 <= 0") {
 TEST_CASE("Testing norm function"){
   BoidState b1{2., 3., 5., 5.};
   BoidState b2{2., 3., 4., 4.};
+  BoidState b3{5., 6., 0., 0.};
+  CHECK(norm(b1, b3) == doctest::Approx(4.24).epsilon(0.01));
   CHECK(norm(b1, b2) == 0.);
 }
 
@@ -116,6 +118,7 @@ TEST_CASE("Testing operators") {
     CHECK((b1 * b2) == {4., 0., 20., 0});
   }*/ //commentati perché non credo ci serviranno
 }
+<<<<<<< HEAD
 
 TEST_CASE("Testing Rules"){
 
@@ -170,4 +173,26 @@ SUBCASE("Check CohesionRule, two boids have the same position")
 
 
 
+=======
+TEST_CASE("Testing alignment rule") {
+  SUBCASE("General tests") {
+  BoidState b1 = {0.,0.,2.,3.};
+  BoidState b2 = {0.,0.,5.,1.};
+  BoidState b3 = {0.,0.,-2.,3.};
+  std::vector<BoidState> a{b1,b2,b3};
+  BoidState b = {0.,0.,1.,-1};
+  AllignmentRule ar{4, 0.8};
+  CHECK(ar(b, a).vel_x == doctest::Approx(1.064).epsilon(0.01));
+  CHECK(ar(b, a).vel_y == doctest::Approx(2.136).epsilon(0.01));
+  BoidState b_ = {0.,0.,5.,7.};
+  CHECK(ar(b_ , a).vel_x == 0.);
+  CHECK(ar(b_ , a).vel_y == 0.);
+  }
+  SUBCASE("a greater than 1"){
+  CHECK_THROWS(AllignmentRule {5,1.2});
+  }
+  /*SUBCASE("Trying to break the code"){
+    //non ho idee per ora
+  }*/
+>>>>>>> 26c607fe6206e988f3b73739e00338be59cd917e
 }
