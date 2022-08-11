@@ -112,8 +112,7 @@ class SeparationRule {
   // valutare un valore che viene deciso da noi
 
  public:
-  SeparationRule(int const n, double const s, double d_s)
-      : n_{n}, s_{s}, distance_s_{d_s} {
+  SeparationRule(int const n, double const s, double d_s): n_{n}, s_{s}, distance_s_{d_s} {
     if (n_ <= 1) {
       throw std::runtime_error{"Number of boids must be >1"};
     }
@@ -191,6 +190,7 @@ VelocityComponents COM(int const n, std::vector<BoidState> b) {
 
   return {sum.x * den, sum.y * den};
 }
+
 class CohesionRule {
   int const n_;
   double const cohesion_const_;
@@ -209,7 +209,6 @@ class CohesionRule {
     return {result.x, result.y};
   }
 };
-
 // dubbio : mettere la vaiabile n solo in boids e non  nelle classi delle
 // regole così sono tutte uguali ?
 
@@ -219,8 +218,7 @@ class Boids {
   SeparationRule s_;
   AllignmentRule a_;
   CohesionRule c_;
-  std::vector<BoidState>
-      boids_;  // ho provato a mettere quella n sopra come definizione ma
+  std::vector<BoidState> boids_;  // ho provato a mettere quella n sopra come definizione ma
                // non funziona non ho capito perchè quindi boh -> faccio
                // fatica a definire un numero fisso di entrate del vettore
 
