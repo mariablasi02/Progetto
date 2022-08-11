@@ -5,6 +5,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 TEST_CASE("Check norm2 <= 0") {
   BoidState b1{2., 3., 5., 5.};
   BoidState b2{2., 3., 4., 4.};
@@ -13,16 +14,23 @@ TEST_CASE("Check norm2 <= 0") {
 
 
 TEST_CASE("Testing norm function"){
+=======
+
+TEST_CASE("Testing norm function") {
+>>>>>>> 1f9ca8a5599053ca4b22d3d9428778899ff0ac18
   BoidState b1{2., 3., 5., 5.};
   BoidState b2{2., 3., 4., 4.};
   BoidState b3{5., 6., 0., 0.};
   CHECK(norm(b1, b3) == doctest::Approx(4.24).epsilon(0.01));
+
   CHECK(norm(b1, b2) == 0.);
 }
 
 
 TEST_CASE("Testing operators") {
-    SUBCASE("Check operator == on identical boids") {
+
+  SUBCASE("Check operator == on identical boids") {
+
     BoidState b1{2., 3., 4., 0.};
     BoidState b2{2., 3., 4., 0.};
     CHECK((b1 == b2) == true);
@@ -119,6 +127,7 @@ TEST_CASE("Testing operators") {
   }*/ //commentati perché non credo ci serviranno
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 TEST_CASE("Testing Rules"){
 
@@ -174,6 +183,10 @@ SUBCASE("Check CohesionRule, two boids have the same position")
 
 
 =======
+=======
+
+
+>>>>>>> 1f9ca8a5599053ca4b22d3d9428778899ff0ac18
 TEST_CASE("Testing alignment rule") {
   SUBCASE("General tests") {
   BoidState b1 = {0.,0.,2.,3.};
@@ -194,5 +207,38 @@ TEST_CASE("Testing alignment rule") {
   /*SUBCASE("Trying to break the code"){
     //non ho idee per ora
   }*/
+<<<<<<< HEAD
 >>>>>>> 26c607fe6206e988f3b73739e00338be59cd917e
+=======
+
+}
+
+
+/*TEST_CASE("Testing Cohesion rule") {
+  SUBCASE("testing with a vector of three") {
+    CohesionRule c1{3, 4};
+    BoidState b1{1., 2., 3., 4.};
+    BoidState b2{2., 3., 4., 5.};
+    BoidState b3{-1., -1., -1., -1.};
+    std::vector<BoidState> v1{b1, b2, b3};
+
+    CHECK(c1(v1).vel_x == -2.0);
+    CHECK(c1(v1).vel_y == -4.0);
+  }
+
+  SUBCASE("testing with a vector of four") {
+    CohesionRule c1{4, 1};
+    BoidState b1{1., 2., 3., 4.};
+    BoidState b2{2., 3., 4., 5.};
+    BoidState b3{-1., -1., -1., -1.};
+    BoidState b4{0., -1., 3., -2.};
+    std::vector<BoidState> v1{b1, b2, b3, b4};
+    CHECK(c1(v1).vel_x == doctest::Approx(-0.67).epsilon(0.01));
+    CHECK(c1(v1).vel_y == doctest::Approx(-1.67).epsilon(0.01));
+  }
+}*/
+
+TEST_CASE("Testing Neighbor-Control function"){
+  //work in progress
+>>>>>>> 1f9ca8a5599053ca4b22d3d9428778899ff0ac18
 }
