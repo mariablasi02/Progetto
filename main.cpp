@@ -1,3 +1,5 @@
+// Compile with: g++ main.cpp -lsfml-graphics -lsfml-window -lsfml-system
+
 #include "boids.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
