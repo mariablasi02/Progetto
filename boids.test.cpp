@@ -197,7 +197,7 @@ TEST_CASE("Testing Neighbor-Control function") {
   pesci.push_back(b2);
   pesci.push_back(b3);
   pesci.push_back(b4);
-  auto b = NeighborsControl(pesci, 3.);
+  auto b = NeighborsControl(pesci, b1, 3.);
   CHECK(static_cast<int>(b.size()) == 2);
 }
 

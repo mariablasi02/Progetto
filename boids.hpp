@@ -258,14 +258,19 @@ class Boids {
     boids_.push_back(boid);
   }
 
-  void evolution(double const delta_t);
+  /*void evolution(double const delta_t) {
+    for(auto fish : boids_){
+    auto nearfishes = NeighborsControl(boids_, fish, d_)
+    }
+
+  }*/
 
   std::vector<BoidState> const& state() const;
 };
 
-std::vector<BoidState> NeighborsControl(Boids const& pesci, double d) {
+std::vector<BoidState> NeighborsControl(Boids const& pesci, BoidState b1, double d) {
     auto p = pesci.TotalBoids();
-    auto b1 = *(p.begin());
+    //auto b1 = *p.begin();
     p.erase(
         std::remove_if(p.begin(), p.end(),
                        [b1, d](BoidState b) { return (norm(b1, b) > d); }),
