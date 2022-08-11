@@ -8,7 +8,6 @@ TEST_CASE("Testing norm function") {
   BoidState b2{2., 3., 4., 4.};
   BoidState b3{5., 6., 0., 0.};
   CHECK(norm(b1, b3) == doctest::Approx(4.24).epsilon(0.01));
-
   CHECK(norm(b1, b2) == 0.);
 }
 
@@ -45,6 +44,7 @@ TEST_CASE("Testing operators") {
     CHECK((b1 + b2).v_x == 5.);
     CHECK((b1 + b2).v_y == 5.); 
   }
+
   SUBCASE("Check addition with three points") {
     BoidState b1{1., 2., 3., 4.};
     BoidState b2{4., 3., 2., 1.};
@@ -101,7 +101,7 @@ TEST_CASE("Testing operators") {
   /*SUBCASE("Check denominator == 0") {
     BoidState b1{2., 0., 5., 5.};
     BoidState b2{2., 3., 4., 0.};
-    CHECK(operator/(b1, b2));
+    CHECK_FALSE((b1/b2) == 0.);
   }
   SUBCASE("Check multiplication with zero") {
     BoidState b1{2., 0., 5., 5.};
@@ -154,15 +154,15 @@ TEST_CASE("Testing Cohesion rule") {
   }
 
   /* SUBCASE("try single functions") {
-    //CohesionRule c1{3, 4};
+    // CohesionRule c1{3, 4};
     BoidState b1{1., 2., 3., 4.};
     BoidState b2{2., 3., 4., 5.};
     BoidState b3{-1., -1., -1., -1.};
     std::vector<BoidState> v1{b1, b2, b3};
     int n = 3;
     CHECK(COM(n, v1).vel_y == 0.5);
-    //CHECK(c1(v1).vel_y == 2.);
-  } */
+    // CHECK(c1(v1).vel_y == 2.);
+  }*/
 }
 
 TEST_CASE("Testing Neighbor-Control function") {
