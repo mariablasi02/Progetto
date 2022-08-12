@@ -112,7 +112,8 @@ class SeparationRule {
   // valutare un valore che viene deciso da noi
 
  public:
-  SeparationRule(int const n, double const s, double d_s): n_{n}, s_{s}, distance_s_{d_s} {
+  SeparationRule(int const n, double const s, double d_s)
+      : n_{n}, s_{s}, distance_s_{d_s} {
     if (n_ <= 1) {
       throw std::runtime_error{"Number of boids must be >1"};
     }
@@ -157,8 +158,6 @@ class SeparationRule {
     return VelocityComponents{-s_ * sum_x, -s_ * sum_y};
   }
 };
-//}
-//};
 
 class AllignmentRule {
   int const n_;
@@ -170,8 +169,8 @@ class AllignmentRule {
       throw std::runtime_error{"a must be < than 0"};
     }
   };
-  VelocityComponents operator()(BoidState const& b1,
-                                std::vector<BoidState> boids) const {
+  VelocityComponents operator()(std::vector<BoidState> boids,
+                                BoidState const& b1) const {
     BoidState sum =
         std::accumulate(boids.begin(), boids.end(), BoidState{0., 0., 0., 0.});
     return VelocityComponents{((sum.v_x - b1.v_x) / (n_ - 1)) * a_,
@@ -201,23 +200,36 @@ class CohesionRule {
       throw std::runtime_error{"Error: must be n>1"};
     }
   }
-  VelocityComponents operator()(std::vector<BoidState> cboids) const {
-    auto bi = *cboids.begin();
+
+  VelocityComponents operator()(std::vector<BoidState> const& cboids) const {
     VelocityComponents position_of_c = COM(n_, cboids);
     BoidState com{position_of_c.vel_x, position_of_c.vel_y, 0., 0.};
+    auto bi = *cboids.begin();
     BoidState result = (com - bi) * cohesion_const_;
     return {result.x, result.y};
   }
 };
 // dubbio : mettere la vaiabile n solo in boids e non  nelle classi delle
 // regole così sono tutte uguali ?
-<<<<<<< HEAD
+
+std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
+                                        BoidState b1, double d) {
+  auto p = pesci;
+  // auto b1 = *p.begin();
+  p.erase(std::remove_if(p.begin(), p.end(),
+                         [b1, d](BoidState b) { return (norm(b1, b) > d); }),
+          p.end());
+  // assert(static_cast<int> pesci.size() == pesci.n());
+  return p;
+}
 
 void same_position(BoidState const& b1, std::vector<BoidState> boids) {
   for (; boids.begin() != boids.end(); ++boids.begin()) {
     if (b1.x == boids.begin()->x && b1.y == boids.begin()->y) {
       boids.erase(boids.begin());
-=======
+    }
+  }
+}
 
 class Boids {
   int const n_;
@@ -225,7 +237,8 @@ class Boids {
   SeparationRule s_;
   AllignmentRule a_;
   CohesionRule c_;
-  std::vector<BoidState> boids_;  // ho provato a mettere quella n sopra come definizione ma
+  std::vector<BoidState>
+      boids_;  // ho provato a mettere quella n sopra come definizione ma
                // non funziona non ho capito perchè quindi boh -> faccio
                // fatica a definire un numero fisso di entrate del vettore
 
@@ -234,20 +247,30 @@ class Boids {
         AllignmentRule const& a, CohesionRule const& c)
       : n_{n}, d_{d}, s_{s}, a_{a}, c_{c} {}
 
-    
-  BoidState singleboid(BoidState const& b1, double const delta_t) const {
-    auto const velocityi = VelocityComponents{b1.v_x, b1.v_y} + s_(boids_, b1) +
-                           a_(b1, boids_) + c_(boids_);
-    auto const positioni = velocityi * delta_t + VelocityComponents{b1.x, b1.y};
-    BoidState newposition{positioni.vel_x, positioni.vel_y, velocityi.vel_x,
-                          velocityi.vel_y};
-    return newposition;
+  BoidState singleboid(std::vector<BoidState> const& vec, BoidState const& b1,
+                       double const delta_t) const {
+    VelocityComponents v_old = {b1.v_x, b1.v_y};
+    auto v_1 = s_(vec, b1);
+    auto v_2 = a_(vec, b1);
+    auto v_3 = c_(vec);
+    auto v_new = v_old + v_1 + v_2 + v_3;
+    return {b1.x + v_new.vel_x * delta_t, b1.y + v_new.vel_y * delta_t,
+            v_new.vel_x, v_new.vel_y};
   }
 
-  bool empty() { return boids_.empty(); }
+  bool empty() {
+    return boids_.empty();
+    if (boids_.empty() == true) {
+      throw std::runtime_error{"There are no boids"};
+    }
+  }
   double distance() const { return d_; }
-  std::vector<BoidState> TotalBoids() const {return boids_; }
-  int n() const {return n_; }
+  std::vector<BoidState> TotalBoids() const { return boids_; }
+  int n() const { return n_; }
+  double d() const { return d_; }
+  SeparationRule s() const { return s_; }
+  AllignmentRule a() const { return a_; }
+  CohesionRule c() const { return c_; }
 
   int size() const {
     /*if (boids_.size() > static_cast<size_t>(std::numeric_limits<int>::max()))
@@ -257,7 +280,7 @@ class Boids {
     return (static_cast<int>(boids_.size()));
   }
 
-    void push_back(BoidState const& boid) {
+  void push_back(BoidState const& boid) {
     // da mettere controllo che non ci siano boid con la stessa posizione e,
     // fare loop fino a n_ perch avere vettore di quella dimensione e mettere
     // assert su tutto / eccezioni -> comunque questo è l'invariante
@@ -265,114 +288,17 @@ class Boids {
     boids_.push_back(boid);
   }
 
-  /*void evolution(double const delta_t) {
-    for(auto fish : boids_){
-    auto nearfishes = NeighborsControl(boids_, fish, d_)
->>>>>>> 7eaeb09df03a8f83642a856404f4b631c8f3ce07
+  void evolution(double const delta_t) {
+    Boids b{n(), d(), s(), a(), c()};
+    std::vector<BoidState> fishes;
+    for (auto fish : boids_) {
+      auto nearfishes = NeighborsControl(boids_, fish, d_);
+      fishes.push_back(b.singleboid(nearfishes, fish, delta_t));
     }
+    boids_ = fishes;
   }
-}
-/* class Boids {
-   int const n_;
-   double const distance_;
-   SeparationRule s_;
-   AllignmentRule a_;
-   CohesionRule c_;
-   public :
 
-   };
-  /* std::vector<BoidState>
-       boids_;  // ho provato a mettere quella n sopra come definizione ma
-                // non funziona non ho capito perchè quindi boh -> faccio
-                // fatica a definire un numero fisso di entrate del vettore
-   BoidState solve(BoidState const& b1, VelocityComponents const& v1,
-                   VelocityComponents const& v2, VelocityComponents const& v3,
-                   double const delta_t) const {
-     return {};
-   }
-
-  public:
-   Boids(int const n, double const d, SeparationRule const& s,
-         AllignmentRule const& a, CohesionRule const& c)
-       : n_{n}, distance_{d}, s_{s}, a_{a}, c_{c} {}
-
-   bool empty() { return boids_.empty(); }
-
-   std::size_t size() const { return boids_.size(); }
-
-   void push_back(BoidState const& b1, std::vector<BoidState>) {
-
-
-     // da mettere controllo che non ci siano boid con la stessa posizione e,
-     // fare loop fino a n_ perch avere vettore di quella dimensione e mettere
-     // assert su tutto / eccezioni -> comunque questo è l'invariante
-
-
-   double distance() const { return d_; }
-
-   int size() const {
-     /*if (boids_.size() >
-     static_cast<size_t>(std::numeric_limits<int>::max())) { throw
-     std::overflow_error("size_t value cannot be stored in a variable of type
-     int.");
-     }
-     return (static_cast<int>(boids_.size()));
-   }
-
-   void NeighborsControl() {
-     auto d = distance();
-     auto b1 = *(boids_.begin());
-     boids_.erase(
-         std::remove_if(boids_.begin(), boids_.end(),
-                        [b1, d](BoidState b) { return (norm(b1, b) > d); }),
-         boids_.end());
-   }
-   // assert(Boids.size() == n_);
-
-     boids_.push_back(boid);
-   }
-
-   void evolution(double const delta_t);
-
-    std::vector<BoidState> const& state() const {
-   return boids_;
- }  // non capisco perchè dia errore qui
-
-
- std::vector<BoidState> const& state() const {
-   return boids_;
- }  // non capisco perchè dia errore qui
+  std::vector<BoidState> const& state() const { return boids_; }
 };
-
-<<<<<<< HEAD
-*/
-
-
-/* auto same_position_it = std::find_if(boids.begin(), boids.end(), f);
-   if (same_position_it != boids.end()) {
-     boids.erase(same_position_it);
-   }
- }*/
-
-// da mettere controllo che non ci siano boid con la stessa posizione e,
-// fare loop fino a n_ perch avere vettore di quella dimensione e mettere
-// assert su tutto / eccezioni -> comunque questo è l'invariante
-=======
-  }*/
-
-  std::vector<BoidState> const& state() const;
-};
-
-std::vector<BoidState> NeighborsControl(Boids const& pesci, BoidState b1, double d) {
-    auto p = pesci.TotalBoids();
-    //auto b1 = *p.begin();
-    p.erase(
-        std::remove_if(p.begin(), p.end(),
-                       [b1, d](BoidState b) { return (norm(b1, b) > d); }),
-        p.end());
-    assert(pesci.size() == pesci.n());
-    return p;
-}
->>>>>>> 7eaeb09df03a8f83642a856404f4b631c8f3ce07
 
 #endif
