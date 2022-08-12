@@ -146,7 +146,7 @@ class SeparationRule {
   }
 };
 
-bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c){
+bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
   auto it = std::find(cont.begin(), cont.end(), c);
   return it != cont.end();
 }
@@ -160,10 +160,13 @@ class AllignmentRule {
       throw std::runtime_error{"a must be < than 1"};
     }
   };
-  Components operator()(std::vector<BoidState> boids, BoidState const& b1) const {
+  Components operator()(std::vector<BoidState> boids,
+                        BoidState const& b1) const {
     assert(check_ownership(boids, b1));
-    BoidState sum = std::accumulate(boids.begin(), boids.end(), BoidState{0., 0., 0., 0.}-b1); 
-    return Components{((sum.v_x / (size(boids) - 1)) - b1.v_x) * a_, ((sum.v_y / (size(boids) - 1)) -b1.v_y)* a_};
+    BoidState sum = std::accumulate(boids.begin(), boids.end(),
+                                    BoidState{0., 0., 0., 0.} - b1);
+    return Components{((sum.v_x / (size(boids) - 1)) - b1.v_x) * a_,
+                      ((sum.v_y / (size(boids) - 1)) - b1.v_y) * a_};
   }
 };
 
@@ -185,7 +188,7 @@ class CohesionRule {
   Components operator()(std::vector<BoidState> const& cboids,
                         BoidState const& b1) const {
     assert(check_ownership(cboids, b1));
-    assert(size(cboids)>1);
+    assert(size(cboids) > 1);
 
     Components position_of_c = COM(cboids, b1);
 
@@ -208,12 +211,7 @@ std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
   return p;
 }
 
-/* void same_position(BoidState const& b1, std::vector<BoidState> boids) {
-  for (; boids.begin() != boids.end(); ++boids.begin()) {
-    if (b1.x == boids.begin()->x && b1.y == boids.begin()->y) {
-      boids.erase(boids.begin());
-    }}
-  }*/
+
 
 void same_position(BoidState const& b1, std::vector<BoidState> boids) {
   auto it = boids.begin();
@@ -221,9 +219,9 @@ void same_position(BoidState const& b1, std::vector<BoidState> boids) {
     auto same_position_it =
         std::find_if(boids.begin(), boids.end(),
                      [b1](BoidState b) { return b.x == b1.x && b.y == b1.y; });
-     if (same_position_it != boids.end()) {
-    boids.erase(same_position_it);
-     }
+    if (same_position_it != boids.end()) {
+      boids.erase(same_position_it);
+    }
   }
 }
 

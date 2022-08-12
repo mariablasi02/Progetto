@@ -130,6 +130,17 @@ TEST_CASE("Testing Separation rule") {
     CHECK(sr(a, b4).val_x == doctest::Approx(-2.8));
     CHECK(sr(a, b4).val_y == doctest::Approx(2.8));
   }
+
+  SUBCASE("Testing NeighborsControl in SeparationRule") {
+    BoidState b1{0., 1., 2., 3.};
+    BoidState b2{0., 3., 5., 1.};
+    BoidState b3{2., 3., -2., 3.};
+    BoidState b4{2., 1., 2., 1.};
+    std::vector<BoidState> a{b1, b2, b3, b4};
+    SeparationRule sr{0.7, 2.2};
+    CHECK(sr(a, b1).val_x == doctest::Approx(1.4));
+    CHECK(sr(a, b1).val_y == doctest::Approx(1.4));
+  }
 }
 
 TEST_CASE("Testing alignment rule") {
@@ -231,7 +242,6 @@ TEST_CASE("Testing Boids with the same position") {
     BoidState b1{7., 2., 2., 3.};
     BoidState b2{3., 2., 3., 4.};
     BoidState b3{6., 2., 3., 3.};
-
     std::vector<BoidState> vec{b1, b2, b3};
     BoidState b{1., 2., 2., 3.};
     same_position(b, vec);
