@@ -226,7 +226,7 @@ TEST_CASE("Testing singleboid function") {
   }
 }
 
-/*TEST_CASE("Testing Boids with the same position") {
+TEST_CASE("Testing Boids with the same position") {
   SUBCASE("Testing Boids") {
     BoidState b1{7., 2., 2., 3.};
     BoidState b2{3., 2., 3., 4.};
@@ -237,4 +237,4 @@ TEST_CASE("Testing singleboid function") {
     same_position(b, vec);
     CHECK(static_cast<int>(vec.size()) == 3);
   }
-}*/
+}

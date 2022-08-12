@@ -184,7 +184,11 @@ class CohesionRule {
 
   Components operator()(std::vector<BoidState> const& cboids,
                         BoidState const& b1) const {
+    assert(check_ownership(cboids, b1));
+    assert(size(cboids)>1);
+
     Components position_of_c = COM(cboids, b1);
+
     BoidState com{position_of_c.val_x, position_of_c.val_y, 0., 0.};
     BoidState result = (com - b1) * cohesion_const_;
     return {result.x, result.y};
@@ -212,7 +216,8 @@ std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
   }*/
 
 void same_position(BoidState const& b1, std::vector<BoidState> boids) {
-  for (; boids.begin() != boids.end(); ++boids.begin()) {
+  auto it = boids.begin();
+  for (; it != boids.end(); ++it) {
     auto same_position_it =
         std::find_if(boids.begin(), boids.end(),
                      [b1](BoidState b) { return b.x == b1.x && b.y == b1.y; });
