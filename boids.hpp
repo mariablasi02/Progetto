@@ -242,7 +242,7 @@ class Boids {
     Components v_old = {b1.v_x, b1.v_y};
     auto v_1 = s_(vec, b1);
     auto v_2 = a_(vec, b1);
-    auto v_3 = c_(vec);
+    auto v_3 = c_(vec, b1);
     auto v_new = v_old + v_1 + v_2 + v_3;
     return {b1.x + v_new.val_x * delta_t, b1.y + v_new.val_y * delta_t,
             v_new.val_x, v_new.val_y};
