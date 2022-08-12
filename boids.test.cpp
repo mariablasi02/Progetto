@@ -226,15 +226,14 @@ TEST_CASE("Testing singleboid function") {
   }
 }
 
-/*TEST_CASE("Testing Boids with the same position") {
+TEST_CASE("Testing Boids with the same position") {
   SUBCASE("Testing Boids") {
     BoidState b1{7., 2., 2., 3.};
     BoidState b2{3., 2., 3., 4.};
     BoidState b3{6., 2., 3., 3.};
-
     std::vector<BoidState> vec{b1, b2, b3};
     BoidState b{1., 2., 2., 3.};
     same_position(b, vec);
     CHECK(static_cast<int>(vec.size()) == 3);
   }
-}*/
+}

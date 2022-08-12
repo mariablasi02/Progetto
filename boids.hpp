@@ -212,9 +212,9 @@ std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
   }*/
 
 void same_position(BoidState const& b1, std::vector<BoidState> boids) {
-  for (; boids.begin() != boids.end(); ++boids.begin()) {
-    auto same_position_it =
-        std::find_if(boids.begin(), boids.end(),
+  auto it = boids.begin();
+  for (; it != boids.end(); ++it) {
+    auto same_position_it = std::find_if(boids.begin(), boids.end(),
                      [b1](BoidState b) { return b.x == b1.x && b.y == b1.y; });
      if (same_position_it != boids.end()) {
     boids.erase(same_position_it);

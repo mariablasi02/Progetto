@@ -25,10 +25,11 @@ int main () {
     unsigned const display_height = .9 * sf::VideoMode::getDesktopMode().height;
     sf::RenderWindow window(sf::VideoMode(display_width, display_height), "Mare");
     window.setFramerateLimit(fps);
+
     sf::Texture texture;
     if(!texture.loadFromFile("sfondomare.png"))
     {
-        //da sollevare un'eccezione eventualmente
+        //sollevare un'eccezione eventualmente
     } 
     sf::Sprite sprite;
     sprite.setTexture(texture);
@@ -36,7 +37,7 @@ int main () {
     sf::CircleShape fish;
     fish.setRadius(8.0f);
     fish.setPointCount(3);
-    fish.setFillColor(sf::Color::Magenta);
+    fish.setFillColor(sf::Color(245, 152, 66));
 
     while(window.isOpen()) {
         sf::Event event;
@@ -46,8 +47,9 @@ int main () {
         }
     window.clear();
     window.draw(sprite);
+    //draw everything here
     fish.setPosition(500, 400);
     window.draw(fish);
-    window.display();
+    window.display(); //takes what was drawn since the last call to display and displays it on the window.
     }
 }
