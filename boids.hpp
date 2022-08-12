@@ -158,6 +158,11 @@ class SeparationRule {
   }
 };
 
+bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c){
+  auto it = std::find(cont.begin(), cont.end(), c);
+  return it != cont.end();
+}
+
 class AllignmentRule {
   double const a_;
 
@@ -167,12 +172,10 @@ class AllignmentRule {
       throw std::runtime_error{"a must be < than 1"};
     }
   };
-  Components operator()(std::vector<BoidState> boids,
-                        BoidState const& b1) const {
-    BoidState sum =
-        std::accumulate(boids.begin(), boids.end(), BoidState{0., 0., 0., 0.});
-    return Components{((sum.v_x - b1.v_x) / (size(boids) - 1)) * a_,
-                      ((sum.v_y - b1.v_y) / (size(boids) - 1)) * a_};
+  Components operator()(std::vector<BoidState> boids, BoidState const& b1) const {
+    assert(check_ownership(boids, b1));
+    BoidState sum = std::accumulate(boids.begin(), boids.end(), BoidState{0., 0., 0., 0.}-b1); 
+    return Components{((sum.v_x / (size(boids) - 1)) - b1.v_x) * a_, ((sum.v_y / (size(boids) - 1)) -b1.v_y)* a_};
   }
 };
 
@@ -203,6 +206,38 @@ class CohesionRule {
 // dubbio : mettere la vaiabile n solo in boids e non  nelle classi delle
 // regole così sono tutte uguali ?
 
+<<<<<<< HEAD
+=======
+std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
+                                        BoidState b1, double d) {
+  auto p = pesci;
+  // auto b1 = *p.begin();
+  p.erase(std::remove_if(p.begin(), p.end(),
+                         [b1, d](BoidState b) { return (norm(b1, b) > d); }),
+          p.end());
+  // assert(static_cast<int> pesci.size() == pesci.n());
+  return p;
+}
+
+/* void same_position(BoidState const& b1, std::vector<BoidState> boids) {
+  for (; boids.begin() != boids.end(); ++boids.begin()) {
+    if (b1.x == boids.begin()->x && b1.y == boids.begin()->y) {
+      boids.erase(boids.begin());
+    }}
+  }*/
+
+void same_position(BoidState const& b1, std::vector<BoidState> boids) {
+  auto it = boids.begin();
+  for (; it != boids.end(); ++it) {
+    auto same_position_it = std::find_if(boids.begin(), boids.end(),
+                     [b1](BoidState b) { return b.x == b1.x && b.y == b1.y; });
+     if (same_position_it != boids.end()) {
+    boids.erase(same_position_it);
+     }
+  }
+}
+
+>>>>>>> 12ffdb04fde89d52423affcc179f6a21f105741a
 class Boids {
   int const n_;
   double const d_;
