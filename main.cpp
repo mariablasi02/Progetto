@@ -3,6 +3,8 @@
 #include "boids.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
+#include <iostream>
+#include <random>
 
 auto evolution(Boids& pesci, int steps_per_evolution, sf::Time delta_t)
 {
@@ -16,6 +18,25 @@ auto evolution(Boids& pesci, int steps_per_evolution, sf::Time delta_t)
 }
 
 int main () {
+  std::cout<< "Enter number of boids: " << '\n';
+  int n;
+  std::cin>> n;
+  std::cout<<"Enter parameters of separation, allignment (between 0 and 1), cohesion: " << '\n';
+  double s;
+  double a;
+  double c;
+  std::cin>> s >> a >> c;
+  double d = 15.;
+  Boids boids{n, d, SeparationRule {s, d/10}, AllignmentRule {a}, CohesionRule {c}}; 
+
+  std::random_device rd; //seed
+  std::default_random_engine gen(rd());
+  std::uniform_real_distribution<> pos(0, 500);
+  std::uniform_real_distribution<> speed(0, 10);
+
+  (boids.TotalBoids()).resize(n);
+  std::generate((boids.TotalBoids()).begin() , (boids.TotalBoids()).end(), [&pos, &speed, &gen] ()->BoidState {return {pos(gen), pos(gen), speed(gen), speed(gen)};});
+
     //something
     auto const delta_t{sf::milliseconds(1)};
     int const fps = 30;
