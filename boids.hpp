@@ -127,7 +127,7 @@ class SeparationRule {
     /* for (; boid_it_next != boid_it_last; ++boid_it_next) {
        double diff = norm(*boid_it, *boid_it_next);
        if (diff < distance_s_) {
-         std::vector<BoidState> boids;
+        std::vector<BoidState> boids;
 
         std::vector<double> boidsdiff_x;
         std::vector<double> boidsdiff_y;
@@ -223,6 +223,8 @@ std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
   return p;
 }
 
+
+
 void same_position(BoidState const& b1, std::vector<BoidState> boids) {
   for (; boids.begin() != boids.end(); ++boids.begin()) {
     if (b1.x == boids.begin()->x && b1.y == boids.begin()->y) {
@@ -302,3 +304,6 @@ class Boids {
 };
 
 #endif
+
+
+
