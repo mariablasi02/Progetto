@@ -98,16 +98,7 @@ TEST_CASE("Testing operators") {
     CHECK((b1 - b2).v_x == 0.);
     CHECK((b1 - b2).v_y == 0.);
   }
-  /*SUBCASE("Check denominator == 0") {
-    BoidState b1{2., 0., 5., 5.};
-    BoidState b2{2., 3., 4., 0.};
-    CHECK_FALSE((b1/b2) == 0.);
-  }
-  SUBCASE("Check multiplication with zero") {
-    BoidState b1{2., 0., 5., 5.};
-    BoidState b2{2., 3., 4., 0.};
-    CHECK((b1 * b2) == {4., 0., 20., 0});
-  }*/ //commentati perché non credo ci serviranno
+  
 }
 
 TEST_CASE("Testing Separation rule") {
