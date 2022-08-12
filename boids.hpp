@@ -134,8 +134,7 @@ class SeparationRule {
 
  public:
   SeparationRule(double const s, double d_s) : s_{s}, distance_s_{d_s} {}
-  auto operator()(std::vector<BoidState> const& b,
-                  BoidState const& b1) const {
+  auto operator()(std::vector<BoidState> const& b, BoidState const& b1) const {
     auto boids = NeighborsControl(b, b1, distance_s_);
     auto boid_it = boids.begin();
     auto boid_it_last = boids.end();
@@ -212,21 +211,6 @@ class CohesionRule {
 // dubbio : mettere la vaiabile n solo in boids e non  nelle classi delle
 // regole così sono tutte uguali ?
 
-<<<<<<< HEAD
-=======
-std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
-                                        BoidState b1, double d) {
-  auto p = pesci;
-  // auto b1 = *p.begin();
-  p.erase(std::remove_if(p.begin(), p.end(),
-                         [b1, d](BoidState b) { return (norm(b1, b) > d); }),
-          p.end());
-  // assert(static_cast<int> pesci.size() == pesci.n());
-  return p;
-}
-
-
-
 void same_position(BoidState const& b1, std::vector<BoidState> boids) {
   auto it = boids.begin();
   for (; it != boids.end(); ++it) {
@@ -239,7 +223,6 @@ void same_position(BoidState const& b1, std::vector<BoidState> boids) {
   }
 }
 
->>>>>>> 12ffdb04fde89d52423affcc179f6a21f105741a
 class Boids {
   int const n_;
   double const d_;
