@@ -143,9 +143,29 @@ SUBCASE("Testing NeighborsControl in SeparationRule"){
 
 }
 }
-;
-    
 
+
+TEST_CASE("Testing alignment rule") {
+  SUBCASE("General tests") {
+    BoidState b1 = {0., 0., 2., 3.};
+    BoidState b2 = {0., 0., 5., 1.};
+    BoidState b3 = {0., 0., -2., 3.};
+    BoidState b4 = {0., 0., 1., -1};
+    std::vector<BoidState> vec{b1, b2, b3, b4};
+    AllignmentRule ar{0.8};
+    CHECK(ar(vec, b4).val_x == doctest::Approx(0.533).epsilon(0.01));
+    CHECK(ar(vec, b4).val_y == doctest::Approx(2.667).epsilon(0.01));
+    BoidState b_ = {0., 0., 1.5, 1.5};
+    vec.push_back(b_);
+    CHECK(ar(vec, b_).val_x == 0.);
+    CHECK(ar(vec, b_).val_y == 0.);
+  }
+  SUBCASE("a greater than 1") { CHECK_THROWS(AllignmentRule{1.2}); }
+  SUBCASE("Trying to break the code") {
+    // si rompe il codice se il boid che passiamo non fa parte del vettore-> da
+    // mettere assert
+  }
+}
 
 
 TEST_CASE("Testing Cohesion rule") {
