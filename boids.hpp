@@ -112,15 +112,14 @@ class SeparationRule {
   // valutare un valore che viene deciso da noi
 
  public:
-  SeparationRule(int const n, double const s, double d_s)
-      : n_{n}, s_{s}, distance_s_{d_s} {
+  SeparationRule(int const n, double const s, double d_s): n_{n}, s_{s}, distance_s_{d_s} {
     if (n_ <= 1) {
       throw std::runtime_error{"Number of boids must be >1"};
     }
   }
   auto operator()(std::vector<BoidState> boids, BoidState const& b1) const {
     auto boid_it = boids.begin();
-    auto boid_it_next = std::next(boids.begin());
+    // auto boid_it_next = std::next(boids.begin());
     // auto boid_it_last = std::prev(boids.end());
     auto boid_it_last = boids.end();
 
@@ -186,9 +185,12 @@ VelocityComponents COM(int const n, std::vector<BoidState> b) {
 
   BoidState sum =
       std::accumulate(cboid_it_next, b.end(), BoidState{0., 0., 0., 0.});
-  double den = 1. / (static_cast<double>(n) - 1);
+
+  double den = 1. / (static_cast<double>(n) - 1.);
+
   return {sum.x * den, sum.y * den};
 }
+
 class CohesionRule {
   int const n_;
   double const cohesion_const_;
@@ -207,14 +209,66 @@ class CohesionRule {
     return {result.x, result.y};
   }
 };
-
 // dubbio : mettere la vaiabile n solo in boids e non  nelle classi delle
 // regole così sono tutte uguali ?
+<<<<<<< HEAD
 
 void same_position(BoidState const& b1, std::vector<BoidState> boids) {
   for (; boids.begin() != boids.end(); ++boids.begin()) {
     if (b1.x == boids.begin()->x && b1.y == boids.begin()->y) {
       boids.erase(boids.begin());
+=======
+
+class Boids {
+  int const n_;
+  double const d_;
+  SeparationRule s_;
+  AllignmentRule a_;
+  CohesionRule c_;
+  std::vector<BoidState> boids_;  // ho provato a mettere quella n sopra come definizione ma
+               // non funziona non ho capito perchè quindi boh -> faccio
+               // fatica a definire un numero fisso di entrate del vettore
+
+ public:
+  Boids(int const n, double const d, SeparationRule const& s,
+        AllignmentRule const& a, CohesionRule const& c)
+      : n_{n}, d_{d}, s_{s}, a_{a}, c_{c} {}
+
+    
+  BoidState singleboid(BoidState const& b1, double const delta_t) const {
+    auto const velocityi = VelocityComponents{b1.v_x, b1.v_y} + s_(boids_, b1) +
+                           a_(b1, boids_) + c_(boids_);
+    auto const positioni = velocityi * delta_t + VelocityComponents{b1.x, b1.y};
+    BoidState newposition{positioni.vel_x, positioni.vel_y, velocityi.vel_x,
+                          velocityi.vel_y};
+    return newposition;
+  }
+
+  bool empty() { return boids_.empty(); }
+  double distance() const { return d_; }
+  std::vector<BoidState> TotalBoids() const {return boids_; }
+  int n() const {return n_; }
+
+  int size() const {
+    /*if (boids_.size() > static_cast<size_t>(std::numeric_limits<int>::max()))
+    { throw std::overflow_error("size_t value cannot be stored in a variable of
+    type int.");
+    }*/
+    return (static_cast<int>(boids_.size()));
+  }
+
+    void push_back(BoidState const& boid) {
+    // da mettere controllo che non ci siano boid con la stessa posizione e,
+    // fare loop fino a n_ perch avere vettore di quella dimensione e mettere
+    // assert su tutto / eccezioni -> comunque questo è l'invariante
+
+    boids_.push_back(boid);
+  }
+
+  /*void evolution(double const delta_t) {
+    for(auto fish : boids_){
+    auto nearfishes = NeighborsControl(boids_, fish, d_)
+>>>>>>> 7eaeb09df03a8f83642a856404f4b631c8f3ce07
     }
   }
 }
@@ -290,6 +344,7 @@ void same_position(BoidState const& b1, std::vector<BoidState> boids) {
  }  // non capisco perchè dia errore qui
 };
 
+<<<<<<< HEAD
 */
 
 
@@ -302,5 +357,22 @@ void same_position(BoidState const& b1, std::vector<BoidState> boids) {
 // da mettere controllo che non ci siano boid con la stessa posizione e,
 // fare loop fino a n_ perch avere vettore di quella dimensione e mettere
 // assert su tutto / eccezioni -> comunque questo è l'invariante
+=======
+  }*/
+
+  std::vector<BoidState> const& state() const;
+};
+
+std::vector<BoidState> NeighborsControl(Boids const& pesci, BoidState b1, double d) {
+    auto p = pesci.TotalBoids();
+    //auto b1 = *p.begin();
+    p.erase(
+        std::remove_if(p.begin(), p.end(),
+                       [b1, d](BoidState b) { return (norm(b1, b) > d); }),
+        p.end());
+    assert(pesci.size() == pesci.n());
+    return p;
+}
+>>>>>>> 7eaeb09df03a8f83642a856404f4b631c8f3ce07
 
 #endif

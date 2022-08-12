@@ -3,18 +3,11 @@
 #include "boids.hpp"
 #include "doctest.h"
 
-TEST_CASE("Check norm2 <= 0") {
-  BoidState b1{2., 3., 5., 5.};
-  BoidState b2{2., 3., 4., 4.};
-  CHECK(((b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y)) == 0.);
-}
-
 TEST_CASE("Testing norm function") {
   BoidState b1{2., 3., 5., 5.};
   BoidState b2{2., 3., 4., 4.};
   BoidState b3{5., 6., 0., 0.};
   CHECK(norm(b1, b3) == doctest::Approx(4.24).epsilon(0.01));
-
   CHECK(norm(b1, b2) == 0.);
 }
 
@@ -51,6 +44,7 @@ TEST_CASE("Testing operators") {
     CHECK((b1 + b2).v_x == 5.);
     CHECK((b1 + b2).v_y == 5.);
   }
+
   SUBCASE("Check addition with three points") {
     BoidState b1{1., 2., 3., 4.};
     BoidState b2{4., 3., 2., 1.};
@@ -150,47 +144,80 @@ TEST_CASE("Testing alignment rule") {
     CHECK(ar(b_, a).vel_y == 0.);
   }
   SUBCASE("a greater than 1") { CHECK_THROWS(AllignmentRule{5, 1.2}); }
-  SUBCASE("Trying to break the code") {
-    // non ho idee per ora
+  /*SUBCASE("Trying to break the code"){
+    //non ho idee per ora
+  }*/
+}
+
+TEST_CASE("Testing Cohesion rule") {
+  SUBCASE("testing with a vector of three") {
+    CohesionRule c1{3, 4};
+    BoidState b1{1., 2., 3., 4.};
+    BoidState b2{2., 3., 4., 5.};
+    BoidState b3{-1., -1., -1., -1.};
+    std::vector<BoidState> v1{b1, b2, b3};
+
+    CHECK(c1(v1).vel_x == -2.0);
+    CHECK(c1(v1).vel_y == -4.0);
   }
 
-  TEST_CASE("Testing Cohesion rule") {
-    SUBCASE("testing with a vector of three") {
-      CohesionRule c1{3, 4};
-      BoidState b1{1., 2., 3., 4.};
-      BoidState b2{2., 3., 4., 5.};
-      BoidState b3{-1., -1., -1., -1.};
-      std::vector<BoidState> v1{b1, b2, b3};
-
-      CHECK(c1(v1).vel_x == -2.0);
-      CHECK(c1(v1).vel_y == -4.0);
-    }
-
-    SUBCASE("testing with a vector of four") {
-      CohesionRule c1{4, 1};
-      BoidState b1{1., 2., 3., 4.};
-      BoidState b2{2., 3., 4., 5.};
-      BoidState b3{-1., -1., -1., -1.};
-      BoidState b4{0., -1., 3., -2.};
-      std::vector<BoidState> v1{b1, b2, b3, b4};
-      CHECK(c1(v1).vel_x == doctest::Approx(-0.67).epsilon(0.01));
-      CHECK(c1(v1).vel_y == doctest::Approx(-1.67).epsilon(0.01));
-    }
-
-    SUBCASE("try single functions") {
-      // CohesionRule c1{3, 4};
-      BoidState b1{1., 2., 3., 4.};
-      BoidState b2{2., 3., 4., 5.};
-      BoidState b3{-1., -1., -1., -1.};
-      std::vector<BoidState> v1{b1, b2, b3};
-      int n = 3;
-      CHECK(COM(n, v1).vel_y == 0.5);
-      // CHECK(c1(v1).vel_y == 2.);
-    }
+  SUBCASE("testing with a vector of four") {
+    CohesionRule c1{4, 1};
+    BoidState b1{1., 2., 3., 4.};
+    BoidState b2{2., 3., 4., 5.};
+    BoidState b3{-1., -1., -1., -1.};
+    BoidState b4{0., -1., 3., -2.};
+    std::vector<BoidState> v1{b1, b2, b3, b4};
+    CHECK(c1(v1).vel_x == doctest::Approx(-0.67).epsilon(0.01));
+    CHECK(c1(v1).vel_y == doctest::Approx(-1.67).epsilon(0.01));
   }
 
-  TEST_CASE("Testing Neighbor-Control function") {
-    // work in progress
+  /* SUBCASE("try single functions") {
+    // CohesionRule c1{3, 4};
+    BoidState b1{1., 2., 3., 4.};
+    BoidState b2{2., 3., 4., 5.};
+    BoidState b3{-1., -1., -1., -1.};
+    std::vector<BoidState> v1{b1, b2, b3};
+    int n = 3;
+    CHECK(COM(n, v1).vel_y == 0.5);
+    // CHECK(c1(v1).vel_y == 2.);
+  }*/
+}
+
+TEST_CASE("Testing Neighbor-Control function") {
+  BoidState b1{1., 2., 3., 4.};
+  BoidState b2{2., 3., 4., 5.};
+  BoidState b3{-1., -1., -1., -1.};
+  BoidState b4{0., -1., 3., -2.};
+  SeparationRule s{3, 2., 2.};
+  AllignmentRule a{3, 0.5};
+  CohesionRule c{3, 3};
+  Boids pesci = {4, 3., s, a, c};
+  pesci.push_back(b1);
+  pesci.push_back(b2);
+  pesci.push_back(b3);
+  pesci.push_back(b4);
+  auto b = NeighborsControl(pesci, b1, 3.);
+  CHECK(static_cast<int>(b.size()) == 2);
+}
+
+TEST_CASE("Testing singleboid function") {
+  SUBCASE("boid in a group of three") {
+    BoidState b1{0., 1., 2., 3.};
+    BoidState b2{-1., 2., 3., 2.};
+    BoidState b3{3., -1., 5., 2.};
+    SeparationRule s{3, 2., 2.};
+    AllignmentRule a{3, 0.5};
+    CohesionRule c{3, 3};
+    std::vector<BoidState> v1{b1, b2, b3};
+    Boids b{3, 4., s, a, c};
+    double const delta_t{0.1};
+    CHECK((b.singleboid(b1, delta_t).x) == (0.8));
+    // CHECK((b.singleboid(b1, s(v1, b1), a(b1, v1), c(v1), delta_t).y) ==
+    // (1.05)); CHECK((b.singleboid(b1, s(v1, b1), a(b1, v1), c(v1),
+    // delta_t).v_x) == (8)); CHECK((b.singleboid(b1, s(v1, b1), a(b1, v1),
+    // c(v1), delta_t).v_y) ==
+    //     (0.5));
   }
 }*/
 TEST_CASE("Testing Boids with the same position"){
