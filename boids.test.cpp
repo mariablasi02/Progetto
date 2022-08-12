@@ -244,6 +244,7 @@ TEST_CASE("Testing evolution function") {
   AllignmentRule a{0.5};
   CohesionRule c{3.};
   std::vector<BoidState> b{b1, b2, b3};
+  // da finire
 }
 
 TEST_CASE("Testing Boids with the same position") {

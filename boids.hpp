@@ -211,6 +211,7 @@ class CohesionRule {
 // dubbio : mettere la vaiabile n solo in boids e non  nelle classi delle
 // regole così sono tutte uguali ?
 
+
 void same_position(BoidState const& b1, std::vector<BoidState> boids) {
   auto it = boids.begin();
   for (; it != boids.end(); ++it) {
