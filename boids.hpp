@@ -294,7 +294,7 @@ class Boids {
     boids_ = fishes;
   }
 
-  std::vector<BoidState> const& state() const{return boids_;}
+  std::vector<BoidState> const& state() const { return boids_; }
 };
 
 #endif
