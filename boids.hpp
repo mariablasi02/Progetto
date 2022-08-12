@@ -146,6 +146,11 @@ class SeparationRule {
   }
 };
 
+bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c){
+  auto it = std::find(cont.begin(), cont.end(), c);
+  return it != cont.end();
+}
+
 class AllignmentRule {
   double const a_;
 
@@ -155,12 +160,10 @@ class AllignmentRule {
       throw std::runtime_error{"a must be < than 1"};
     }
   };
-  Components operator()(std::vector<BoidState> boids,
-                        BoidState const& b1) const {
-    BoidState sum =
-        std::accumulate(boids.begin(), boids.end(), BoidState{0., 0., 0., 0.});
-    return Components{((sum.v_x - b1.v_x) / (size(boids) - 1)) * a_,
-                      ((sum.v_y - b1.v_y) / (size(boids) - 1)) * a_};
+  Components operator()(std::vector<BoidState> boids, BoidState const& b1) const {
+    assert(check_ownership(boids, b1));
+    BoidState sum = std::accumulate(boids.begin(), boids.end(), BoidState{0., 0., 0., 0.}-b1); 
+    return Components{((sum.v_x / (size(boids) - 1)) - b1.v_x) * a_, ((sum.v_y / (size(boids) - 1)) -b1.v_y)* a_};
   }
 };
 
