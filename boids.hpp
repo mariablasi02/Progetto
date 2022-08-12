@@ -116,6 +116,17 @@ int size(std::vector<BoidState> const& v) {
   return (static_cast<int>(v.size()));
 }
 
+std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
+                                        BoidState b1, double d) {
+  auto p = pesci;
+  // auto b1 = *p.begin();
+  p.erase(std::remove_if(p.begin(), p.end(),
+                         [b1, d](BoidState b) { return (norm(b1, b) > d); }),
+          p.end());
+  // assert(static_cast<int> pesci.size() == pesci.n());
+  return p;
+}
+
 class SeparationRule {
   double const s_;
   double const distance_s_;
@@ -123,8 +134,9 @@ class SeparationRule {
 
  public:
   SeparationRule(double const s, double d_s) : s_{s}, distance_s_{d_s} {}
-  auto operator()(std::vector<BoidState> const& boids,
+  auto operator()(std::vector<BoidState> const& b,
                   BoidState const& b1) const {
+    auto boids = NeighborsControl(b, b1, distance_s_);
     auto boid_it = boids.begin();
     auto boid_it_last = boids.end();
 
@@ -139,8 +151,8 @@ class SeparationRule {
       boidsdiff_y.push_back(diff_y);
     }
 
-    double sum_x = std::accumulate(boidsdiff_x.begin(), boidsdiff_x.end(), 0.);
-    double sum_y = std::accumulate(boidsdiff_y.begin(), boidsdiff_y.end(), 0.);
+    double sum_x = std::accumulate(boidsdiff_x.begin(), boidsdiff_x.end(), 0);
+    double sum_y = std::accumulate(boidsdiff_y.begin(), boidsdiff_y.end(), 0);
 
     return Components{-s_ * sum_x, -s_ * sum_y};
   }
@@ -164,12 +176,9 @@ class AllignmentRule {
   }
 };
 
-Components COM(std::vector<BoidState> vec) {
-  auto cboid_it_next = std::next(vec.begin());
-  // auto cboid_last = std::prev(b_.end());
-
+Components COM(std::vector<BoidState> const& vec, BoidState const& b1) {
   BoidState sum =
-      std::accumulate(cboid_it_next, vec.end(), BoidState{0., 0., 0., 0.});
+      std::accumulate(vec.begin(), vec.end(), BoidState{0., 0., 0., 0.}) - b1;
 
   double den = 1. / (static_cast<double>(size(vec)) - 1.);
 
@@ -184,34 +193,15 @@ class CohesionRule {
 
   Components operator()(std::vector<BoidState> const& cboids,
                         BoidState const& b1) const {
-    Components position_of_c = COM(cboids);
+    Components position_of_c = COM(cboids, b1);
+
     BoidState com{position_of_c.val_x, position_of_c.val_y, 0., 0.};
-    auto bi = *cboids.begin();
-    BoidState result = (com - bi) * cohesion_const_;
+    BoidState result = (com - b1) * cohesion_const_;
     return {result.x, result.y};
   }
 };
 // dubbio : mettere la vaiabile n solo in boids e non  nelle classi delle
 // regole così sono tutte uguali ?
-
-std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
-                                        BoidState b1, double d) {
-  auto p = pesci;
-  // auto b1 = *p.begin();
-  p.erase(std::remove_if(p.begin(), p.end(),
-                         [b1, d](BoidState b) { return (norm(b1, b) > d); }),
-          p.end());
-  // assert(static_cast<int> pesci.size() == pesci.n());
-  return p;
-}
-
-void same_position(BoidState const& b1, std::vector<BoidState> boids) {
-  for (; boids.begin() != boids.end(); ++boids.begin()) {
-    if (b1.x == boids.begin()->x && b1.y == boids.begin()->y) {
-      boids.erase(boids.begin());
-    }
-  }
-}
 
 class Boids {
   int const n_;
