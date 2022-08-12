@@ -100,7 +100,6 @@ TEST_CASE("Testing operators") {
   }
 }
 
-<<<<<<< HEAD
 TEST_CASE("Testing Separation rule"){
     SUBCASE("General test "){BoidState b1{0., 1., 2., 3.};
 BoidState b2{0., 3., 5., 1.};
@@ -130,23 +129,19 @@ SUBCASE("Testing whit a boid of the vector") {
   CHECK(sr(a, b4).val_x == doctest::Approx(-2.8));
   CHECK(sr(a, b4).val_y == doctest::Approx(2.8));
 }
-SUBCASE("Testing NeighborsControl in SeparationRule"){
-  
+SUBCASE("Testing NeighborsControl in SeparationRule") {
   BoidState b1{0., 1., 2., 3.};
   BoidState b2{0., 3., 5., 1.};
   BoidState b3{2., 3., -2., 3.};
   BoidState b4{2., 1., 2., 1.};
   std::vector<BoidState> a{b1, b2, b3, b4};
-  SeparationRule sr{0.7 , 2.2};
+  SeparationRule sr{0.7, 2.2};
   CHECK(sr(a, b1).val_x == doctest::Approx(1.4));
   CHECK(sr(a, b1).val_y == doctest::Approx(1.4));
-  
-
 }
 }
 ;
 
-=======
 TEST_CASE("Testing Separation rule") {
   SUBCASE("General test ") {
     BoidState b1{0., 1., 2., 3.};
@@ -179,30 +174,11 @@ TEST_CASE("Testing Separation rule") {
   }
 }
 
->>>>>>> 12ffdb04fde89d52423affcc179f6a21f105741a
 TEST_CASE("Testing alignment rule") {
   SUBCASE("General tests") {
     BoidState b1 = {0., 0., 2., 3.};
     BoidState b2 = {0., 0., 5., 1.};
     BoidState b3 = {0., 0., -2., 3.};
-<<<<<<< HEAD
-    std::vector<BoidState> a{b1, b2, b3};
-    BoidState b = {0., 0., 1., -1};
-    AllignmentRule ar{0.8};
-    CHECK(ar(a, b).val_x == doctest::Approx(1.064).epsilon(0.01));
-    CHECK(ar(a, b).val_y == doctest::Approx(2.136).epsilon(0.01));
-    BoidState b_ = {0., 0., 5., 7.};
-    CHECK(ar(a, b_).val_x == 0.);
-    CHECK(ar(a, b_).val_y == 0.);
-  }
-/*SUBCASE("a greater than 1") { CHECK_THROWS(AllignmentRule{1.2}); }
-SUBCASE("Trying to break the code"){
-  //non ho idee per ora
-}
-
-}*/
-=======
-
     BoidState b4 = {0., 0., 1., -1};
     std::vector<BoidState> vec{b1, b2, b3, b4};
     AllignmentRule ar{0.8};
@@ -219,7 +195,6 @@ SUBCASE("Trying to break the code"){
     // mettere assert
   }
 }
->>>>>>> 12ffdb04fde89d52423affcc179f6a21f105741a
 
 TEST_CASE("Testing Cohesion rule") {
   SUBCASE("Testing function COM") {
@@ -274,12 +249,8 @@ TEST_CASE("Testing Neighbor-Control function") {
   auto b = NeighborsControl(pesci.TotalBoids(), b1, 3.);
   CHECK(static_cast<int>(b.size()) == 2);
 }
-<<<<<<< HEAD
 
-  TEST_CASE("Testing singleboid function") {
-=======
 TEST_CASE("Testing singleboid function") {
->>>>>>> 12ffdb04fde89d52423affcc179f6a21f105741a
   SUBCASE("boid in a group of three") {
     BoidState b1{0., 1., 2., 3.};
     BoidState b2{-1., 2., 3., 2.};
@@ -297,7 +268,6 @@ TEST_CASE("Testing singleboid function") {
   }
 }
 
-<<<<<<< HEAD
 TEST_CASE("Testing evolution function") {
   BoidState b1{2., 3., 4., 2.};
   BoidState b2{2., 1., 2., 1.};
@@ -308,18 +278,6 @@ TEST_CASE("Testing evolution function") {
   std::vector<BoidState> b{b1, b2, b3};
 }
 
-TEST_CASE("Testing Boids with the same position"){
-    SUBCASE("Testing Boids"){BoidState b1{7., 2., 2., 3.};
-BoidState b2{3., 2., 3., 4.};
-BoidState b3{6., 2., 3., 3.};
-std::vector<BoidState> a{b1, b2, b3};
-BoidState b{1., 2., 2., 3.};
-same_position(b, a);
-CHECK(static_cast<int>(a.size()) == 3);
-}
-}
-;
-=======
 TEST_CASE("Testing Boids with the same position") {
   SUBCASE("Testing Boids") {
     BoidState b1{7., 2., 2., 3.};
@@ -331,4 +289,3 @@ TEST_CASE("Testing Boids with the same position") {
     CHECK(static_cast<int>(vec.size()) == 3);
   }
 }
->>>>>>> 12ffdb04fde89d52423affcc179f6a21f105741a
