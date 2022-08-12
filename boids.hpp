@@ -18,11 +18,8 @@ struct BoidState {
   double v_x{};
   double v_y{};
 
-  // BoidState(double x, double y, double vx, double vy) : x{x}, y{y}, v_x{vx},
-  // v_y{vy} {};
-
   BoidState(double x, double y, double vx, double vy)
-      : x{x}, y{y}, v_x{vx}, v_y{vy} {};
+      : x{x}, y{y}, v_x{vx}, v_y{vy} {}
 
   BoidState& operator+=(BoidState const& other) {
     x += other.x;
@@ -32,11 +29,14 @@ struct BoidState {
     return *this;
   }
 
-  double norm(BoidState const& other) {
-    auto result = (x - other.x) * (x - other.x) + (y - other.y) * (y - other.y);
-    assert(!(result < 0));
-    return std::sqrt(result);
+  BoidState& operator*=(double const other){
+    x *= other;
+    y *= other;
+    v_x *= other;
+    v_y *= other;
+    return *this;
   }
+
 };
 
 bool operator==(BoidState const& b1, BoidState const& b2) {
@@ -59,16 +59,8 @@ BoidState operator-(BoidState const& b1, BoidState const& b2) {
 }
 
 BoidState operator*(BoidState const& b1, double const d) {
-  return {b1.x * d, b1.y * d, b1.v_x * d, b1.v_y * d};
-}
-BoidState operator*(BoidState const& b1, BoidState const& b2) {
-  return {b1.x * b2.x, b1.y * b2.y, b1.v_x * b2.v_x, b1.v_y * b2.v_y};
-}
-BoidState operator/(BoidState const& b1, BoidState const& b2) {
-  if (b2.x == 0 || b2.y == 0 || b2.v_x == 0 || b2.v_y == 0) {
-    throw std::runtime_error{"Denominator is zero"};
-  }
-  return {b1.x / b2.x, b1.y / b2.y, b1.v_x / b2.v_x, b1.v_y / b2.v_y};
+  auto result = b1;
+  return result *= d;
 }
 
 double norm(BoidState const& b1, BoidState const& b2) {
@@ -79,51 +71,72 @@ double norm(BoidState const& b1, BoidState const& b2) {
 
 // nelle classi private si sceglie di mantenere _ alla fine dei data members
 
-struct VelocityComponents {
-  double vel_x;
-  double vel_y;
+struct Components {
+  double val_x;
+  double val_y;
+
+  Components& operator +=(Components const& other){
+    val_x += other.val_x;
+    val_y += other.val_y;
+    return *this;
+  }
+
+  Components& operator*= (double const d){
+    val_x *=d;
+    val_y*=d;
+    return *this;
+  }
 };
 
-VelocityComponents operator+(VelocityComponents const& c1,
-                             VelocityComponents const& c2) {
-  return {c1.vel_x + c2.vel_x, c2.vel_y + c2.vel_y};
+Components operator+(Components const& c1,
+                             Components const& c2) {
+                              auto result = c1;
+  return result += c2;
 }
 
-VelocityComponents operator-(VelocityComponents const& c1,
-                             VelocityComponents const& c2) {
-  return {c1.vel_x - c2.vel_x, c2.vel_y - c2.vel_y};
+Components operator-(Components const& c1,
+                             Components const& c2) {
+  return {c1.val_x - c2.val_x, c2.val_y - c2.val_y};
 }
 
-VelocityComponents operator*(VelocityComponents const& c1, double const d) {
-  return {c1.vel_x * d, c1.vel_y * d};
+Components operator*(Components const& c1, double const d) {
+  auto result = c1;
+  return result *= d;
 }
 
-bool operator==(VelocityComponents const& c1, VelocityComponents const& c2) {
-  return {c1.vel_x == c2.vel_x && c1.vel_y == c2.vel_y};
+bool operator==(Components const& c1, Components const& c2) {
+  return {c1.val_x == c2.val_x && c1.val_y == c2.val_y};
 }
 
 // idea : si potrebbero implementare le classi delle regole già con dei vettori
 // che restituiscono le regole -> dopo mando audio
 
+
+int size(std::vector<BoidState> const& v) {
+    /*if (boids_.size() > static_cast<size_t>(std::numeric_limits<int>::max()))
+    { throw std::overflow_error("size_t value cannot be stored in a variable of
+    type int.");
+    }*/
+    return (static_cast<int>(v.size()));
+  }
+
+
+
+
 class SeparationRule {
-  int const n_;
   double const s_;
   double const distance_s_;
   // valutare un valore che viene deciso da noi
 
  public:
-  SeparationRule(int const n, double const s, double d_s)
-      : n_{n}, s_{s}, distance_s_{d_s} {
-    if (n_ <= 1) {
-      throw std::runtime_error{"Number of boids must be >1"};
-    }
+  SeparationRule(double const s, double d_s)
+      : s_{s}, distance_s_{d_s} {
   }
-  auto operator()(std::vector<BoidState> boids, BoidState const& b1) const {
+  auto operator()(std::vector<BoidState> const& boids, BoidState const& b1) const {
     auto boid_it = boids.begin();
-    // auto boid_it_next = std::next(boids.begin());
-    // auto boid_it_last = std::prev(boids.end());
     auto boid_it_last = boids.end();
 
+<<<<<<< HEAD
     /* for (; boid_it_next != boid_it_last; ++boid_it_next) {
        double diff = norm(*boid_it, *boid_it_next);
        if (diff < distance_s_) {
@@ -141,6 +154,8 @@ class SeparationRule {
       if (diff < distance_s_) {
         std::vector<BoidState> boids;*/
 
+=======
+>>>>>>> ea549c287b16a95841e4cb94ee507fbc412cfa0b
     std::vector<double> boidsdiff_x;
     std::vector<double> boidsdiff_y;
 
@@ -155,55 +170,50 @@ class SeparationRule {
     double sum_x = std::accumulate(boidsdiff_x.begin(), boidsdiff_x.end(), 0.);
     double sum_y = std::accumulate(boidsdiff_y.begin(), boidsdiff_y.end(), 0.);
 
-    return VelocityComponents{-s_ * sum_x, -s_ * sum_y};
+    return Components{-s_ * sum_x, -s_ * sum_y};
   }
 };
 
 class AllignmentRule {
-  int const n_;
   double const a_;
 
  public:
-  AllignmentRule(int const n, double const a) : n_{n}, a_{a} {
+  AllignmentRule( double const a) :  a_{a} {
     if (a == 1. || a > 1.) {
-      throw std::runtime_error{"a must be < than 0"};
+      throw std::runtime_error{"a must be < than 1"};
     }
   };
-  VelocityComponents operator()(std::vector<BoidState> boids,
+  Components operator()(std::vector<BoidState> boids,
                                 BoidState const& b1) const {
     BoidState sum =
         std::accumulate(boids.begin(), boids.end(), BoidState{0., 0., 0., 0.});
-    return VelocityComponents{((sum.v_x - b1.v_x) / (n_ - 1)) * a_,
-                              ((sum.v_y - b1.v_y) / (n_ - 1)) * a_};
+    return Components{((sum.v_x - b1.v_x) / (size(boids) - 1)) * a_,
+                              ((sum.v_y - b1.v_y) / (size(boids) - 1)) * a_};
   }
 };
 
-VelocityComponents COM(int const n, std::vector<BoidState> b) {
-  auto cboid_it_next = std::next(b.begin());
+Components COM( std::vector<BoidState> vec) {
+  auto cboid_it_next = std::next(vec.begin());
   // auto cboid_last = std::prev(b_.end());
 
   BoidState sum =
-      std::accumulate(cboid_it_next, b.end(), BoidState{0., 0., 0., 0.});
+      std::accumulate(cboid_it_next, vec.end(), BoidState{0., 0., 0., 0.});
 
-  double den = 1. / (static_cast<double>(n) - 1.);
+  double den = 1. / (static_cast<double>(size(vec)) - 1.);
 
   return {sum.x * den, sum.y * den};
 }
 
 class CohesionRule {
-  int const n_;
   double const cohesion_const_;
 
  public:
-  CohesionRule(int const n, double const c) : n_{n}, cohesion_const_{c} {
-    if (n <= 1) {
-      throw std::runtime_error{"Error: must be n>1"};
-    }
+  CohesionRule( double const c) :  cohesion_const_{c} {
   }
 
-  VelocityComponents operator()(std::vector<BoidState> const& cboids) const {
-    VelocityComponents position_of_c = COM(n_, cboids);
-    BoidState com{position_of_c.vel_x, position_of_c.vel_y, 0., 0.};
+  Components operator()(std::vector<BoidState> const& cboids, BoidState const& b1) const {
+    Components position_of_c = COM( cboids);
+    BoidState com{position_of_c.val_x, position_of_c.val_y, 0., 0.};
     auto bi = *cboids.begin();
     BoidState result = (com - bi) * cohesion_const_;
     return {result.x, result.y};
@@ -274,13 +284,7 @@ class Boids {
   AllignmentRule a() const { return a_; }
   CohesionRule c() const { return c_; }
 
-  int size() const {
-    /*if (boids_.size() > static_cast<size_t>(std::numeric_limits<int>::max()))
-    { throw std::overflow_error("size_t value cannot be stored in a variable of
-    type int.");
-    }*/
-    return (static_cast<int>(boids_.size()));
-  }
+  
 
   void push_back(BoidState const& boid) {
     // da mettere controllo che non ci siano boid con la stessa posizione e,

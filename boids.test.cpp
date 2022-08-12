@@ -233,8 +233,7 @@ TEST_CASE("Testing Boids with the same position") {
     BoidState b3{6., 2., 3., 3.};
     std::vector<BoidState> a{b1, b2, b3};
     BoidState b{1., 2., 2., 3.};
-    same_position(b, a);
-    CHECK(static_cast<int>(a.size()) == 3);
+    sameposition(b, a);
+    CHECK(static_cast<int>(a.size())== 3);
   }
-}
-
+};
