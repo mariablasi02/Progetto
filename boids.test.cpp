@@ -100,45 +100,60 @@ TEST_CASE("Testing operators") {
   }
 }
 
-/* TEST_CASE("Testing Separation rule") {
+TEST_CASE("Testing Separation rule") {
   SUBCASE("General test ") {
-    BoidState b1 = {0., 1., 2., 3.};
-    BoidState b2 = {0., 3., 5., 1.};
-    BoidState b3 = {2., 3., -2., 3.};
+    BoidState b1{0., 1., 2., 3.};
+    BoidState b2{0., 3., 5., 1.};
+    BoidState b3{2., 3., -2., 3.};
     std::vector<BoidState> a{b1, b2, b3};
-    BoidState b = {2., 3., 1., 2.};
-    SeparationRule sr{4, 0.5, 6.};
+    BoidState b{2., 3., 1., 2.};
+    SeparationRule sr{0.5, 6.};
 
-    CHECK(sr(a, b).vel_x == doctest::Approx(-2.));
-    CHECK(sr(a, b).vel_y == doctest::Approx(-1.));
+    CHECK(sr(a, b).val_x == doctest::Approx(-2.));
+    CHECK(sr(a, b).val_y == doctest::Approx(-1.));
 
-    BoidState b_ = {0., 0., 0., 0.};
+    BoidState b_{0., 0., 0., 0.};
 
-    CHECK(sr(a, b_).vel_x == doctest::Approx(1.));
-    CHECK(sr(a, b_).vel_y == doctest::Approx(3.5));
+    CHECK(sr(a, b_).val_x == doctest::Approx(1.));
+    CHECK(sr(a, b_).val_y == doctest::Approx(3.5));
   }
-}; */
+  SUBCASE("Testing whit a boid of the vector") {
+    BoidState b1{0., 1., 2., 3.};
+    BoidState b2{0., 3., 5., 1.};
+    BoidState b3{2., 3., -2., 3.};
+    BoidState b4{2., 1., 2., 1.};
+    std::vector<BoidState> a{b1, b2, b3, b4};
+    SeparationRule sr{0.7, 3};
 
-/* TEST_CASE("Testing alignment rule") {
+    CHECK(sr(a, b1).val_x == doctest::Approx(2.8));
+    CHECK(sr(a, b1).val_y == doctest::Approx(2.8));
+    CHECK(sr(a, b4).val_x == doctest::Approx(-2.8));
+    CHECK(sr(a, b4).val_y == doctest::Approx(2.8));
+  }
+}
+
+TEST_CASE("Testing alignment rule") {
   SUBCASE("General tests") {
     BoidState b1 = {0., 0., 2., 3.};
     BoidState b2 = {0., 0., 5., 1.};
     BoidState b3 = {0., 0., -2., 3.};
-    std::vector<BoidState> a{b1, b2, b3};
-    BoidState b = {0., 0., 1., -1};
-    AllignmentRule ar{0.8};
-    CHECK(ar(a, b).val_x == doctest::Approx(1.067).epsilon(0.01));
-    CHECK(ar(a, b).val_y == doctest::Approx(2.136).epsilon(0.01));
-    BoidState b_ = {0., 0., 5., 7.};
-    CHECK(ar(a, b_).val_x == 0.);
-    CHECK(ar(a, b_).val_y == 0.);
-  }
 
+    BoidState b4 = {0., 0., 1., -1};
+    std::vector<BoidState> vec{b1, b2, b3, b4};
+    AllignmentRule ar{0.8};
+    CHECK(ar(vec, b4).val_x == doctest::Approx(0.533).epsilon(0.01));
+    CHECK(ar(vec, b4).val_y == doctest::Approx(2.667).epsilon(0.01));
+    BoidState b_ = {0., 0., 1.5, 1.5};
+    vec.push_back(b_);
+    CHECK(ar(vec, b_).val_x == 0.);
+    CHECK(ar(vec, b_).val_y == 0.);
+  }
   SUBCASE("a greater than 1") { CHECK_THROWS(AllignmentRule{1.2}); }
   SUBCASE("Trying to break the code") {
-    // non ho idee per ora
+    // si rompe il codice se il boid che passiamo non fa parte del vettore-> da
+    // mettere assert
   }
-} */
+}
 
 TEST_CASE("Testing Cohesion rule") {
   SUBCASE("Testing function COM") {
@@ -193,8 +208,7 @@ TEST_CASE("Testing Neighbor-Control function") {
   auto b = NeighborsControl(pesci.TotalBoids(), b1, 3.);
   CHECK(static_cast<int>(b.size()) == 2);
 }
-
-/* TEST_CASE("Testing singleboid function") {
+TEST_CASE("Testing singleboid function") {
   SUBCASE("boid in a group of three") {
     BoidState b1{0., 1., 2., 3.};
     BoidState b2{-1., 2., 3., 2.};
@@ -205,22 +219,22 @@ TEST_CASE("Testing Neighbor-Control function") {
     std::vector<BoidState> v1{b1, b2, b3};
     Boids b{3, 10., s, a, c};
     double const delta_t{0.1};
-    CHECK(((b.singleboid(v1, b1, delta_t)).x) ==
-          doctest::Approx(1.2).epsilon(0.0001));
-    CHECK(((b.singleboid(v1, b1, delta_t)).y) == 1.);
-    CHECK(((b.singleboid(v1, b1, delta_t)).v_x) == 12.);
-    CHECK(((b.singleboid(v1, b1, delta_t)).v_y) == 0.);
+    CHECK(((b.singleboid(v1, b1, delta_t)).x) == 1.1);
+    CHECK(((b.singleboid(v1, b1, delta_t)).y) == 0.85);
+    CHECK(((b.singleboid(v1, b1, delta_t)).v_x) == 11.);
+    CHECK(((b.singleboid(v1, b1, delta_t)).v_y) == -1.5);
   }
-} */
+}
 
-TEST_CASE("Testing Boids with the same position") {
+/*TEST_CASE("Testing Boids with the same position") {
   SUBCASE("Testing Boids") {
     BoidState b1{7., 2., 2., 3.};
     BoidState b2{3., 2., 3., 4.};
     BoidState b3{6., 2., 3., 3.};
+
+    std::vector<BoidState> vec{b1, b2, b3};
     BoidState b{1., 2., 2., 3.};
-    std::vector<BoidState> a{b1, b2, b3};
-    same_position(b, a);
-    CHECK((static_cast<int>(a.size())) == 3);
+    same_position(b, vec);
+    CHECK(static_cast<int>(vec.size()) == 3);
   }
-}
+}*/
