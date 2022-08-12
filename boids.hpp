@@ -158,8 +158,6 @@ class SeparationRule {
     return VelocityComponents{-s_ * sum_x, -s_ * sum_y};
   }
 };
-//}
-//};
 
 class AllignmentRule {
   int const n_;
@@ -213,6 +211,7 @@ class CohesionRule {
 };
 // dubbio : mettere la vaiabile n solo in boids e non  nelle classi delle
 // regole così sono tutte uguali ?
+
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
                                         BoidState b1, double d) {
   auto p = pesci;
@@ -259,7 +258,12 @@ class Boids {
             v_new.vel_x, v_new.vel_y};
   }
 
-  bool empty() { return boids_.empty(); }
+  bool empty() {
+    return boids_.empty();
+    if (boids_.empty() == true) {
+      throw std::runtime_error{"There are no boids"};
+    }
+  }
   double distance() const { return d_; }
   std::vector<BoidState> TotalBoids() const { return boids_; }
   int n() const { return n_; }
