@@ -206,25 +206,6 @@ class CohesionRule {
 // dubbio : mettere la vaiabile n solo in boids e non  nelle classi delle
 // regole così sono tutte uguali ?
 
-<<<<<<< HEAD
-=======
-std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
-                                        BoidState b1, double d) {
-  auto p = pesci;
-  // auto b1 = *p.begin();
-  p.erase(std::remove_if(p.begin(), p.end(),
-                         [b1, d](BoidState b) { return (norm(b1, b) > d); }),
-          p.end());
-  // assert(static_cast<int> pesci.size() == pesci.n());
-  return p;
-}
-
-/* void same_position(BoidState const& b1, std::vector<BoidState> boids) {
-  for (; boids.begin() != boids.end(); ++boids.begin()) {
-    if (b1.x == boids.begin()->x && b1.y == boids.begin()->y) {
-      boids.erase(boids.begin());
-    }}
-  }*/
 
 void same_position(BoidState const& b1, std::vector<BoidState> boids) {
   auto it = boids.begin();
@@ -237,7 +218,6 @@ void same_position(BoidState const& b1, std::vector<BoidState> boids) {
   }
 }
 
->>>>>>> 12ffdb04fde89d52423affcc179f6a21f105741a
 class Boids {
   int const n_;
   double const d_;
