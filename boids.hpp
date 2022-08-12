@@ -18,9 +18,6 @@ struct BoidState {
   double v_x{};
   double v_y{};
 
-  BoidState(double x, double y, double vx, double vy)
-      : x{x}, y{y}, v_x{vx}, v_y{vy} {}
-
   BoidState& operator+=(BoidState const& other) {
     x += other.x;
     y += other.y;
@@ -229,8 +226,7 @@ class Boids {
   SeparationRule s_;
   AllignmentRule a_;
   CohesionRule c_;
-  std::vector<BoidState>
-      boids_;  // ho provato a mettere quella n sopra come definizione ma
+  std::vector<BoidState> boids_;  // ho provato a mettere quella n sopra come definizione ma
                // non funziona non ho capito perchè quindi boh -> faccio
                // fatica a definire un numero fisso di entrate del vettore
 
@@ -282,7 +278,7 @@ class Boids {
     boids_ = fishes;
   }
 
-  std::vector<BoidState> const& state() const { return boids_; }
+  std::vector<BoidState> const& state() const { return boids_; } //da modificare
 };
 
 #endif
