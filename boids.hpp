@@ -239,13 +239,13 @@ class Boids {
 
   BoidState singleboid(std::vector<BoidState> const& vec, BoidState const& b1,
                        double const delta_t) const {
-    VelocityComponents v_old = {b1.v_x, b1.v_y};
+    Components v_old = {b1.v_x, b1.v_y};
     auto v_1 = s_(vec, b1);
     auto v_2 = a_(vec, b1);
     auto v_3 = c_(vec);
     auto v_new = v_old + v_1 + v_2 + v_3;
-    return {b1.x + v_new.vel_x * delta_t, b1.y + v_new.vel_y * delta_t,
-            v_new.vel_x, v_new.vel_y};
+    return {b1.x + v_new.val_x * delta_t, b1.y + v_new.val_y * delta_t,
+            v_new.val_x, v_new.val_y};
   }
 
   bool empty() {
