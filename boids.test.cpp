@@ -239,13 +239,24 @@ TEST_CASE("Testing singleboid function") {
 
 TEST_CASE("Testing evolution function") {
   BoidState b1{2., 3., 4., 2.};
-  BoidState b2{2., 1., 2., 1.};
+  BoidState b2{6., 1., -1, 1.};
   BoidState b3{4., 3., 4., 1.};
   SeparationRule s{1., 3.};
   AllignmentRule a{0.5};
   CohesionRule c{3.};
-  std::vector<BoidState> b{b1, b2, b3};
-  // da finire
+  //std::vector<BoidState> vec{b1, b2, b3};
+  Boids bb{4, 5., s, a, c};
+  bb.push_back(b1);
+  bb.push_back(b2);
+  bb.push_back(b3);
+  CHECK(bb.TotalBoids().size() == 3);
+  auto b_new = bb.singleboid(bb.TotalBoids(), b1, 0.5); //i test non passano, sad:(
+  CHECK(b_new.v_x == 18.75);
+  bb.evolution(0.5);
+  CHECK((bb.TotalBoids())[0].x == 11.375);
+  CHECK((bb.TotalBoids())[0].y == 1.75);
+  CHECK((bb.TotalBoids())[0].v_x == 18.75);
+  CHECK((bb.TotalBoids())[0].v_y == -2.5);
 }
 
 TEST_CASE("Testing Boids with the same position") {

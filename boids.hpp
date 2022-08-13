@@ -295,9 +295,9 @@ class Boids {
       auto v_2 = a_(vec, b1);
       auto v_3 = c_(vec, b1);
       auto v_new = v_old + v_1 + v_2 + v_3;
-      assert(v_1.val_x != 0. && v_1.val_y != 0.);
-      assert(v_2.val_x != 0. && v_2.val_y != 0.);
-      assert(v_3.val_x != 0. && v_3.val_y != 0.);
+      //assert(v_1.val_x != 0. && v_1.val_y != 0.);
+      //assert(v_2.val_x != 0. && v_2.val_y != 0.);
+      //assert(v_3.val_x != 0. && v_3.val_y != 0.);
       return {b1.x + v_new.val_x * delta_t, b1.y + v_new.val_y * delta_t,
               v_new.val_x, v_new.val_y};
     } else {
