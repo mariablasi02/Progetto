@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <iostream>
 #include <iterator>
 #include <limits>
 #include <numeric>
@@ -76,6 +77,13 @@ double norm(BoidState const& b1, BoidState const& b2) {
   auto result = (b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y);
   assert(!(result < 0));
   return std::sqrt(result);
+}
+
+BoidState operator/(BoidState const& b1, BoidState const& b2) {
+  if (b2.x == 0 || b2.y == 0 || b2.v_x == 0 || b2.v_y == 0) {
+    throw std::runtime_error{"Denominator is zero"};
+  }
+  return {b1.x / b2.x, b1.y / b2.y, b1.v_x / b2.v_x, b1.v_y / b2.v_y};
 }
 
 // nelle classi private si sceglie di mantenere _ alla fine dei data members
@@ -336,23 +344,43 @@ class Boids {
   }
 };
 
-void const state(Boids& b, double const delta_t) {
+void state(Boids& b, double const delta_t) {
   auto vec = b.TotalBoids();
   b.evolution(delta_t);
   auto sum =
       std::accumulate(vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
-  //Components mean_pos{sum.v_x / size(vec), sum.v_y / size(vec)};
-  //Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
+  Components mean_pos{sum.x / size(vec), sum.y / size(vec)};
+  Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
 
-  //auto mean_position = norm(sum, BoidState{0.0,0.0,0.0,0.0})/size(vec);
-  //auto mean_velocity = std::sqrt();
+  auto mean_position = std::sqrt(mean_pos.val_x * mean_pos.val_x +
+                                 mean_pos.val_y * mean_pos.val_y);
+  auto mean_velocity = std::sqrt(mean_vel.val_x * mean_vel.val_x +
+                                 mean_vel.val_y * mean_vel.val_y);
   auto products = std::inner_product(vec.begin(), vec.end(), vec.begin(),
                                      BoidState{0.0, 0.0, 0.0, 0.0});
-  auto variance = products - sum*sum;
+  auto variance = products - sum * sum;
+  BoidState variance_boid{variance.x, variance.y, variance.v_x, variance.v_y};
 
-  //Components 
+  assert((mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) !=
+             0 &&
+         (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) !=
+             0);
 
-  //std::cout<< "Mean position "<< mean
+  auto std_dev_position = std::sqrt((mean_pos.val_x * mean_pos.val_x) /
+                                    (mean_pos.val_x * mean_pos.val_x +
+                                     mean_pos.val_y * mean_pos.val_y) *
+                                    (variance_boid.x + variance_boid.y)) /
+                          size(vec);
+  auto std_dev_velocity = std::sqrt((mean_vel.val_x * mean_vel.val_x) /
+                                    (mean_vel.val_x * mean_vel.val_x +
+                                     mean_vel.val_y * mean_vel.val_y) *
+                                    (variance_boid.v_x + variance_boid.v_y)) /
+                          size(vec);
+
+  std::cout << "Mean position and standard deviation: " << mean_position
+            << " +/- " << std_dev_position;
+  std::cout << "Mean velocity and stardand deviation: " << mean_velocity
+            << " +/- " << std_dev_velocity;
 }
 
 #endif
