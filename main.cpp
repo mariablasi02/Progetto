@@ -1,4 +1,4 @@
-// Compile with: g++ main.cpp -lsfml-graphics -lsfml-window -lsfml-system
+// Compile with: g++ -Wall -Wextra -fsanitize=address main.cpp -lsfml-graphics -lsfml-window -lsfml-system
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
@@ -12,9 +12,10 @@ auto evolution(Boids& pesci, int steps_per_evolution, sf::Time delta_t) {
 
   for (int i{0}; i != steps_per_evolution; ++i) {
     pesci.evolution(dt);
+
   }
 
-  return pesci.state();
+  return pesci.TotalBoids();
 }
 
 int main() {
@@ -43,8 +44,8 @@ int main() {
                   return {pos(gen), pos(gen), speed(gen), speed(gen)};
                 });
 
+                
   
-
   // something
   auto const delta_t{sf::milliseconds(1)};
   int const fps = 30;
