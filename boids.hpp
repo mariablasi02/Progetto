@@ -130,8 +130,8 @@ int size(std::vector<BoidState> const& v) {
           type int."};
     }
     else */
-  //if (static_cast<int>(v.size()) > 1) {
-    return (static_cast<int>(v.size())); //risolvere problema eccezione
+  // if (static_cast<int>(v.size()) > 1) {
+  return (static_cast<int>(v.size()));  // risolvere problema eccezione
   //} else {
   //  throw std::runtime_error{"Error: n must be > 1"};
   //}
@@ -276,8 +276,8 @@ class Boids {
   SeparationRule s_;
   AllignmentRule a_;
   CohesionRule c_;
-  std::vector<BoidState>
-      boids_;  
+  std::vector<BoidState> boids_;
+
  public:
   Boids(int const n, double const d, SeparationRule const& s,
         AllignmentRule const& a, CohesionRule const& c)
@@ -309,7 +309,7 @@ class Boids {
   double d() const { return d_; }
   SeparationRule s() const { return s_; }
   AllignmentRule a() const {
-    assert( a_.get_a()<1.);
+    assert(a_.get_a() < 1.);
     return a_;
   }
   CohesionRule c() const { return c_; }
@@ -335,37 +335,38 @@ class Boids {
 };
 
 void state(Boids& b, double const delta_t) {
-  auto vec = b.TotalBoids();
   b.evolution(delta_t);
-  auto sum =
-      std::accumulate(vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
+  auto vec = b.TotalBoids();
+  auto sum = std::accumulate(
+      vec.begin(), vec.end(),
+      BoidState{0.0, 0.0, 0.0,
+                0.0});  // forse da ripensare come distanza tra boids
   Components mean_pos{sum.x / size(vec), sum.y / size(vec)};
   Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
 
-  auto mean_position = std::sqrt(mean_pos.val_x * mean_pos.val_x +
+  auto mean_position = std::sqrt(mean_pos.val_x * mean_pos.val_x + //aspettare confronto
                                  mean_pos.val_y * mean_pos.val_y);
   auto mean_velocity = std::sqrt(mean_vel.val_x * mean_vel.val_x +
                                  mean_vel.val_y * mean_vel.val_y);
-  auto products = std::inner_product(vec.begin(), vec.end(), vec.begin(),
-                                     BoidState{0.0, 0.0, 0.0, 0.0});
-  auto variance = products - sum * sum;
-  BoidState variance_boid{variance.x, variance.y, variance.v_x, variance.v_y};
+  auto products =
+      std::inner_product(vec.begin(), vec.end(), vec.begin(),
+                         BoidState{0.0, 0.0, 0.0, 0.0});  // somma dei quadrati
+  auto variance = products * (1 / size(vec)) -
+                  sum * (1 / size(vec)) * sum * (1 / size(vec));
 
-  /* assert((mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) !=
+  assert((mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) !=
              0 &&
          (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) !=
-             0); */
+             0);
 
-  auto std_dev_position = std::sqrt((mean_pos.val_x * mean_pos.val_x) /
-                                    (mean_pos.val_x * mean_pos.val_x +
-                                     mean_pos.val_y * mean_pos.val_y) *
-                                    (variance_boid.x + variance_boid.y)) /
-                          size(vec);
-  auto std_dev_velocity = std::sqrt((mean_vel.val_x * mean_vel.val_x) /
-                                    (mean_vel.val_x * mean_vel.val_x +
-                                     mean_vel.val_y * mean_vel.val_y) *
-                                    (variance_boid.v_x + variance_boid.v_y)) /
-                          size(vec);
+  auto std_dev_position = std::sqrt(
+      (mean_pos.val_x * mean_pos.val_x) /
+      (mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) *
+      (variance.x * variance.x + variance.y * variance.y) / size(vec));
+  auto std_dev_velocity = std::sqrt(
+      (mean_vel.val_x * mean_vel.val_x) /
+      (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) *
+      (variance.x * variance.x + variance.y * variance.y) / size(vec));
 
   std::cout << "Mean position and standard deviation: " << mean_position
             << " +/- " << std_dev_position;
