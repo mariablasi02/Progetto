@@ -9,6 +9,7 @@
 #include <numeric>
 #include <stdexcept>
 #include <vector>
+#include <typeinfo>
 
 // manca il controllo degli errori su tutto
 
@@ -106,10 +107,10 @@ bool operator==(Components const& c1, Components const& c2) {
 // che restituiscono le regole -> dopo mando audio
 
 int size(std::vector<BoidState> const& v) {
-  /*if (boids_.size() > static_cast<size_t>(std::numeric_limits<int>::max()))
-  { throw std::overflow_error("size_t value cannot be stored in a variable of
-  type int.");
-  }*/
+  if (boids_.size() > static_cast<size_t>(std::numeric_limits<int>::max()))
+  { throw std::overflow_error{"size_t value cannot be stored in a variable of
+  type int."};
+  }
   return (static_cast<int>(v.size()));
 }
 
