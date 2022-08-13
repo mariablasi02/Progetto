@@ -130,11 +130,11 @@ int size(std::vector<BoidState> const& v) {
           type int."};
     }
     else */
-  if (static_cast<int>(v.size()) > 1) {
-    return (static_cast<int>(v.size()));
-  } else {
-    throw std::runtime_error{"Error: n must be > 1"};
-  }
+  //if (static_cast<int>(v.size()) > 1) {
+    return (static_cast<int>(v.size())); //risolvere problema eccezione
+  //} else {
+  //  throw std::runtime_error{"Error: n must be > 1"};
+  //}
 }
 
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
@@ -277,10 +277,7 @@ class Boids {
   AllignmentRule a_;
   CohesionRule c_;
   std::vector<BoidState>
-      boids_;  // ho provato a mettere quella n sopra come definizione ma
-               // non funziona non ho capito perchè quindi boh -> faccio
-               // fatica a definire un numero fisso di entrate del vettore
-
+      boids_;  
  public:
   Boids(int const n, double const d, SeparationRule const& s,
         AllignmentRule const& a, CohesionRule const& c)
@@ -312,7 +309,7 @@ class Boids {
   double d() const { return d_; }
   SeparationRule s() const { return s_; }
   AllignmentRule a() const {
-    assert(a_.get_a() == 1. || a_.get_a() > 1.);
+    assert( a_.get_a()<1.);
     return a_;
   }
   CohesionRule c() const { return c_; }
