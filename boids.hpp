@@ -79,13 +79,6 @@ double norm(BoidState const& b1, BoidState const& b2) {
   return std::sqrt(result);
 }
 
-BoidState operator/(BoidState const& b1, BoidState const& b2) {
-  if (b2.x == 0 || b2.y == 0 || b2.v_x == 0 || b2.v_y == 0) {
-    throw std::runtime_error{"Denominator is zero"};
-  }
-  return {b1.x / b2.x, b1.y / b2.y, b1.v_x / b2.v_x, b1.v_y / b2.v_y};
-}
-
 // nelle classi private si sceglie di mantenere _ alla fine dei data members
 
 struct Components {
@@ -361,10 +354,10 @@ void state(Boids& b, double const delta_t) {
   auto variance = products - sum * sum;
   BoidState variance_boid{variance.x, variance.y, variance.v_x, variance.v_y};
 
-  assert((mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) !=
+  /* assert((mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) !=
              0 &&
          (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) !=
-             0);
+             0); */
 
   auto std_dev_position = std::sqrt((mean_pos.val_x * mean_pos.val_x) /
                                     (mean_pos.val_x * mean_pos.val_x +

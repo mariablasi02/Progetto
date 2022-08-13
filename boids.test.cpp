@@ -178,7 +178,7 @@ TEST_CASE("Testing Cohesion rule") {
     CHECK(COM(vec, b2).val_y == 3.5);
   }
 
-  SUBCASE("testing with a vector of three") {
+  SUBCASE("Testing with a vector of three") {
     CohesionRule c1{4.};
     BoidState b1{1., 2., 3., 4.};
     BoidState b2{2., 3., 4., 5.};
@@ -189,7 +189,7 @@ TEST_CASE("Testing Cohesion rule") {
     CHECK(c1(v1, b1).val_y == -4.0);
   }
 
-  SUBCASE("testing with a vector of four") {
+  SUBCASE("Testing with a vector of four") {
     CohesionRule c1{1};
     BoidState b1{1., 2., 3., 4.};
     BoidState b2{2., 3., 4., 5.};
@@ -199,6 +199,7 @@ TEST_CASE("Testing Cohesion rule") {
     CHECK(c1(v1, b1).val_x == doctest::Approx(-0.67).epsilon(0.01));
     CHECK(c1(v1, b1).val_y == doctest::Approx(-1.67).epsilon(0.01));
   }
+
 }
 
 TEST_CASE("Testing Neighbor-Control function") {
