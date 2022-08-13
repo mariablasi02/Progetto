@@ -258,7 +258,3 @@ TEST_CASE("Testing Boids with the same position") {
     CHECK(static_cast<int>(vec.size()) == 3);
   }
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 938081c959c921cc215991354741dd2ca1a4d41b
