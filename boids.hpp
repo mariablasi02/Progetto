@@ -334,7 +334,7 @@ class Boids {
     boids_ = fishes;
   }
 
-  void setvector(std::vector<BoidState> const& b){ //prova
+  void setvector(std::vector<BoidState> const& b) {  // prova
     boids_ = b;
   }
 };
@@ -374,10 +374,12 @@ void state(Boids& b, double const delta_t) {
       (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) *
       (variance.x * variance.x + variance.y * variance.y) / size(vec));
 
-  std::cout << "Mean position and standard deviation: " << mean_position
-            << " +/- " << std_dev_position;
-  std::cout << "Mean velocity and stardand deviation: " << mean_velocity
-            << " +/- " << std_dev_velocity;
+  std::cout << '\n'
+            << "Mean position and standard deviation: " << mean_position
+            << " +/- " << std_dev_position << '\n';
+  std::cout << '\n'
+            << "Mean velocity and stardand deviation: " << mean_velocity
+            << " +/- " << std_dev_velocity << '\n';
 }
 
 #endif
