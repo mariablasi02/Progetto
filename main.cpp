@@ -53,9 +53,12 @@ int main() {
 
   // std::cout << (bob.TotalBoids())[1].x << '\n';
 
+
   auto const delta_t{sf::milliseconds(1)};
   int const fps = 30;
   int const step_evolution{300 / fps};
+
+ 
 
   sf::RenderWindow window(sf::VideoMode(1179, 691), "sperem");
   window.setFramerateLimit(fps);
@@ -115,6 +118,8 @@ int main() {
       window.draw(rec);
     }
 
+
     window.display();
   }
+
 }
