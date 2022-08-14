@@ -67,6 +67,7 @@ int main() {
       window.draw(rec);
     }
 
+
     window.display();
   }
 }
