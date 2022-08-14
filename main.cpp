@@ -93,22 +93,27 @@ int main() {
         window.close();
       }
     }
+    auto boidscopy = evolve(boids, step_evolution, delta_t);
+    int i = 0;
 
     window.clear();
     window.draw(sprite);
-    
-    auto boidscopy = evolve(boids, step_evolution, delta_t);
     for(auto& b : boidscopy){
       triangle.setPosition(b.x, b.y);
+      switch(static_cast<int>(b.y)) {
+        case 0:
+        triangle.move(0.f, 691); 
+        boids.TotalBoids()[i].y = 691;      
+        break;
+        case 691:
+        triangle.move(0.f, -691);
+        boids.TotalBoids()[i].y = 0.; 
+        break;
+        ++i;
+      }  
+    
       window.draw(triangle);
-      if(triangle.getPosition().x == 0.f) {
-        float x_bottom_edge = 1179;
-        triangle.move(x_bottom_edge, 0.f);
-      }
-      if(triangle.getPosition().x == 1179) {
-        //float x_top_edge = 1179;
-        triangle.move(-1179,0.f);
-      }
+  
     }
 
 
