@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <iostream>
 #include <random>
-#include <thread>
+#include <cstdlib>
 
 
 auto evolve(Boids& boids, int spevolution, sf::Time delta_t) {
@@ -20,36 +20,46 @@ auto evolve(Boids& boids, int spevolution, sf::Time delta_t) {
 }
 
 int main() {
-  std::random_device red;
-  std::default_random_engine gen(red());
+  std::random_device rd;
+  std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> dist(0, 690);
   std::uniform_real_distribution<double> dist2(0, 50);
 
-  std::cout << "insert number of boids" << '\n';
+  std::cout << "Insert number of boids (at least 2): " << '\n';
   int n;
   std::cin >> n;
+  if(std::cin.fail()|| n<=1){ 
+    std::cerr << "Invalid number\n";
+    return EXIT_FAILURE;
+  }
   std::cout
-      << "Insert separation const, allignement const ( < 1 ), cohesion const "
+      << "Insert separation const, allignement const ( < 1 ), cohesion const: "
       << '\n';  // valori di n ottimali: intorno a 20 per il momento
+  double s;
   double a;
-  double b;
   double c;
 
-  std::cin >> a >> b >> c;
+  std::cin >> s >> a >> c;
+  if(std::cin.fail()|| a>1){
+    std::cerr << "Invalid number\n";
+    return EXIT_FAILURE;
+  }
 
-  Boids bob{n, 20., SeparationRule{a, 20. / 10.}, AllignmentRule{b},
+  Boids boids{n, 20., SeparationRule{s, 20. / 10.}, AllignmentRule{a},
             CohesionRule{c}};
-  auto bob1 = bob.TotalBoids();
-  bob1.resize(n);
 
-  std::generate(bob1.begin(), bob1.end(), [&gen, &dist, &dist2]() -> BoidState {
+  auto vec_boids = boids.TotalBoids();
+
+  vec_boids.resize(n);
+  
+  std::generate(vec_boids.begin(), vec_boids.end(), [&gen, &dist, &dist2]() -> BoidState {
     return {dist(gen), dist(gen), dist2(gen), dist2(gen)};
   });
   // std::cout << bob1[1].x <<'\n';
 
-  bob.setvector(bob1);
+  boids.setvector(vec_boids);
 
-  state(bob, 0.1);
+  state(boids, 0.1);
 
   // std::cout << (bob.TotalBoids())[1].x << '\n';
 
@@ -69,11 +79,11 @@ int main() {
   sf::Sprite sprite;
   sprite.setTexture(texture);
 
-  sf::CircleShape rec;
-  rec.setRadius(10.f);
-  rec.setPointCount(3);
+  sf::CircleShape triangle;
+  triangle.setRadius(10.f);
+  triangle.setPointCount(3);
 
-  rec.setFillColor(sf::Color(245, 152, 66));
+  triangle.setFillColor(sf::Color(245, 152, 66));
 
   while (window.isOpen()) {
     sf::Event event;
@@ -111,11 +121,11 @@ int main() {
     window.clear();
     window.draw(sprite);
     // auto bobcopy = bob1; //va
-    auto bobcopy = evolve(bob, step_evolution, delta_t);
+    auto boidscopy = evolve(boids, step_evolution, delta_t);
 
-    for (auto& bobbysss : bobcopy) {
-      rec.setPosition(bobbysss.x, bobbysss.y);
-      window.draw(rec);
+    for (auto& b : boidscopy) {
+      triangle.setPosition(b.x, b.y);
+      window.draw(triangle);
     }
 
 
