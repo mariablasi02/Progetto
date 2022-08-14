@@ -1,15 +1,11 @@
 #include "boids.hpp"
 
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <iostream>
-#include <iterator>
 #include <limits>
 #include <numeric>
-#include <stdexcept>
-#include <typeinfo>
-#include <vector>
+
 
 BoidState& BoidState::operator+=(BoidState const& other) {
   x += other.x;

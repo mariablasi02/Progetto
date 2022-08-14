@@ -1,4 +1,4 @@
-// Compile with: g++ -Wall -Wextra -fsanitize=address main.cpp -lsfml-graphics -lsfml-window -lsfml-system 
+// Compile with: g++ -Wall -Wextra -fsanitize=address boids.cpp rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system 
 
 //close the window from sfml button
 #include "boids.hpp"
@@ -13,7 +13,7 @@
 
 auto evolve(Boids& boids, int spevolution, sf::Time delta_t) {
   double const unitoft{delta_t.asSeconds()};
-  for (int i{0}; i != spevolution; ++i) {
+  for (int i{0}; i != spevolution; ++i) { // attenzione!!!! potrebbe esserci problema di velocità
     boids.evolution(unitoft);
   }
   return boids.TotalBoids();
@@ -93,39 +93,27 @@ int main() {
         window.close();
       }
     }
-
-   /*  for (int i{0}; i != size(bob.TotalBoids()); ++i) {
-      if ((bob.TotalBoids())[i].x < 0. || (bob.TotalBoids())[i].x > 691. ||
-          (bob.TotalBoids())[i].y < 0. || (bob.TotalBoids())[i].y > 1179.) {
-        if ((bob.TotalBoids())[i].x < 0. || (bob.TotalBoids())[i].x > 691.) {
-          (bob.TotalBoids())[i].v_x = -(bob.TotalBoids())[i].v_x;
-        } else {
-          (bob.TotalBoids())[i].v_y = -(bob.TotalBoids())[i].v_y;
-        }
-      }
-    } */
-    // sputato a un video su youtube
-    /* if (rec.getPosition().x < 0.f ){
-      rec.setPosition(0.f, rec.getPosition().y);
-    }
-    if (rec.getPosition().x + rec.getGlobalBounds().width > 1179 ){
-      rec.setPosition(1179.f- rec.getGlobalBounds().width, rec.getPosition().y);
-    }
-    if (rec.getPosition().y < 0.f ){
-      rec.setPosition(rec.getPosition().x, 0.f);
-    }
-    if (rec.getPosition().y + rec.getGlobalBounds().height >691 ){
-      rec.setPosition(rec.getPosition().x, 691.f- rec.getGlobalBounds().height);
-    } */
+    auto boidscopy = evolve(boids, step_evolution, delta_t);
+    int i = 0;
 
     window.clear();
     window.draw(sprite);
-    // auto bobcopy = bob1; //va
-    auto boidscopy = evolve(boids, step_evolution, delta_t);
-
-    for (auto& b : boidscopy) {
+    for(auto& b : boidscopy){
       triangle.setPosition(b.x, b.y);
+      switch(static_cast<int>(b.y)) {
+        case 0:
+        triangle.move(0.f, 691); 
+        boids.TotalBoids()[i].y = 691;      
+        break;
+        case 691:
+        triangle.move(0.f, -691);
+        boids.TotalBoids()[i].y = 0.; 
+        break;
+        ++i;
+      }  
+    
       window.draw(triangle);
+  
     }
 
 

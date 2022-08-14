@@ -1,15 +1,8 @@
 #ifndef BOIDS_HPP
 #define BOIDS_HPP
 
-#include <algorithm>
 #include <cassert>
-#include <cmath>
-#include <iostream>
-#include <iterator>
-#include <limits>
-#include <numeric>
 #include <stdexcept>
-#include <typeinfo>
 #include <vector>
 
 // manca il controllo degli errori su tutto
