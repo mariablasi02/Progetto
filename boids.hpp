@@ -333,6 +333,10 @@ class Boids {
     assert(size(fishes) == size(boids_));
     boids_ = fishes;
   }
+
+  void setvector(std::vector<BoidState> const& b){ //prova
+    boids_ = b;
+  }
 };
 
 double state(Boids& b, double const delta_t) {
