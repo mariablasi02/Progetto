@@ -23,7 +23,7 @@ int main() {
   std::random_device red;
   std::default_random_engine gen(red());
   std::uniform_real_distribution<double> dist(0, 690);
-  std::uniform_real_distribution<double> dist2(100, 200);
+  std::uniform_real_distribution<double> dist2(0, 50);
 
   std::cout << "insert number of boids" << '\n';
   int n;
@@ -37,7 +37,7 @@ int main() {
 
   std::cin >> a >> b >> c;
 
-  Boids bob{n, 7., SeparationRule{a, 7. / 10.}, AllignmentRule{b},
+  Boids bob{n, 20., SeparationRule{a, 20. / 10.}, AllignmentRule{b},
             CohesionRule{c}};
   auto bob1 = bob.TotalBoids();
   bob1.resize(n);
@@ -81,7 +81,7 @@ int main() {
       }
     }
 
-    /* for (int i{0}; i != size(bob.TotalBoids()); ++i) {
+   /*  for (int i{0}; i != size(bob.TotalBoids()); ++i) {
       if ((bob.TotalBoids())[i].x < 0. || (bob.TotalBoids())[i].x > 691. ||
           (bob.TotalBoids())[i].y < 0. || (bob.TotalBoids())[i].y > 1179.) {
         if ((bob.TotalBoids())[i].x < 0. || (bob.TotalBoids())[i].x > 691.) {
@@ -90,6 +90,19 @@ int main() {
           (bob.TotalBoids())[i].v_y = -(bob.TotalBoids())[i].v_y;
         }
       }
+    } */
+    // sputato a un video su youtube
+    /* if (rec.getPosition().x < 0.f ){
+      rec.setPosition(0.f, rec.getPosition().y);
+    }
+    if (rec.getPosition().x + rec.getGlobalBounds().width > 1179 ){
+      rec.setPosition(1179.f- rec.getGlobalBounds().width, rec.getPosition().y);
+    }
+    if (rec.getPosition().y < 0.f ){
+      rec.setPosition(rec.getPosition().x, 0.f);
+    }
+    if (rec.getPosition().y + rec.getGlobalBounds().height >691 ){
+      rec.setPosition(rec.getPosition().x, 691.f- rec.getGlobalBounds().height);
     } */
 
     window.clear();
