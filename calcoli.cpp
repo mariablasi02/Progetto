@@ -13,6 +13,4 @@ int main() {
     std::cout<< "Components x and y of v1: " << s(v, b1).val_x << "x" << s(v, b1).val_y << "y" << '\n';
     std::cout<< "Components x and y of v2: " << a(v, b1).val_x << "x" << a(v, b1).val_y << "y" << '\n';
     std::cout<< "Components x and y of v3: " << c(v, b1).val_x << "x" << c(v, b1).val_y << "y" << '\n';
-    
 }
-

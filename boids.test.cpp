@@ -270,3 +270,29 @@ TEST_CASE("Testing Boids with the same position") {
     CHECK(static_cast<int>(vec.size()) == 3);
   }
 }
+
+
+
+TEST_CASE("Testing mean and std dev"){
+ SUBCASE("Testing mean_position"){
+
+ }
+ SUBCASE("Testing mean_velocity"){
+  BoidState b1{2., 3., 4., 2.};
+  BoidState b2{6., 1., -1, 1.};
+  BoidState b3{4., 3., 4., 1.};
+  SeparationRule s{5., 3.};
+  AllignmentRule a{0.5};
+  CohesionRule c{3.};
+  //std::vector<BoidState> vec{b1, b2, b3};
+  Boids boids{3, 6., s, a, c};
+  auto b = state(boids, 0.5);
+  CHECK( b == 2,68);
+ }
+ SUBCASE("Testing std_dev_position"){
+
+ }
+ SUBCASE("Testing std_dev_velocity"){
+
+ }
+ }

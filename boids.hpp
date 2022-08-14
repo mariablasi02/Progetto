@@ -335,7 +335,7 @@ class Boids {
   }
 };
 
-void state(Boids& b, double const delta_t) {
+double state(Boids& b, double const delta_t) {
   b.evolution(delta_t);
   auto vec = b.TotalBoids();
   auto sum = std::accumulate(
@@ -370,10 +370,12 @@ void state(Boids& b, double const delta_t) {
       (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) *
       (variance.x * variance.x + variance.y * variance.y) / size(vec));
 
-  std::cout << "Mean position and standard deviation: " << mean_position
+  /*std::cout << "Mean position and standard deviation: " << mean_position
             << " +/- " << std_dev_position;
   std::cout << "Mean velocity and stardand deviation: " << mean_velocity
-            << " +/- " << std_dev_velocity;
+            << " +/- " << std_dev_velocity;*/
+            return mean_velocity;
+
 }
 
 #endif
