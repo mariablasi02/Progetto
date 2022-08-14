@@ -242,6 +242,18 @@ void state(Boids& b, double const delta_t) {
       (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) *
       (variance.x * variance.x + variance.y * variance.y) / size(vec));
 
+
+ /* std::vector<double> sums;
+ auto it = vec.begin();
+ auto it2 = vec.begin();
+    for (; it2 != vec.end(); ++it2){
+ for (auto i : vec){
+        sums.push_back(norm(i, *it2));
+    }
+    //++it;
+ } */
+
+
   /* double somma_x;
   double somma_y;
   double somma_v_x;
