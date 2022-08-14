@@ -131,11 +131,11 @@ int size(std::vector<BoidState> const& v) {
           type int."};
     }
     else */
-  // if (static_cast<int>(v.size()) > 1) {
-  return (static_cast<int>(v.size()));  // risolvere problema eccezione
+   //if (static_cast<int>(v.size()) > 1) {
+  //return (static_cast<int>(v.size()));  // risolvere problema eccezione
   //} else {
-  //  throw std::runtime_error{"Error: n must be > 1"};
-  // }
+   // throw std::runtime_error{"Error: n must be > 1"};
+   //}
 }
 
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
