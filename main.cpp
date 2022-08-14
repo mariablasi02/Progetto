@@ -31,7 +31,7 @@ auto evolve(Boids& boids, int spevolution,  sf::Time delta_t){
 int main() {
   std::random_device red;
   std::default_random_engine gen(red());
-  std::uniform_real_distribution<double> dist(0, 600);
+  std::uniform_real_distribution<double> dist(50, 100);
   std::uniform_real_distribution<double> dist2(0, 100);
 
   std::cout << "insert number of boids" << '\n';
@@ -53,14 +53,16 @@ int main() {
     return {dist(gen), dist(gen), dist2(gen), dist2(gen)};
   });
   //std::cout << bob1[1].x <<'\n'; 
-
+ 
   bob.setvector(bob1); 
-
+ 
   //std::cout << (bob.TotalBoids())[1].x << '\n';
 
   auto const delta_t{sf::milliseconds(1)};
   int const fps = 30;
   int const step_evolution{300 / fps};
+
+ 
 
   sf::RenderWindow window(sf::VideoMode(1179, 691), "sperem");
   window.setFramerateLimit(fps);
@@ -100,4 +102,5 @@ int main() {
 
     window.display();
   }
+
 }

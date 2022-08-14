@@ -131,11 +131,11 @@ int size(std::vector<BoidState> const& v) {
           type int."};
     }
     else */
-  // if (static_cast<int>(v.size()) > 1) {
-  return (static_cast<int>(v.size()));  // risolvere problema eccezione
-  //} else {
-  //  throw std::runtime_error{"Error: n must be > 1"};
-  //}
+  if (static_cast<int>(v.size()) > 1) {
+    return (static_cast<int>(v.size()));  // risolvere problema eccezione
+  } else {
+    throw std::runtime_error{"Error: n must be > 1"};
+  }
 }
 
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
@@ -334,12 +334,12 @@ class Boids {
     boids_ = fishes;
   }
 
-  void setvector(std::vector<BoidState> const& b){ //prova
+  void setvector(std::vector<BoidState> const& b) {  // prova
     boids_ = b;
   }
 };
 
-double state(Boids& b, double const delta_t) {
+void state(Boids& b, double const delta_t) {
   b.evolution(delta_t);
   auto vec = b.TotalBoids();
   auto sum = std::accumulate(
@@ -355,31 +355,29 @@ double state(Boids& b, double const delta_t) {
   auto mean_velocity = std::sqrt(mean_vel.val_x * mean_vel.val_x +
                                  mean_vel.val_y * mean_vel.val_y);
   auto products =
-      std::inner_product(vec.begin(), vec.end(), vec.begin(),
-                         BoidState{0.0, 0.0, 0.0, 0.0});  // somma dei quadrati
-  auto variance = products * (1 / size(vec)) -
-                  sum * (1 / size(vec)) * sum * (1 / size(vec));
+       std::inner_product(vec.begin(), vec.end(), vec.begin(),
+                          BoidState{0.0, 0.0, 0.0, 0.0});  // somma dei quadrati
+   auto variance = products * (1 / size(vec)) -
+                   sum * (1 / size(vec)) * sum * (1 / size(vec));
 
-  assert((mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) !=
-             0 &&
-         (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) !=
-             0);
+   assert((mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) !=
+              0 &&
+          (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) !=
+              0);
 
-  auto std_dev_position = std::sqrt(
-      (mean_pos.val_x * mean_pos.val_x) /
-      (mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) *
-      (variance.x * variance.x + variance.y * variance.y) / size(vec));
-  auto std_dev_velocity = std::sqrt(
-      (mean_vel.val_x * mean_vel.val_x) /
-      (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) *
-      (variance.x * variance.x + variance.y * variance.y) / size(vec));
+   auto std_dev_position = std::sqrt(
+       (mean_pos.val_x * mean_pos.val_x) /
+       (mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) *
+       (variance.x * variance.x + variance.y * variance.y) / size(vec));
+   auto std_dev_velocity = std::sqrt(
+       (mean_vel.val_x * mean_vel.val_x) /
+       (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) *
+       (variance.x * variance.x + variance.y * variance.y) / size(vec));
 
-  /*std::cout << "Mean position and standard deviation: " << mean_position
+  std::cout << "Mean position and standard deviation: " << mean_position
             << " +/- " << std_dev_position;
   std::cout << "Mean velocity and stardand deviation: " << mean_velocity
-            << " +/- " << std_dev_velocity;*/
-            return mean_velocity;
-
+            << " +/- " << std_dev_velocity;
 }
 
 #endif
