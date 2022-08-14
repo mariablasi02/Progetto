@@ -1,5 +1,11 @@
 #include "boids.hpp"
 
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <numeric>
+
+
 Components SeparationRule::operator()(std::vector<BoidState> const& b,
                                       BoidState const& b1) const {
   assert(size(b) > 1);

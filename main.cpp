@@ -1,4 +1,4 @@
-// Compile with: g++ -Wall -Wextra -fsanitize=address main.cpp -lsfml-graphics -lsfml-window -lsfml-system 
+// Compile with: g++ -Wall -Wextra -fsanitize=address boids.cpp rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system 
 
 //close the window from sfml button
 #include "boids.hpp"
@@ -13,7 +13,7 @@
 
 auto evolve(Boids& boids, int spevolution, sf::Time delta_t) {
   double const unitoft{delta_t.asSeconds()};
-  for (int i{0}; i != spevolution; ++i) {
+  for (int i{0}; i != spevolution; ++i) { // attenzione!!!! potrebbe esserci problema di velocità
     boids.evolution(unitoft);
   }
   return boids.TotalBoids();
