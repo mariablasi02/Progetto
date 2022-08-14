@@ -94,38 +94,21 @@ int main() {
       }
     }
 
-   /*  for (int i{0}; i != size(bob.TotalBoids()); ++i) {
-      if ((bob.TotalBoids())[i].x < 0. || (bob.TotalBoids())[i].x > 691. ||
-          (bob.TotalBoids())[i].y < 0. || (bob.TotalBoids())[i].y > 1179.) {
-        if ((bob.TotalBoids())[i].x < 0. || (bob.TotalBoids())[i].x > 691.) {
-          (bob.TotalBoids())[i].v_x = -(bob.TotalBoids())[i].v_x;
-        } else {
-          (bob.TotalBoids())[i].v_y = -(bob.TotalBoids())[i].v_y;
-        }
-      }
-    } */
-    // sputato a un video su youtube
-    /* if (rec.getPosition().x < 0.f ){
-      rec.setPosition(0.f, rec.getPosition().y);
-    }
-    if (rec.getPosition().x + rec.getGlobalBounds().width > 1179 ){
-      rec.setPosition(1179.f- rec.getGlobalBounds().width, rec.getPosition().y);
-    }
-    if (rec.getPosition().y < 0.f ){
-      rec.setPosition(rec.getPosition().x, 0.f);
-    }
-    if (rec.getPosition().y + rec.getGlobalBounds().height >691 ){
-      rec.setPosition(rec.getPosition().x, 691.f- rec.getGlobalBounds().height);
-    } */
-
     window.clear();
     window.draw(sprite);
-    // auto bobcopy = bob1; //va
+    
     auto boidscopy = evolve(boids, step_evolution, delta_t);
-
-    for (auto& b : boidscopy) {
+    for(auto& b : boidscopy){
       triangle.setPosition(b.x, b.y);
       window.draw(triangle);
+      if(triangle.getPosition().x == 0.f) {
+        float x_bottom_edge = 1179;
+        triangle.move(x_bottom_edge, 0.f);
+      }
+      if(triangle.getPosition().x == 1179) {
+        //float x_top_edge = 1179;
+        triangle.move(-1179,0.f);
+      }
     }
 
 
