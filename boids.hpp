@@ -65,7 +65,8 @@ class SeparationRule {
 
  public:
   SeparationRule(double const s, double d_s) : s_{s}, distance_s_{d_s} {}
-  Components operator()(std::vector<BoidState> const& b, BoidState const& b1) const;
+  Components operator()(std::vector<BoidState> const& b,
+                        BoidState const& b1) const;
 };
 
 bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c);

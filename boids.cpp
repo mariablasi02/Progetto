@@ -217,9 +217,21 @@ void state(Boids& b, double const delta_t) {
   Components mean_pos{sum.x / size(vec), sum.y / size(vec)};
   Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
 
-  auto mean_position =
-      std::sqrt(mean_pos.val_x * mean_pos.val_x +  // aspettare confronto
-                mean_pos.val_y * mean_pos.val_y);
+  std::vector<double> somme;
+  auto it = vec.begin();
+
+  for ( ; it != vec.end(); ++it) {
+    auto it_2 = std::next(it);
+      for (; it_2 != vec.end(); ++it_2) {
+      somme.push_back(norm(*it, *it_2));
+    }
+  }
+  auto mean_position = (std::accumulate(somme.begin(), somme.end(), 0.)) /
+                       static_cast<int>(somme.size());
+
+  /* auto mean_position =
+       std::sqrt(mean_pos.val_x * mean_pos.val_x +  // aspettare confronto
+                 mean_pos.val_y * mean_pos.val_y);*/
   auto mean_velocity = std::sqrt(mean_vel.val_x * mean_vel.val_x +
                                  mean_vel.val_y * mean_vel.val_y);
   auto products =
