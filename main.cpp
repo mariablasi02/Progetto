@@ -23,7 +23,7 @@ int main() {
   std::random_device rd;
   std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> dist(0, 690);
-  std::uniform_real_distribution<double> dist2(0, 50);
+  std::uniform_real_distribution<double> dist2(-100, 100);
 
   std::cout << "Insert number of boids (at least 2): " << '\n';
   int n;
@@ -45,7 +45,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  Boids boids{n, 10., SeparationRule{s, 20. / 100.}, AllignmentRule{a},
+  Boids boids{n, 100., SeparationRule{s, 100. / 50.}, AllignmentRule{a},
               CohesionRule{c}};
 
   auto vec_boids = boids.TotalBoids();
