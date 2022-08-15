@@ -65,9 +65,9 @@ double norm(BoidState const& b1, BoidState const& b2) {
   return std::sqrt(result);
 }
 
-double velocity_norm(BoidState const& b1, BoidState const& b2) {
-  auto result = (b1.v_x - b2.v_x) * (b1.v_x - b2.v_x) +
-                (b1.v_y - b2.v_y) * (b1.v_y - b2.v_y);
+double velocity_norm(BoidState const& b) {
+  auto result = (b.v_x * b.v_x + b.v_y * b.v_y);
+  ;
   return std::sqrt(result);
 }
 
@@ -201,13 +201,11 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
   std::transform(v.begin(), v.end(), v.begin(), [](BoidState b) {
     if (b.x <= 0.) {
       b.x = 1179.;
-
     } else if (b.x >= 1179.) {
       b.x = 0.;
     }
     if (b.y <= 0.) {
       b.y = 691.;
-
     } else if (b.y >= 691.) {
       b.y = 0.;
     }
@@ -223,8 +221,8 @@ void Boids::evolution(double const delta_t) {
   for (auto fish : boids_) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
     fishes.push_back(b.singleboid(nearfishes, fish, delta_t));
-    borders(fishes);
   }
+    borders(fishes);
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
 }
@@ -246,7 +244,7 @@ void state(Boids& b, double const delta_t) {
     auto it_2 = std::next(it);
     for (; it_2 != vec.end(); ++it_2) {
       position.push_back(norm(*it, *it_2));
-      velocity.push_back(velocity_norm(*it, *it_2));
+      ;
     }
   }
   auto mean_position = (std::accumulate(position.begin(), position.end(), 0.)) /
@@ -258,16 +256,21 @@ void state(Boids& b, double const delta_t) {
   auto std_dev_position =
       std::sqrt(sums_pos2_medio - mean_position * mean_position);
 
-  auto mean_velocity = (std::accumulate(velocity.begin(), velocity.end(), 0.)) /
-                       static_cast<int>(velocity.size());
+  auto sum =
+      std::accumulate(vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
+  Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
+
+  for (auto i : vec) {
+    velocity.push_back(velocity_norm(i));
+  }
+  auto mean_velocity = std::sqrt(mean_vel.val_x * mean_vel.val_x +
+                                 mean_vel.val_y * mean_vel.val_y);
 
   auto sums_vel2_medio = (std::inner_product(velocity.begin(), velocity.end(),
                                              velocity.begin(), 0.)) /
                          static_cast<int>(velocity.size());
   auto std_dev_velocity =
       std::sqrt(sums_vel2_medio - mean_velocity * mean_velocity);
-
-  
 
   std::cout << '\n'
             << "Mean position and standard deviation: " << mean_position
