@@ -11,10 +11,10 @@
 #include <cstdlib>
 
 
-auto evolve(Boids& boids, int spevolution, sf::Time delta_t) {
-  double const unitoft{delta_t.asSeconds()};
-  for (int i{0}; i != spevolution; ++i) { // attenzione!!!! potrebbe esserci problema di velocità
-    boids.evolution(unitoft);
+auto evolve(Boids& boids, int sp_evolution, sf::Time delta_t) {
+  double const unit_of_t{delta_t.asSeconds()};
+  for (int i{0}; i != sp_evolution; ++i) { // attenzione!!!! potrebbe esserci problema di velocità
+    boids.evolution(unit_of_t);
   }
   return boids.TotalBoids();
 }
@@ -22,8 +22,9 @@ auto evolve(Boids& boids, int spevolution, sf::Time delta_t) {
 int main() {
   std::random_device rd;
   std::default_random_engine gen(rd());
-  std::uniform_real_distribution<double> dist(0, 690);
-  std::uniform_real_distribution<double> dist2(0, 50);
+  std::uniform_real_distribution<double> pos_x(0,1179);
+  std::uniform_real_distribution<double> pos_y(0, 690);
+  std::uniform_real_distribution<double> speed(-80, 80);
 
   std::cout << "Insert number of boids (at least 2): " << '\n';
   int n;
@@ -52,8 +53,8 @@ int main() {
 
   vec_boids.resize(n);
   
-  std::generate(vec_boids.begin(), vec_boids.end(), [&gen, &dist, &dist2]() -> BoidState {
-    return {dist(gen), dist(gen), dist2(gen), dist2(gen)};
+  std::generate(vec_boids.begin(), vec_boids.end(), [&gen, &pos_x, &pos_y, &speed]() -> BoidState {
+    return {pos_x(gen), pos_y(gen), speed(gen), speed(gen)};
   });
   // std::cout << bob1[1].x <<'\n';
 
@@ -102,16 +103,24 @@ int main() {
       triangle.setPosition(b.x, b.y);
       switch(static_cast<int>(b.y)) {
         case 0:
-        triangle.move(0.f, 691); 
-        boids.TotalBoids()[i].y = 691;      
+        triangle.move(0.f, 690); 
+        boids.TotalBoids()[i].y = 690;      
         break;
         case 691:
-        triangle.move(0.f, -691);
-        boids.TotalBoids()[i].y = 0.; 
+        triangle.move(0.f, -690);
+        boids.TotalBoids()[i].y = 1.; 
         break;
-        ++i;
-      }  
-    
+      } 
+    switch(static_cast<int>(b.x)) {
+      case 0:
+      triangle.move(1178,0.f);
+      boids.TotalBoids()[i].x = 1178;
+      break;
+      case 1179:
+      triangle.move(-1178,0.f);
+      boids.TotalBoids()[i].x = 1.;
+    }
+      ++i;
       window.draw(triangle);
   
     }
