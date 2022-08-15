@@ -294,7 +294,7 @@ TEST_CASE("Testing Boids with the same position") {
   }
 }
 
-TEST_CASE("Testing mean and std dev") {
+/*TEST_CASE("Testing mean and std dev") {
   SUBCASE("Testing mean_position") {}
   SUBCASE("Testing mean_velocity") {
     BoidState b1{2., 3., 4., 2.};
@@ -305,9 +305,9 @@ TEST_CASE("Testing mean and std dev") {
     CohesionRule c{3.};
     Boids boids{3, 6., s, a, c};
     state(boids, 0.5);
-    // CHECK(== 2, 68);}
+    // CHECK( :( )== 2, 68);}
 
   SUBCASE("Testing std_dev_position") {}
   SUBCASE("Testing std_dev_velocity") {}
 }
-}
+}*/
