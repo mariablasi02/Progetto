@@ -5,6 +5,8 @@
 #include <iostream>
 #include <limits>
 #include <numeric>
+#include <string>
+#include <string.h>
 
 BoidState& BoidState::operator+=(BoidState const& other) {
   x += other.x;
@@ -252,7 +254,7 @@ void Boids::setvector(std::vector<BoidState> const& b) {  // prova
   boids_ = b;
 }
 
-void state(Boids& b, double const delta_t) {
+std::string state(Boids& b, double const delta_t) {
   b.evolution(delta_t);
   auto vec = b.TotalBoids();
 
@@ -292,11 +294,17 @@ void state(Boids& b, double const delta_t) {
                          static_cast<int>(velocity.size());
   auto std_dev_velocity =
       std::sqrt(sums_vel2_medio - mean_velocity * mean_velocity);
+      auto pos = std::to_string(mean_position);
+      auto pos_stdev = std::to_string(std_dev_position);
+      auto speed = std::to_string(mean_velocity);
+      auto speed_stdev = std::to_string(std_dev_velocity);
+  return "Mean position and standard deviation: " + pos + "+/-" + pos_stdev + '\n' + "Mean velocity and standard deviation: " + speed + "+/-" + speed_stdev + '\n';
 
-  std::cout << '\n'
+
+  /*std::cout << '\n'
             << "Mean position and standard deviation: " << mean_position
             << " +/- " << std_dev_position << '\n';
   std::cout << '\n'
             << "Mean velocity and stardand deviation: " << mean_velocity
-            << " +/- " << std_dev_velocity << '\n';
+            << " +/- " << std_dev_velocity << '\n';*/
 }

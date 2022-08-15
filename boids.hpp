@@ -144,6 +144,6 @@ class Boids {
   void setvector(std::vector<BoidState> const& b);
 };
 
-void state(Boids& b, double const delta_t);
+std::string state(Boids& b, double const delta_t);
 
 #endif
