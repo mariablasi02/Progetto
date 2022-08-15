@@ -1,5 +1,4 @@
 // Compile with: g++ -Wall -Wextra -fsanitize=address boids.cpp rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system 
-
 //close the window from sfml button
 #include "boids.hpp"
 #include <SFML/Graphics.hpp>
@@ -70,7 +69,7 @@ int main() {
 
  
 
-  sf::RenderWindow window(sf::VideoMode(1179, 691), "sperem");
+  sf::RenderWindow window(sf::VideoMode(1179, 691), "Sea");
   window.setFramerateLimit(fps);
   sf::Texture texture;
   if (!texture.loadFromFile("sfondomare.png")) {
@@ -95,6 +94,8 @@ int main() {
     }
     auto boidscopy = evolve(boids, step_evolution, delta_t);
     int i = 0;
+
+
 
     window.clear();
     window.draw(sprite);
