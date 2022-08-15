@@ -198,33 +198,22 @@ void Boids::push_back(BoidState const& boid) {
 }
 
 std::vector<BoidState> borders(std::vector<BoidState>& v) {
-  
- std::transform(v.begin(), v.end(), v.begin(), [](BoidState b) {
+  std::transform(v.begin(), v.end(), v.begin(), [](BoidState b) {
     if (b.x <= 0.) {
       b.x = 1179.;
-      b.y = b.y;
-      b.v_x = b.v_x;
-      b.v_y = b.v_y;
+
     } else if (b.x >= 1179.) {
       b.x = 0.;
-      b.y = b.y;
-      b.v_x = b.v_x;
-      b.v_y = b.v_y;
-    } 
+    }
     if (b.y <= 0.) {
-      b.x = b.x;
       b.y = 691.;
-      b.v_x = b.v_x;
-      b.v_y = b.v_y;
+
     } else if (b.y >= 691.) {
-      b.x = b.x;
       b.y = 0.;
-      b.v_x = b.v_x;
-      b.v_y = b.v_y;
     }
 
     return BoidState{b.x, b.y, b.v_x, b.v_y};
-  });  // c'è errore qua -> se si sistema dovrebbe andareù
+  });
   return v;
 }
 
@@ -234,7 +223,7 @@ void Boids::evolution(double const delta_t) {
   for (auto fish : boids_) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
     fishes.push_back(b.singleboid(nearfishes, fish, delta_t));
-     borders(fishes);
+    borders(fishes);
   }
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
@@ -278,33 +267,7 @@ void state(Boids& b, double const delta_t) {
   auto std_dev_velocity =
       std::sqrt(sums_vel2_medio - mean_velocity * mean_velocity);
 
-  /*auto sum = std::accumulate(
-    vec.begin(), vec.end(),
-    BoidState{0.0, 0.0, 0.0,
-              0.0}); */ // forse da ripensare come distanza tra boids
-  /* Components mean_pos{sum.x / size(vec), sum.y / size(vec)};
-   Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
-  auto mean_velocity = std::sqrt(mean_vel.val_x * mean_vel.val_x +
-                                 mean_vel.val_y * mean_vel.val_y);
-  auto products =
-      std::inner_product(vec.begin(), vec.end(), vec.begin(),
-                         BoidState{0.0, 0.0, 0.0, 0.0});  // somma dei quadrati
-  auto variance = products * (1 / size(vec)) -
-                  sum * (1 / size(vec)) * sum * (1 / size(vec));
-
-  assert((mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) !=
-             0 &&
-         (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) !=
-             0);
-
-  auto std_dev_position = std::sqrt(
-      (mean_pos.val_x * mean_pos.val_x) /
-      (mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) *
-      (variance.x * variance.x + variance.y * variance.y) / size(vec));
-  auto std_dev_velocity = std::sqrt(
-      (mean_vel.val_x * mean_vel.val_x) /
-      (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) *
-      (variance.x * variance.x + variance.y * variance.y) / size(vec));*/
+  
 
   std::cout << '\n'
             << "Mean position and standard deviation: " << mean_position
