@@ -6,7 +6,6 @@
 #include <limits>
 #include <numeric>
 
-
 BoidState& BoidState::operator+=(BoidState const& other) {
   x += other.x;
   y += other.y;
@@ -63,6 +62,12 @@ BoidState operator*(BoidState const& b1, BoidState const& b2) {
 double norm(BoidState const& b1, BoidState const& b2) {
   auto result = (b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y);
   assert(!(result < 0));
+  return std::sqrt(result);
+}
+
+double velocity_norm(BoidState const& b) {
+  auto result = (b.v_x * b.v_x + b.v_y * b.v_y);
+  ;
   return std::sqrt(result);
 }
 
@@ -192,6 +197,43 @@ void Boids::push_back(BoidState const& boid) {
   }
 }
 
+std::vector<BoidState> velocity_limit_(std::vector<BoidState>& b) {
+  std::transform(b.begin(), b.end(), b.begin(), [](BoidState b_) {
+    if(b_.v_x < 250 && b_.v_x > 0){
+      b_.v_x = 250;
+    }
+    if(b_.v_y < 250 && b_.v_y > 0){
+      b_.v_y = 250;
+    }
+    if(b_.v_x > -250 && b_.v_x < 0){
+      b_.v_x = -250;
+    }
+    if(b_.v_y > -250 && b_.v_y < 0){
+      b_.v_y = -250;
+    }  
+    return BoidState{b_.x, b_.y, b_.v_x, b_.v_y};
+  });
+  return b;
+}
+
+std::vector<BoidState> borders(std::vector<BoidState>& v) {
+  std::transform(v.begin(), v.end(), v.begin(), [](BoidState b) {
+    if (b.x <= 0.) {
+      b.x = 1179.;
+    } else if (b.x >= 1179.) {
+      b.x = 0.;
+    }
+    if (b.y <= 0.) {
+      b.y = 691.;
+    } else if (b.y >= 691.) {
+      b.y = 0.;
+    }
+    assert(b.x >= 0. && b.x <= 1179. && b.y >= 0. && b.y <= 691.);
+    return BoidState{b.x, b.y, b.v_x, b.v_y};
+  });
+  return v;
+}
+
 void Boids::evolution(double const delta_t) {
   Boids b{n(), d(), s(), a(), c()};
   std::vector<BoidState> fishes;
@@ -199,6 +241,9 @@ void Boids::evolution(double const delta_t) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
     fishes.push_back(b.singleboid(nearfishes, fish, delta_t));
   }
+
+  borders(fishes);
+  velocity_limit_(fishes);
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
 }
@@ -210,57 +255,43 @@ void Boids::setvector(std::vector<BoidState> const& b) {  // prova
 void state(Boids& b, double const delta_t) {
   b.evolution(delta_t);
   auto vec = b.TotalBoids();
-  auto sum = std::accumulate(
-      vec.begin(), vec.end(),
-      BoidState{0.0, 0.0, 0.0,
-                0.0});  // forse da ripensare come distanza tra boids
-  Components mean_pos{sum.x / size(vec), sum.y / size(vec)};
+
+  std::vector<double> position;
+  std::vector<double> velocity;
+
+  auto it = vec.begin();
+
+  for (; it != vec.end(); ++it) {
+    auto it_2 = std::next(it);
+    for (; it_2 != vec.end(); ++it_2) {
+      position.push_back(norm(*it, *it_2));
+      ;
+    }
+  }
+  auto mean_position = (std::accumulate(position.begin(), position.end(), 0.)) /
+                       static_cast<int>(position.size());
+
+  auto sums_pos2_medio = (std::inner_product(position.begin(), position.end(),
+                                             position.begin(), 0.)) /
+                         static_cast<int>(position.size());
+  auto std_dev_position =
+      std::sqrt(sums_pos2_medio - mean_position * mean_position);
+
+  auto sum =
+      std::accumulate(vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
   Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
 
-  auto mean_position =
-      std::sqrt(mean_pos.val_x * mean_pos.val_x +  // aspettare confronto
-                mean_pos.val_y * mean_pos.val_y);
+  for (auto i : vec) {
+    velocity.push_back(velocity_norm(i));
+  }
   auto mean_velocity = std::sqrt(mean_vel.val_x * mean_vel.val_x +
                                  mean_vel.val_y * mean_vel.val_y);
-  auto products =
-      std::inner_product(vec.begin(), vec.end(), vec.begin(),
-                         BoidState{0.0, 0.0, 0.0, 0.0});  // somma dei quadrati
-  auto variance = products * (1 / size(vec)) -
-                  sum * (1 / size(vec)) * sum * (1 / size(vec));
 
-  assert((mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) !=
-             0 &&
-         (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) !=
-             0);
-
-  auto std_dev_position = std::sqrt(
-      (mean_pos.val_x * mean_pos.val_x) /
-      (mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) *
-      (variance.x * variance.x + variance.y * variance.y) / size(vec));
-  auto std_dev_velocity = std::sqrt(
-      (mean_vel.val_x * mean_vel.val_x) /
-      (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) *
-      (variance.x * variance.x + variance.y * variance.y) / size(vec));
-
-  /* double somma_x;
-  double somma_y;
-  double somma_v_x;
-  double somma_v_y;
-  auto it=vec.begin();
-  for (; it != vec.end(); ++it) {
-    somma_x += (vec.begin()->x - mean_pos.val_x);
-    somma_y += (vec.begin()->y - mean_pos.val_y);
-    somma_v_x += (vec.begin()->v_x - mean_vel.val_x);
-    somma_v_y += (vec.begin()->v_y - mean_vel.val_y);
-  }
-  auto std_dev_x = std::sqrt(somma_x * somma_x / size(vec));
-  auto std_dev_y = std::sqrt(somma_y * somma_y / size(vec));
-  auto std_dev_position = //non si dovrebbe propagare in quadratura?
-      std::sqrt(std_dev_x * std_dev_x + std_dev_y * std_dev_y);
-  auto std_dev_v_x = std::sqrt(somma_v_x * somma_v_x / size(vec));
-  auto std_dev_v_y = std::sqrt(somma_v_y * somma_v_y / size(vec));
+  auto sums_vel2_medio = (std::inner_product(velocity.begin(), velocity.end(),
+                                             velocity.begin(), 0.)) /
+                         static_cast<int>(velocity.size());
   auto std_dev_velocity =
-      std::sqrt(std_dev_v_x * std_dev_v_x + std_dev_v_y * std_dev_v_y); */
+      std::sqrt(sums_vel2_medio - mean_velocity * mean_velocity);
 
   std::cout << '\n'
             << "Mean position and standard deviation: " << mean_position

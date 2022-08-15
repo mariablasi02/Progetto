@@ -1,6 +1,7 @@
 #ifndef BOIDS_HPP
 #define BOIDS_HPP
 
+#include <algorithm>
 #include <cassert>
 #include <stdexcept>
 #include <vector>
@@ -65,7 +66,8 @@ class SeparationRule {
 
  public:
   SeparationRule(double const s, double d_s) : s_{s}, distance_s_{d_s} {}
-  Components operator()(std::vector<BoidState> const& b, BoidState const& b1) const;
+  Components operator()(std::vector<BoidState> const& b,
+                        BoidState const& b1) const;
 };
 
 bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c);
@@ -101,6 +103,8 @@ class CohesionRule {
 bool same_pos_check(BoidState const& b1, std::vector<BoidState> boids);
 
 void same_position(BoidState const& b1, std::vector<BoidState> boids);
+
+std::vector<BoidState> borders(std::vector<BoidState>& v); // è una prova la definizione è in boids.cpp non si muovono come dico io il problema è il commento nel main-> modificato anche evolve 
 
 class Boids {
   int const n_;

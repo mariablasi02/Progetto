@@ -24,7 +24,7 @@ int main() {
   std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> pos_x(0,1179);
   std::uniform_real_distribution<double> pos_y(0, 690);
-  std::uniform_real_distribution<double> speed(-80, 80);
+  std::uniform_real_distribution<double> speed(-100, 100);
 
   std::cout << "Insert number of boids (at least 2): " << '\n';
   int n;
@@ -41,12 +41,8 @@ int main() {
   double c;
 
   std::cin >> s >> a >> c;
-  if(std::cin.fail()|| a>1){
-    std::cerr << "Invalid number\n";
-    return EXIT_FAILURE;
-  }
-
-  Boids boids{n, 20., SeparationRule{s, 20. / 10.}, AllignmentRule{a},
+  
+  Boids boids{n, 400., SeparationRule{s, 250.}, AllignmentRule{a},
             CohesionRule{c}};
 
   auto vec_boids = boids.TotalBoids();
@@ -71,7 +67,7 @@ int main() {
 
  
 
-  sf::RenderWindow window(sf::VideoMode(1179, 691), "sperem");
+  sf::RenderWindow window(sf::VideoMode(1179, 691), "Sea");
   window.setFramerateLimit(fps);
   sf::Texture texture;
   if (!texture.loadFromFile("sfondomare.png")) {
@@ -86,7 +82,7 @@ int main() {
 
   triangle.setFillColor(sf::Color(245, 152, 66));
 
-  while (window.isOpen()) {
+  while (window.isOpen())  {
     sf::Event event;
 
     while (window.pollEvent(event)) {

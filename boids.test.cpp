@@ -101,12 +101,12 @@ TEST_CASE("Testing operators") {
 }
 
 /*TEST_CASE("n <= 1") {
-  BoidState b1{0., 1., 2., 3.};     //se scommentiamo l'eccezione su size funziona
-  std::vector<BoidState> b{b1};
-  CHECK_THROWS_AS(size(b), std::runtime_error);
+  BoidState b1{0., 1., 2., 3.};     //se scommentiamo l'eccezione su size
+funziona std::vector<BoidState> b{b1}; CHECK_THROWS_AS(size(b),
+std::runtime_error);
 }*/
 
-TEST_CASE("already the boid in the group") {
+TEST_CASE("Boid already in the group") {
   BoidState b1{1., 2., 3., 4.};
   BoidState b2{2., 3., 4., 5.};
   BoidState b3{1., 4., 3., -1.};
@@ -161,10 +161,36 @@ TEST_CASE("Testing Separation rule") {
     CHECK(sr(a, b1).val_x == doctest::Approx(1.4));
     CHECK(sr(a, b1).val_y == doctest::Approx(1.4));
   }
+  SUBCASE("Testing a negative separation constant") {
+    BoidState b1{2., 1., 2., 3.};
+    BoidState b2{0., 3., 5., 1.};
+    BoidState b3{2., 3., -2., 3.};
+    std::vector<BoidState> v{b1, b2, b3};
+    SeparationRule sr{-0.7, 3.0};
+    CHECK(sr(v, b1).val_x == doctest::Approx(1.4));
+    CHECK(sr(v, b1).val_y == doctest::Approx(-2.8));
+    CHECK(sr(v, b2).val_x == doctest::Approx(-2.8));
+    CHECK(sr(v, b2).val_y == doctest::Approx(1.4));
+  }
+  SUBCASE("Testing as separation constant is zero") {
+    BoidState b1{4., 1., 2., 3.};
+    BoidState b2{1., 3., 5., 1.};
+    BoidState b3{2., 2., -2., 3.};
+    std::vector<BoidState> v{b1, b2, b3};
+    SeparationRule sr{0.0, 3.7};
+    CHECK(sr(v, b1).val_x == doctest::Approx(0.0));
+    CHECK(sr(v, b1).val_y == doctest::Approx(0.0));
+    CHECK(sr(v, b2).val_x == doctest::Approx(0.0));
+    CHECK(sr(v, b2).val_y == doctest::Approx(0.0));
+    CHECK(sr(v, b3).val_x == doctest::Approx(0.0));
+    CHECK(sr(v, b3).val_y == doctest::Approx(0.0));
+  }
 }
 
 TEST_CASE("Testing alignment rule") {
   SUBCASE("General tests") {
+    // It is a choice to have all four boids in the same position: the formula
+    // of this rule depends only on the velocity of the boids.
     BoidState b1 = {0., 0., 2., 3.};
     BoidState b2 = {0., 0., 5., 1.};
     BoidState b3 = {0., 0., -2., 3.};
@@ -178,8 +204,30 @@ TEST_CASE("Testing alignment rule") {
     CHECK(ar(vec, b_).val_x == 0.);
     CHECK(ar(vec, b_).val_y == 0.);
   }
-  SUBCASE("a greater than 1") {
+  SUBCASE("Negative allignment constant") {
+    BoidState b1 = {0., 0., 1., -4.};
+    BoidState b2 = {0., 0., -5., 1.};
+    BoidState b3 = {0., 0., -2., 3.};
+    BoidState b4 = {0., 0., 1., -1};
+    std::vector<BoidState> vec{b1, b2, b3, b4};
+    AllignmentRule ar{-2.0};
+    CHECK(ar(vec, b1).val_x == doctest::Approx(6.0).epsilon(0.01));
+    CHECK(ar(vec, b1).val_y == doctest::Approx(-10.0).epsilon(0.01));
+  }
+  SUBCASE("Allignment constant as zero") {
+    BoidState b1 = {0., 0., 1., -4.};
+    BoidState b2 = {0., 0., -5., 1.};
+    BoidState b3 = {0., 0., -2., 3.};
+    BoidState b4 = {0., 0., 1., -1};
+    std::vector<BoidState> vec{b1, b2, b3, b4};
+    AllignmentRule ar{0.0};
+    CHECK(ar(vec, b1).val_x == doctest::Approx(0.0).epsilon(0.01));
+    CHECK(ar(vec, b1).val_y == doctest::Approx(0.0).epsilon(0.01));
+  }
+
+  SUBCASE("Allignment constant greater than 1") {
     CHECK_THROWS(AllignmentRule{1.2});
+    CHECK_THROWS(AllignmentRule{5.9});
     CHECK_THROWS_AS(AllignmentRule{3.2}, std::runtime_error);
   }
   SUBCASE("Trying to break the code") {
@@ -188,7 +236,7 @@ TEST_CASE("Testing alignment rule") {
   }
 }
 
-TEST_CASE("Testing Cohesion rule") {
+TEST_CASE("Testing function COM") {
   SUBCASE("Testing function COM") {
     BoidState b1{1., 2., 3., 4.};
     BoidState b2{2., 3., 4., 5.};
@@ -201,7 +249,22 @@ TEST_CASE("Testing Cohesion rule") {
     CHECK(COM(vec, b2) == Components{0.0, 3.5});
     CHECK(COM(vec, b2).val_y == 3.5);
   }
+  SUBCASE("Testing with a empty vector") {
+    BoidState b1{2., 3., 6., 1.5};
+    std::vector<BoidState> v1{};
+    CHECK(COM(v1, b1).val_x == 2.0);
+    CHECK(COM(v1, b1).val_y == 3.0);
+  }
 
+  SUBCASE("Testing with a single boid") {
+    BoidState b1{2.7, 3.9, 6.1, 1.5};
+    std::vector<BoidState> v1{b1};
+    CHECK(COM(v1, b1).val_x == 2.7);
+    CHECK(COM(v1, b1).val_y == 3.9);
+  }
+}
+
+TEST_CASE("Testing Cohesion rule") {
   SUBCASE("Testing with a vector of three") {
     CohesionRule c1{4.};
     BoidState b1{1., 2., 3., 4.};
@@ -223,6 +286,35 @@ TEST_CASE("Testing Cohesion rule") {
     CHECK(c1(v1, b1).val_x == doctest::Approx(-0.67).epsilon(0.01));
     CHECK(c1(v1, b1).val_y == doctest::Approx(-1.67).epsilon(0.01));
   }
+
+SUBCASE("Teting with negative cohesion constant"){
+  CohesionRule c1{-1.7};
+    BoidState b1{1.3, 2., 3.6, 4.};
+    BoidState b2{2., 3., 4., 5.};
+    BoidState b3{-1., -1.3, -1., -1.7};
+    BoidState b4{0., -1., 3., -2.};
+    std::vector<BoidState> v1{b1, b2, b3, b4};
+    CHECK(c1(v1, b1).val_x == doctest::Approx(1.64).epsilon(0.01));
+    CHECK(c1(v1, b1).val_y == doctest::Approx(3.00).epsilon(0.01));
+    CHECK(c1(v1, b2).val_x == doctest::Approx(3.23).epsilon(0.01));
+    CHECK(c1(v1, b2).val_y == doctest::Approx(5.27).epsilon(0.01));
+    CHECK(c1(v1, b3).val_x == doctest::Approx(-3.57).epsilon(0.01));
+    CHECK(c1(v1, b3).val_y == doctest::Approx(-4.47661).epsilon(0.01));
+    CHECK(c1(v1, b4).val_x == doctest::Approx(-1.30).epsilon(0.01));
+    CHECK(c1(v1, b4).val_y == doctest::Approx(-3.79667).epsilon(0.01));
+}
+SUBCASE("Cohesion constant as zero"){
+CohesionRule c1{0.0};
+    BoidState b1{1., 2., 3.5, 4.};
+    BoidState b2{2.6, 3., 4., 5.4};
+    BoidState b3{-1., -1., -1., -1.};
+    BoidState b4{0.9, -1., 3., -2.};
+    std::vector<BoidState> v1{b1, b2, b3, b4};
+    CHECK(c1(v1, b1).val_x == doctest::Approx(0.0).epsilon(0.01));
+    CHECK(c1(v1, b1).val_y == doctest::Approx(0.0).epsilon(0.01));
+}
+
+
 }
 
 TEST_CASE("Testing Neighbor-Control function") {
@@ -261,25 +353,48 @@ TEST_CASE("Testing singleboid function") {
 }
 
 TEST_CASE("Testing evolution function") {
-  BoidState b1{2., 3., 4., 2.};
-  BoidState b2{6., 1., -1, 1.};
-  BoidState b3{4., 3., 4., 1.};
-  SeparationRule s{5., 3.};
-  AllignmentRule a{0.5};
-  CohesionRule c{3.};
-  // std::vector<BoidState> vec{b1, b2, b3};
-  Boids bb{3, 6., s, a, c};
-  bb.push_back(b1);
-  bb.push_back(b2);
-  bb.push_back(b3);
-  CHECK(bb.TotalBoids().size() == 3);
-  auto b_new = bb.singleboid(bb.TotalBoids(), b1, 0.5);
-  CHECK(b_new.v_x == 21.75);
-  bb.evolution(0.5);
-  CHECK((bb.TotalBoids())[0].x == 12.875);
-  CHECK((bb.TotalBoids())[0].y == 2.25);
-  CHECK((bb.TotalBoids())[0].v_x == 21.75);
-  CHECK((bb.TotalBoids())[0].v_y == -1.5);
+  SUBCASE("Testing everything without borders") {
+    BoidState b1{2., 3., 4., 2.};
+    BoidState b2{6., 1., -1, 1.};
+    BoidState b3{4., 3., 4., 1.};
+    SeparationRule s{5., 3.};
+    AllignmentRule a{0.5};
+    CohesionRule c{3.};
+    // std::vector<BoidState> vec{b1, b2, b3};
+    Boids bb{3, 6., s, a, c};
+    bb.push_back(b1);
+    bb.push_back(b2);
+    bb.push_back(b3);
+    CHECK(bb.TotalBoids().size() == 3);
+    auto b_new = bb.singleboid(bb.TotalBoids(), b1, 0.5);
+    CHECK(b_new.v_x == 21.75);
+    bb.evolution(0.5);
+    CHECK((bb.TotalBoids())[0].x == 12.875);
+    CHECK((bb.TotalBoids())[0].y == 2.25);
+    CHECK((bb.TotalBoids())[0].v_x == 21.75);
+    CHECK((bb.TotalBoids())[0].v_y == -1.5);
+  }
+  SUBCASE("Testing borders") {
+    BoidState b1{1179., 3., 4., 2.};
+    BoidState b2{-4.3, 700., 1., 3.};
+    BoidState b3{3, 700., 1., 3.};
+    BoidState b4{2., -4.1, 1., 3.};
+    SeparationRule s{0., 3.};
+    AllignmentRule a{0.};
+    CohesionRule c{0.};
+    // std::vector<BoidState> vec{b1, b2, b3};
+    Boids bb{3, 6., s, a, c};
+    bb.push_back(b1);
+    bb.push_back(b2);
+    bb.push_back(b3);
+    bb.push_back(b4);
+    CHECK(bb.TotalBoids().size() == 4);
+    bb.evolution(0.5);
+    CHECK((bb.TotalBoids())[0].x == 0.);
+    CHECK((bb.TotalBoids())[1].x == 1179.);
+    CHECK((bb.TotalBoids())[2].y == 0.);
+    CHECK((bb.TotalBoids())[3].y == 691.);
+  }
 }
 
 TEST_CASE("Testing Boids with the same position") {
@@ -295,19 +410,7 @@ TEST_CASE("Testing Boids with the same position") {
 }
 
 /*TEST_CASE("Testing mean and std dev") {
-  SUBCASE("Testing mean_position") {}
-  SUBCASE("Testing mean_velocity") {
-    BoidState b1{2., 3., 4., 2.};
-    BoidState b2{6., 1., -1, 1.};
-    BoidState b3{4., 3., 4., 1.};
-    SeparationRule s{5., 3.};
-    AllignmentRule a{0.5};
-    CohesionRule c{3.};
-    Boids boids{3, 6., s, a, c};
-    state(boids, 0.5);
-    // CHECK( :( )== 2, 68);}
-
-  SUBCASE("Testing std_dev_position") {}
-  SUBCASE("Testing std_dev_velocity") {}
-}
-}*/
+    SUBCASE("Testing std_dev_position") {}
+    SUBCASE("Testing std_dev_velocity") {}
+  }
+ */
