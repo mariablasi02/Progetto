@@ -104,7 +104,7 @@ bool same_pos_check(BoidState const& b1, std::vector<BoidState> boids);
 
 void same_position(BoidState const& b1, std::vector<BoidState> boids);
 
-void borders(std::vector<BoidState>& v); // è una prova la definizione è in boids.cpp non si muovono come dico io il problema è il commento nel main-> modificato anche evolve 
+std::vector<BoidState> borders(std::vector<BoidState>& v); // è una prova la definizione è in boids.cpp non si muovono come dico io il problema è il commento nel main-> modificato anche evolve 
 
 class Boids {
   int const n_;
