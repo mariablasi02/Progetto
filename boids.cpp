@@ -6,7 +6,6 @@
 #include <limits>
 #include <numeric>
 
-
 BoidState& BoidState::operator+=(BoidState const& other) {
   x += other.x;
   y += other.y;
@@ -192,12 +191,40 @@ void Boids::push_back(BoidState const& boid) {
   }
 }
 
+void borders(std::vector<BoidState>& v) {
+  std::for_each(v.begin(), v.end(), [](BoidState b) {
+    if (b.x <= 0.) {
+      b.x = 1179.;
+      b.y = b.y;
+      b.v_x = b.v_x;
+      b.v_y = b.v_y;
+    } else if (b.x >= 1179.) {
+      b.x = 0.;
+      b.y = b.y;
+      b.v_x = b.v_x;
+      b.v_y = b.v_y;
+    }
+    if (b.y <= 0.) {
+      b.x = b.x;
+      b.y = 691.;
+      b.v_x = b.v_x;
+      b.v_y = b.v_y;
+    } else if (b.y >= 691.) {
+      b.x = b.x;
+      b.y = 0.;
+      b.v_x = b.v_x;
+      b.v_y = b.v_y;
+    }
+  }); //c'è errore qua -> se si sistema dovrebbe andare 
+}
+
 void Boids::evolution(double const delta_t) {
   Boids b{n(), d(), s(), a(), c()};
   std::vector<BoidState> fishes;
   for (auto fish : boids_) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
     fishes.push_back(b.singleboid(nearfishes, fish, delta_t));
+    //borders(fishes);
   }
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
@@ -220,9 +247,9 @@ void state(Boids& b, double const delta_t) {
   std::vector<double> somme;
   auto it = vec.begin();
 
-  for ( ; it != vec.end(); ++it) {
+  for (; it != vec.end(); ++it) {
     auto it_2 = std::next(it);
-      for (; it_2 != vec.end(); ++it_2) {
+    for (; it_2 != vec.end(); ++it_2) {
       somme.push_back(norm(*it, *it_2));
     }
   }
@@ -254,17 +281,15 @@ void state(Boids& b, double const delta_t) {
       (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) *
       (variance.x * variance.x + variance.y * variance.y) / size(vec));
 
-
- /* std::vector<double> sums;
- auto it = vec.begin();
- auto it2 = vec.begin();
-    for (; it2 != vec.end(); ++it2){
- for (auto i : vec){
-        sums.push_back(norm(i, *it2));
-    }
-    //++it;
- } */
-
+  /* std::vector<double> sums;
+  auto it = vec.begin();
+  auto it2 = vec.begin();
+     for (; it2 != vec.end(); ++it2){
+  for (auto i : vec){
+         sums.push_back(norm(i, *it2));
+     }
+     //++it;
+  } */
 
   /* double somma_x;
   double somma_y;
