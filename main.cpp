@@ -45,7 +45,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  Boids boids{n, 20., SeparationRule{s, 20. / 10.}, AllignmentRule{a},
+  Boids boids{n, 10., SeparationRule{s, 20. / 100.}, AllignmentRule{a},
               CohesionRule{c}};
 
   auto vec_boids = boids.TotalBoids();

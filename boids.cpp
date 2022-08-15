@@ -201,29 +201,17 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
   std::transform(v.begin(), v.end(), v.begin(), [](BoidState b) {
     if (b.x <= 0.) {
       b.x = 1179.;
-      b.y = b.y;
-      b.v_x = b.v_x;
-      b.v_y = b.v_y;
     } else if (b.x >= 1179.) {
       b.x = 0.;
-      b.y = b.y;
-      b.v_x = b.v_x;
-      b.v_y = b.v_y;
     }
     if (b.y <= 0.) {
-      b.x = b.x;
       b.y = 691.;
-      b.v_x = b.v_x;
-      b.v_y = b.v_y;
     } else if (b.y >= 691.) {
-      b.x = b.x;
       b.y = 0.;
-      b.v_x = b.v_x;
-      b.v_y = b.v_y;
     }
     assert(b.x >= 0. && b.x <= 1179. && b.y >= 0. && b.y <= 691.);
     return BoidState{b.x, b.y, b.v_x, b.v_y};
-  });  // c'è errore qua -> se si sistema dovrebbe andareù
+  });
   return v;
 }
 
@@ -234,6 +222,7 @@ void Boids::evolution(double const delta_t) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
     fishes.push_back(b.singleboid(nearfishes, fish, delta_t));
   }
+
   borders(fishes);
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
