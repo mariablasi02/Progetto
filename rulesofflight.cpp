@@ -56,8 +56,8 @@ Components AllignmentRule::operator()(std::vector<BoidState> boids,
 Components COM(std::vector<BoidState> const& vec, BoidState const& b1) {
   BoidState sum =
       std::accumulate(vec.begin(), vec.end(), BoidState{0., 0., 0., 0.}) - b1;
-
   if ((size(vec)) > 1) {
+
     double den = (static_cast<double>(size(vec)) - 1.);
 
     return {sum.x / den, sum.y / den};
