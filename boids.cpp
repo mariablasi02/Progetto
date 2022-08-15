@@ -65,9 +65,9 @@ double norm(BoidState const& b1, BoidState const& b2) {
   return std::sqrt(result);
 }
 
-double velocity_norm(BoidState const& b1, BoidState const& b2) {
-  auto result = (b1.v_x - b2.v_x) * (b1.v_x - b2.v_x) +
-                (b1.v_y - b2.v_y) * (b1.v_y - b2.v_y);
+double velocity_norm(BoidState const& b) {
+  auto result = (b.v_x * b.v_x +
+                                 b.v_y * b.v_y);;
   return std::sqrt(result);
 }
 
@@ -224,8 +224,7 @@ void state(Boids& b, double const delta_t) {
   for (; it != vec.end(); ++it) {
     auto it_2 = std::next(it);
     for (; it_2 != vec.end(); ++it_2) {
-      position.push_back(norm(*it, *it_2));
-      velocity.push_back(velocity_norm(*it, *it_2));
+      position.push_back(norm(*it, *it_2));;
     }
   }
   auto mean_position = (std::accumulate(position.begin(), position.end(), 0.)) /
@@ -236,47 +235,20 @@ void state(Boids& b, double const delta_t) {
                          static_cast<int>(position.size());
   auto std_dev_position =
       std::sqrt(sums_pos2_medio - mean_position * mean_position);
+  
+  auto sum = std::accumulate( vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
+  Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
+  
+  for(auto i : vec){
+   velocity.push_back(velocity_norm(i)); 
+  }
+  auto mean_velocity = std::sqrt(mean_vel.val_x * mean_vel.val_x +
+                                 mean_vel.val_y * mean_vel.val_y);
 
-  auto mean_velocity = (std::accumulate(velocity.begin(), velocity.end(), 0.)) /
-                       static_cast<int>(velocity.size());
-
-  auto sums_vel2_medio = (std::inner_product(velocity.begin(), velocity.end(),
-                                             velocity.begin(), 0.)) /
-                         static_cast<int>(velocity.size());
+  auto sums_vel2_medio =(std::inner_product(velocity.begin(), velocity.end(), velocity.begin(), 0.))/ static_cast<int>(velocity.size());
   auto std_dev_velocity =
       std::sqrt(sums_vel2_medio - mean_velocity * mean_velocity);
 
-  /*auto sum = std::accumulate(
-    vec.begin(), vec.end(),
-    BoidState{0.0, 0.0, 0.0,
-              0.0}); */ // forse da ripensare come distanza tra boids
-  /* Components mean_pos{sum.x / size(vec), sum.y / size(vec)};
-   Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
-  auto mean_velocity = std::sqrt(mean_vel.val_x * mean_vel.val_x +
-                                 mean_vel.val_y * mean_vel.val_y);
-  auto products =
-      std::inner_product(vec.begin(), vec.end(), vec.begin(),
-                         BoidState{0.0, 0.0, 0.0, 0.0});  // somma dei quadrati
-  auto variance = products * (1 / size(vec)) -
-                  sum * (1 / size(vec)) * sum * (1 / size(vec));
-
-  assert((mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) !=
-             0 &&
-         (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) !=
-             0);
-
-  auto std_dev_position = std::sqrt(
-      (mean_pos.val_x * mean_pos.val_x) /
-      (mean_pos.val_x * mean_pos.val_x + mean_pos.val_y * mean_pos.val_y) *
-      (variance.x * variance.x + variance.y * variance.y) / size(vec));
-  auto std_dev_velocity = std::sqrt(
-      (mean_vel.val_x * mean_vel.val_x) /
-      (mean_vel.val_x * mean_vel.val_x + mean_vel.val_y * mean_vel.val_y) *
-      (variance.x * variance.x + variance.y * variance.y) / size(vec));*/
-
-  /* auto mean_position =
-       std::sqrt(mean_pos.val_x * mean_pos.val_x +  // aspettare confronto
-                 mean_pos.val_y * mean_pos.val_y);*/
 
   std::cout << '\n'
             << "Mean position and standard deviation: " << mean_position
