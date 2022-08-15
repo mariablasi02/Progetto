@@ -66,8 +66,8 @@ double norm(BoidState const& b1, BoidState const& b2) {
 }
 
 double velocity_norm(BoidState const& b) {
-  auto result = (b.v_x * b.v_x +
-                                 b.v_y * b.v_y);;
+  auto result = (b.v_x * b.v_x + b.v_y * b.v_y);
+  ;
   return std::sqrt(result);
 }
 
@@ -198,8 +198,7 @@ void Boids::push_back(BoidState const& boid) {
 }
 
 std::vector<BoidState> borders(std::vector<BoidState>& v) {
-  
- std::transform(v.begin(), v.end(), v.begin(), [](BoidState b) {
+  std::transform(v.begin(), v.end(), v.begin(), [](BoidState b) {
     if (b.x <= 0.) {
       b.x = 1179.;
       b.y = b.y;
@@ -210,7 +209,7 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
       b.y = b.y;
       b.v_x = b.v_x;
       b.v_y = b.v_y;
-    } 
+    }
     if (b.y <= 0.) {
       b.x = b.x;
       b.y = 691.;
@@ -222,7 +221,7 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
       b.v_x = b.v_x;
       b.v_y = b.v_y;
     }
-
+    assert(b.x >= 0. && b.x <= 1179. && b.y >= 0. && b.y <= 691.);
     return BoidState{b.x, b.y, b.v_x, b.v_y};
   });  // c'è errore qua -> se si sistema dovrebbe andareù
   return v;
@@ -234,8 +233,8 @@ void Boids::evolution(double const delta_t) {
   for (auto fish : boids_) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
     fishes.push_back(b.singleboid(nearfishes, fish, delta_t));
-     borders(fishes);
   }
+  borders(fishes);
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
 }
@@ -256,7 +255,8 @@ void state(Boids& b, double const delta_t) {
   for (; it != vec.end(); ++it) {
     auto it_2 = std::next(it);
     for (; it_2 != vec.end(); ++it_2) {
-      position.push_back(norm(*it, *it_2));;
+      position.push_back(norm(*it, *it_2));
+      ;
     }
   }
   auto mean_position = (std::accumulate(position.begin(), position.end(), 0.)) /
@@ -267,20 +267,22 @@ void state(Boids& b, double const delta_t) {
                          static_cast<int>(position.size());
   auto std_dev_position =
       std::sqrt(sums_pos2_medio - mean_position * mean_position);
-  
-  auto sum = std::accumulate( vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
+
+  auto sum =
+      std::accumulate(vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
   Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
-  
-  for(auto i : vec){
-   velocity.push_back(velocity_norm(i)); 
+
+  for (auto i : vec) {
+    velocity.push_back(velocity_norm(i));
   }
   auto mean_velocity = std::sqrt(mean_vel.val_x * mean_vel.val_x +
                                  mean_vel.val_y * mean_vel.val_y);
 
-  auto sums_vel2_medio =(std::inner_product(velocity.begin(), velocity.end(), velocity.begin(), 0.))/ static_cast<int>(velocity.size());
+  auto sums_vel2_medio = (std::inner_product(velocity.begin(), velocity.end(),
+                                             velocity.begin(), 0.)) /
+                         static_cast<int>(velocity.size());
   auto std_dev_velocity =
       std::sqrt(sums_vel2_medio - mean_velocity * mean_velocity);
-
 
   std::cout << '\n'
             << "Mean position and standard deviation: " << mean_position

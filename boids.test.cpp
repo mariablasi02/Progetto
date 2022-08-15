@@ -284,8 +284,9 @@ TEST_CASE("Testing evolution function") {
   }
   SUBCASE("Testing borders"){
     BoidState b1{1179., 3., 4., 2.};
-    BoidState b2{6., 1., -1, 1.};
-    BoidState b3{4., 3., 4., 1.};
+    BoidState b2{-4.3, 700., 1., 3.};
+    BoidState b3{3, 700., 1., 3.};
+    BoidState b4 {2.,-4.1, 1., 3.};
     SeparationRule s{0., 3.};
     AllignmentRule a{0.};
     CohesionRule c{0.};
@@ -294,14 +295,13 @@ TEST_CASE("Testing evolution function") {
     bb.push_back(b1);
     bb.push_back(b2);
     bb.push_back(b3);
-    CHECK(bb.TotalBoids().size() == 3);
-    auto b_new = bb.singleboid(bb.TotalBoids(), b1, 0.5);
-    CHECK(b_new.v_x == 4.);
+    bb.push_back(b4);
+    CHECK(bb.TotalBoids().size() == 4);
     bb.evolution(0.5);
     CHECK((bb.TotalBoids())[0].x == 0.);
-    //CHECK((bb.TotalBoids())[0].y == 2.25);
-    //CHECK((bb.TotalBoids())[0].v_x == 21.75);
-    //CHECK((bb.TotalBoids())[0].v_y == -1.5);
+    CHECK((bb.TotalBoids())[1].x == 1179.);
+    CHECK((bb.TotalBoids())[2].y== 0.);
+    CHECK((bb.TotalBoids())[3].y == 691.);
   }
 }
 
