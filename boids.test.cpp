@@ -101,9 +101,9 @@ TEST_CASE("Testing operators") {
 }
 
 /*TEST_CASE("n <= 1") {
-  BoidState b1{0., 1., 2., 3.};     //se scommentiamo l'eccezione su size funziona
-  std::vector<BoidState> b{b1};
-  CHECK_THROWS_AS(size(b), std::runtime_error);
+  BoidState b1{0., 1., 2., 3.};     //se scommentiamo l'eccezione su size
+funziona std::vector<BoidState> b{b1}; CHECK_THROWS_AS(size(b),
+std::runtime_error);
 }*/
 
 TEST_CASE("already the boid in the group") {
@@ -261,25 +261,48 @@ TEST_CASE("Testing singleboid function") {
 }
 
 TEST_CASE("Testing evolution function") {
-  BoidState b1{2., 3., 4., 2.};
-  BoidState b2{6., 1., -1, 1.};
-  BoidState b3{4., 3., 4., 1.};
-  SeparationRule s{5., 3.};
-  AllignmentRule a{0.5};
-  CohesionRule c{3.};
-  // std::vector<BoidState> vec{b1, b2, b3};
-  Boids bb{3, 6., s, a, c};
-  bb.push_back(b1);
-  bb.push_back(b2);
-  bb.push_back(b3);
-  CHECK(bb.TotalBoids().size() == 3);
-  auto b_new = bb.singleboid(bb.TotalBoids(), b1, 0.5);
-  CHECK(b_new.v_x == 21.75);
-  bb.evolution(0.5);
-  CHECK((bb.TotalBoids())[0].x == 12.875);
-  CHECK((bb.TotalBoids())[0].y == 2.25);
-  CHECK((bb.TotalBoids())[0].v_x == 21.75);
-  CHECK((bb.TotalBoids())[0].v_y == -1.5);
+  SUBCASE("Testing everything without borders") {
+    BoidState b1{2., 3., 4., 2.};
+    BoidState b2{6., 1., -1, 1.};
+    BoidState b3{4., 3., 4., 1.};
+    SeparationRule s{5., 3.};
+    AllignmentRule a{0.5};
+    CohesionRule c{3.};
+    // std::vector<BoidState> vec{b1, b2, b3};
+    Boids bb{3, 6., s, a, c};
+    bb.push_back(b1);
+    bb.push_back(b2);
+    bb.push_back(b3);
+    CHECK(bb.TotalBoids().size() == 3);
+    auto b_new = bb.singleboid(bb.TotalBoids(), b1, 0.5);
+    CHECK(b_new.v_x == 21.75);
+    bb.evolution(0.5);
+    CHECK((bb.TotalBoids())[0].x == 12.875);
+    CHECK((bb.TotalBoids())[0].y == 2.25);
+    CHECK((bb.TotalBoids())[0].v_x == 21.75);
+    CHECK((bb.TotalBoids())[0].v_y == -1.5);
+  }
+  SUBCASE("Testing borders"){
+    BoidState b1{1179., 3., 4., 2.};
+    BoidState b2{6., 1., -1, 1.};
+    BoidState b3{4., 3., 4., 1.};
+    SeparationRule s{0., 3.};
+    AllignmentRule a{0.};
+    CohesionRule c{0.};
+    // std::vector<BoidState> vec{b1, b2, b3};
+    Boids bb{3, 6., s, a, c};
+    bb.push_back(b1);
+    bb.push_back(b2);
+    bb.push_back(b3);
+    CHECK(bb.TotalBoids().size() == 3);
+    auto b_new = bb.singleboid(bb.TotalBoids(), b1, 0.5);
+    CHECK(b_new.v_x == 4.);
+    bb.evolution(0.5);
+    CHECK((bb.TotalBoids())[0].x == 0.);
+    //CHECK((bb.TotalBoids())[0].y == 2.25);
+    //CHECK((bb.TotalBoids())[0].v_x == 21.75);
+    //CHECK((bb.TotalBoids())[0].v_y == -1.5);
+  }
 }
 
 TEST_CASE("Testing Boids with the same position") {
@@ -294,7 +317,7 @@ TEST_CASE("Testing Boids with the same position") {
   }
 }
 
-TEST_CASE("Testing mean and std dev") {
+/* TEST_CASE("Testing mean and std dev") {
   SUBCASE("Testing mean_position") {}
   SUBCASE("Testing mean_velocity") {
     BoidState b1{2., 3., 4., 2.};
@@ -307,7 +330,7 @@ TEST_CASE("Testing mean and std dev") {
     state(boids, 0.5);
     // CHECK(== 2, 68);}
 
-  SUBCASE("Testing std_dev_position") {}
-  SUBCASE("Testing std_dev_velocity") {}
-}
-}
+    SUBCASE("Testing std_dev_position") {}
+    SUBCASE("Testing std_dev_velocity") {}
+  }
+} */
