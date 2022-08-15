@@ -184,7 +184,7 @@ double Boids::d() const { return d_; }
 
 SeparationRule Boids::s() const { return s_; }
 
-AllignmentRule Boids::a() const {
+AlignmentRule Boids::a() const {
   assert(a_.get_a() < 1.);
   return a_;
 }
@@ -300,11 +300,4 @@ std::string state(Boids& b, double const delta_t) {
       auto speed_stdev = std::to_string(std_dev_velocity);
   return "Mean position and standard deviation: " + pos + "+/-" + pos_stdev + '\n' + "Mean velocity and standard deviation: " + speed + "+/-" + speed_stdev + '\n';
 
-
-  /*std::cout << '\n'
-            << "Mean position and standard deviation: " << mean_position
-            << " +/- " << std_dev_position << '\n';
-  std::cout << '\n'
-            << "Mean velocity and stardand deviation: " << mean_velocity
-            << " +/- " << std_dev_velocity << '\n';*/
 }

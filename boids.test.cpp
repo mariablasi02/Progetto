@@ -112,7 +112,7 @@ TEST_CASE("Boid already in the group") {
   BoidState b3{1., 4., 3., -1.};
   BoidState b{1., 2., 3., 4.};
   SeparationRule s{2., 2.};
-  AllignmentRule a{0.5};
+  AlignmentRule a{0.5};
   CohesionRule c{3};
   Boids boids = {4, 3., s, a, c};
   boids.push_back(b1);
@@ -196,7 +196,7 @@ TEST_CASE("Testing alignment rule") {
     BoidState b3 = {0., 0., -2., 3.};
     BoidState b4 = {0., 0., 1., -1};
     std::vector<BoidState> vec{b1, b2, b3, b4};
-    AllignmentRule ar{0.8};
+    AlignmentRule ar{0.8};
     CHECK(ar(vec, b4).val_x == doctest::Approx(0.533).epsilon(0.01));
     CHECK(ar(vec, b4).val_y == doctest::Approx(2.667).epsilon(0.01));
     BoidState b_ = {0., 0., 1.5, 1.5};
@@ -204,31 +204,31 @@ TEST_CASE("Testing alignment rule") {
     CHECK(ar(vec, b_).val_x == 0.);
     CHECK(ar(vec, b_).val_y == 0.);
   }
-  SUBCASE("Negative allignment constant") {
+  SUBCASE("Negative alignment constant") {
     BoidState b1 = {0., 0., 1., -4.};
     BoidState b2 = {0., 0., -5., 1.};
     BoidState b3 = {0., 0., -2., 3.};
     BoidState b4 = {0., 0., 1., -1};
     std::vector<BoidState> vec{b1, b2, b3, b4};
-    AllignmentRule ar{-2.0};
+    AlignmentRule ar{-2.0};
     CHECK(ar(vec, b1).val_x == doctest::Approx(6.0).epsilon(0.01));
     CHECK(ar(vec, b1).val_y == doctest::Approx(-10.0).epsilon(0.01));
   }
-  SUBCASE("Allignment constant as zero") {
+  SUBCASE("Alignment constant as zero") {
     BoidState b1 = {0., 0., 1., -4.};
     BoidState b2 = {0., 0., -5., 1.};
     BoidState b3 = {0., 0., -2., 3.};
     BoidState b4 = {0., 0., 1., -1};
     std::vector<BoidState> vec{b1, b2, b3, b4};
-    AllignmentRule ar{0.0};
+    AlignmentRule ar{0.0};
     CHECK(ar(vec, b1).val_x == doctest::Approx(0.0).epsilon(0.01));
     CHECK(ar(vec, b1).val_y == doctest::Approx(0.0).epsilon(0.01));
   }
 
-  SUBCASE("Allignment constant greater than 1") {
-    CHECK_THROWS(AllignmentRule{1.2});
-    CHECK_THROWS(AllignmentRule{5.9});
-    CHECK_THROWS_AS(AllignmentRule{3.2}, std::runtime_error);
+  SUBCASE("Alignment constant greater than 1") {
+    CHECK_THROWS(AlignmentRule{1.2});
+    CHECK_THROWS(AlignmentRule{5.9});
+    CHECK_THROWS_AS(AlignmentRule{3.2}, std::runtime_error);
   }
   SUBCASE("Trying to break the code") {
     // si rompe il codice se il boid che passiamo non fa parte del vettore-> da
@@ -323,7 +323,7 @@ TEST_CASE("Testing Neighbor-Control function") {
   BoidState b3{-1., -1., -1., -1.};
   BoidState b4{0., -1., 3., -2.};
   SeparationRule s{2., 2.};
-  AllignmentRule a{0.5};
+  AlignmentRule a{0.5};
   CohesionRule c{3};
   Boids pesci = {4, 3., s, a, c};
   pesci.push_back(b1);
@@ -340,7 +340,7 @@ TEST_CASE("Testing singleboid function") {
     BoidState b2{-1., 2., 3., 2.};
     BoidState b3{3., -1., 5., 2.};
     SeparationRule s{2., 4.};
-    AllignmentRule a{0.5};
+    AlignmentRule a{0.5};
     CohesionRule c{4.};
     std::vector<BoidState> v1{b1, b2, b3};
     Boids b{3, 10., s, a, c};
@@ -358,7 +358,7 @@ TEST_CASE("Testing evolution function") {
     BoidState b2{6., 1., -1, 1.};
     BoidState b3{4., 3., 4., 1.};
     SeparationRule s{5., 3.};
-    AllignmentRule a{0.5};
+    AlignmentRule a{0.5};
     CohesionRule c{3.};
     // std::vector<BoidState> vec{b1, b2, b3};
     Boids bb{3, 6., s, a, c};
@@ -380,7 +380,7 @@ TEST_CASE("Testing evolution function") {
     BoidState b3{3, 700., 1., 3.};
     BoidState b4{2., -4.1, 1., 3.};
     SeparationRule s{0., 3.};
-    AllignmentRule a{0.};
+    AlignmentRule a{0.};
     CohesionRule c{0.};
     // std::vector<BoidState> vec{b1, b2, b3};
     Boids bb{3, 6., s, a, c};

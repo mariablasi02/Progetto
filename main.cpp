@@ -34,7 +34,7 @@ int main() {
     return EXIT_FAILURE;
   }
   std::cout
-      << "Insert separation const, allignement const ( < 1 ), cohesion const: "
+      << "Insert separation const, alignment const ( < 1 ), cohesion const: "
       << '\n';  // valori di n ottimali: intorno a 20 per il momento
   double s;
   double a;
@@ -42,7 +42,7 @@ int main() {
 
   std::cin >> s >> a >> c;
   
-  Boids boids{n, 400., SeparationRule{s, 25.}, AllignmentRule{a},
+  Boids boids{n, 400., SeparationRule{s, 25.}, AlignmentRule{a},
             CohesionRule{c}};
 
   auto vec_boids = boids.TotalBoids();
