@@ -122,7 +122,7 @@ int size(std::vector<BoidState> const& v) {
 }
 
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
-                                        BoidState b1, double d) {
+                                         BoidState const& b1, double d) {
   auto p = pesci;
   auto n = pesci.size();
   // auto b1 = *p.begin();
@@ -204,15 +204,27 @@ std::vector<BoidState> velocity_limit_(std::vector<BoidState>& b) {
     if(b_.v_x < 250 && b_.v_x > 0){
       b_.v_x = 250;
     }
+    if(b_.v_x > 450 ){
+      b_.v_x = 450;
+    }
     if(b_.v_y < 250 && b_.v_y > 0){
       b_.v_y = 250;
+    }
+    if(b_.v_y > 450 ){
+      b_.v_y = 450;
     }
     if(b_.v_x > -250 && b_.v_x < 0){
       b_.v_x = -250;
     }
+    if(b_.v_x < -450 ){
+      b_.v_x = -450;
+    }
     if(b_.v_y > -250 && b_.v_y < 0){
       b_.v_y = -250;
     }  
+     if(b_.v_y < -450 ){
+      b_.v_y = -450;
+    }
     return BoidState{b_.x, b_.y, b_.v_x, b_.v_y};
   });
   return b;

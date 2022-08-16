@@ -1,13 +1,14 @@
-#include "boids.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <numeric>
 
+#include "boids.hpp"
 
 Components SeparationRule::operator()(std::vector<BoidState> const& b,
                                       BoidState const& b1) const {
   assert(size(b) > 1);
+  assert(same_pos_check(b1, b) == false);
   auto boids = NeighborsControl(b, b1, distance_s_);
   auto boid_it = boids.begin();
   auto boid_it_last = boids.end();
@@ -41,7 +42,7 @@ bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
 double AlignmentRule::get_a() const { return a_; }
 
 Components AlignmentRule::operator()(std::vector<BoidState> boids,
-                                      BoidState const& b1) const {
+                                     BoidState const& b1) const {
   assert(check_ownership(boids, b1));
   if (size(boids) > 1) {
     BoidState sum = std::accumulate(boids.begin(), boids.end(),
@@ -57,7 +58,6 @@ Components COM(std::vector<BoidState> const& vec, BoidState const& b1) {
   BoidState sum =
       std::accumulate(vec.begin(), vec.end(), BoidState{0., 0., 0., 0.}) - b1;
   if ((size(vec)) > 1) {
-
     double den = (static_cast<double>(size(vec)) - 1.);
 
     return {sum.x / den, sum.y / den};
