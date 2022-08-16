@@ -34,7 +34,7 @@ int main() {
     return EXIT_FAILURE;
   }
   std::cout
-      << "Insert separation const, allignement const ( < 1 ), cohesion const: "
+      << "Insert separation const, alignment const ( < 1 ), cohesion const: "
       << '\n';  // valori di n ottimali: intorno a 20 per il momento
   double s;
   double a;
@@ -42,7 +42,7 @@ int main() {
 
   std::cin >> s >> a >> c;
   
-  Boids boids{n, 400., SeparationRule{s, 250.}, AllignmentRule{a},
+  Boids boids{n, 400., SeparationRule{s, 25.}, AlignmentRule{a},
             CohesionRule{c}};
 
   auto vec_boids = boids.TotalBoids();
@@ -79,8 +79,21 @@ int main() {
   sf::CircleShape triangle;
   triangle.setRadius(10.f);
   triangle.setPointCount(3);
-
   triangle.setFillColor(sf::Color(245, 152, 66));
+
+  
+  sf::Font font;
+  font.loadFromFile("cmuntt.ttf");
+  sf::Text stats;
+  stats.setFont(font);
+  //stats.setString(state(boids, delta_t.asSeconds()));
+  stats.setCharacterSize(15);
+  stats.setPosition(sf::Vector2f(680.,0.f));
+  sf::RectangleShape rect;
+  rect.setPosition(sf::Vector2f(675, 0.));
+  rect.setSize(sf::Vector2f(600.,40));
+  rect.setFillColor(sf::Color::Black);
+  
 
   while (window.isOpen())  {
     sf::Event event;
@@ -91,6 +104,7 @@ int main() {
       }
     }
     auto boidscopy = evolve(boids, step_evolution, delta_t);
+    stats.setString(state(boids, delta_t.asSeconds()));
     int i = 0;
 
     window.clear();
@@ -120,6 +134,9 @@ int main() {
       window.draw(triangle);
   
     }
+    window.draw(rect);
+    window.draw(stats);
+    
 
 
     window.display();

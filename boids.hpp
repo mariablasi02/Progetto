@@ -72,11 +72,11 @@ class SeparationRule {
 
 bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c);
 
-class AllignmentRule {
+class AlignmentRule {
   double const a_;
 
  public:
-  AllignmentRule(double const a) : a_{a} {
+  AlignmentRule(double const a) : a_{a} {
     if (a == 1. || a > 1.) {
       throw std::runtime_error{"a must be < than 1"};
     }
@@ -110,13 +110,13 @@ class Boids {
   int const n_;
   double const d_;
   SeparationRule s_;
-  AllignmentRule a_;
+  AlignmentRule a_;
   CohesionRule c_;
   std::vector<BoidState> boids_;
 
  public:
   Boids(int const n, double const d, SeparationRule const& s,
-        AllignmentRule const& a, CohesionRule const& c)
+        AlignmentRule const& a, CohesionRule const& c)
       : n_{n}, d_{d}, s_{s}, a_{a}, c_{c} {
     assert(n > 1);
     assert(a_.get_a() < 1.);
@@ -133,7 +133,7 @@ class Boids {
 
   SeparationRule s() const;
 
-  AllignmentRule a() const;
+  AlignmentRule a() const;
 
   CohesionRule c() const;
 
@@ -144,6 +144,6 @@ class Boids {
   void setvector(std::vector<BoidState> const& b);
 };
 
-void state(Boids& b, double const delta_t);
+std::string state(Boids& b, double const delta_t);
 
 #endif

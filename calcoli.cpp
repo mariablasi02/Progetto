@@ -86,7 +86,7 @@ int main() {
   BoidState b2{6., 1., 300, 303.};
   BoidState b3{4., 3., 340., 280.};
   SeparationRule s{0.5, 3.};
-  AllignmentRule a{0.5};
+  AlignmentRule a{0.5};
   CohesionRule c{0.3};
   std::vector<BoidState> v{b1, b2, b3};
   auto vector = NeighborsControl(v, b1, 5.);

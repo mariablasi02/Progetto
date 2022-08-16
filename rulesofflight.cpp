@@ -38,9 +38,9 @@ bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
   }
 }
 
-double AllignmentRule::get_a() const { return a_; }
+double AlignmentRule::get_a() const { return a_; }
 
-Components AllignmentRule::operator()(std::vector<BoidState> boids,
+Components AlignmentRule::operator()(std::vector<BoidState> boids,
                                       BoidState const& b1) const {
   assert(check_ownership(boids, b1));
   if (size(boids) > 1) {
