@@ -1,12 +1,13 @@
 #include "boids.hpp"
 
+#include <string.h>
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <limits>
 #include <numeric>
 #include <string>
-#include <string.h>
 
 BoidState& BoidState::operator+=(BoidState const& other) {
   x += other.x;
@@ -122,7 +123,7 @@ int size(std::vector<BoidState> const& v) {
 }
 
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
-                                         BoidState const& b1, double d) {
+                                        BoidState const& b1, double d) {
   auto p = pesci;
   auto n = pesci.size();
   // auto b1 = *p.begin();
@@ -201,28 +202,28 @@ void Boids::push_back(BoidState const& boid) {
 
 std::vector<BoidState> velocity_limit_(std::vector<BoidState>& b) {
   std::transform(b.begin(), b.end(), b.begin(), [](BoidState b_) {
-    if(b_.v_x < 250 && b_.v_x > 0){
+    if (b_.v_x < 250 && b_.v_x > 0) {
       b_.v_x = 250;
     }
-    if(b_.v_x > 450 ){
+    if (b_.v_x > 450) {
       b_.v_x = 450;
     }
-    if(b_.v_y < 250 && b_.v_y > 0){
+    if (b_.v_y < 250 && b_.v_y > 0) {
       b_.v_y = 250;
     }
-    if(b_.v_y > 450 ){
+    if (b_.v_y > 450) {
       b_.v_y = 450;
     }
-    if(b_.v_x > -250 && b_.v_x < 0){
+    if (b_.v_x > -250 && b_.v_x < 0) {
       b_.v_x = -250;
     }
-    if(b_.v_x < -450 ){
+    if (b_.v_x < -450) {
       b_.v_x = -450;
     }
-    if(b_.v_y > -250 && b_.v_y < 0){
+    if (b_.v_y > -250 && b_.v_y < 0) {
       b_.v_y = -250;
-    }  
-     if(b_.v_y < -450 ){
+    }
+    if (b_.v_y < -450) {
       b_.v_y = -450;
     }
     return BoidState{b_.x, b_.y, b_.v_x, b_.v_y};
@@ -306,10 +307,11 @@ std::string state(Boids& b, double const delta_t) {
                          static_cast<int>(velocity.size());
   auto std_dev_velocity =
       std::sqrt(sums_vel2_medio - mean_velocity * mean_velocity);
-      auto pos = std::to_string(mean_position);
-      auto pos_stdev = std::to_string(std_dev_position);
-      auto speed = std::to_string(mean_velocity);
-      auto speed_stdev = std::to_string(std_dev_velocity);
-  return "Mean position and standard deviation: " + pos + "+/-" + pos_stdev + '\n' + "Mean velocity and standard deviation: " + speed + "+/-" + speed_stdev + '\n';
-
+  auto pos = std::to_string(mean_position);
+  auto pos_stdev = std::to_string(std_dev_position);
+  auto speed = std::to_string(mean_velocity);
+  auto speed_stdev = std::to_string(std_dev_velocity);
+  return "Mean position and standard deviation: " + pos + "+/-" + pos_stdev +
+         '\n' + "Mean velocity and standard deviation: " + speed + "+/-" +
+         speed_stdev + '\n';
 }
