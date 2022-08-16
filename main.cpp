@@ -44,7 +44,7 @@ int main() {
 
   std::cin >> s >> a >> c;
   
-  Boids boids{n, 400., SeparationRule{s, 25.}, AlignmentRule{a},
+  Boids boids{n, 200., SeparationRule{s, 25.}, AlignmentRule{a},
             CohesionRule{c}};
 
   auto vec_boids = boids.TotalBoids();

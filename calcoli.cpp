@@ -82,14 +82,14 @@ std::cout << "result: " << COM(v1, b4).val_y << '\n';
 
 #include "boids.hpp"
 int main() {
-  BoidState b1{2., 3., 350., 273.};
-  BoidState b2{6., 1., 300, 303.};
-  BoidState b3{4., 3., 340., 280.};
-  SeparationRule s{0.5, 3.};
-  AlignmentRule a{0.5};
-  CohesionRule c{0.3};
+    BoidState b1{3., 1., 275., 100.};
+    BoidState b2{2., 1., 78., 420};
+    BoidState b3{1., 4., 190, 600};
+    SeparationRule s{0.2, 20};
+    AlignmentRule a{0.3};
+    CohesionRule c{1.3};
   std::vector<BoidState> v{b1, b2, b3};
-  auto vector = NeighborsControl(v, b1, 5.);
+  auto vector = NeighborsControl(v, b2, 40.);
   std::cout << vector.size() << '\n';
   std::cout << "Components x and y of v1: " << s(v, b1).val_x << "x"
             << s(v, b1).val_y << "y" << '\n';

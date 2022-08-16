@@ -1,11 +1,9 @@
 #ifndef BOIDS_HPP
 #define BOIDS_HPP
 
-#include <algorithm>
 #include <cassert>
 #include <stdexcept>
 #include <vector>
-
 // manca il controllo degli errori su tutto
 
 struct BoidState {
@@ -35,6 +33,8 @@ BoidState operator*(BoidState const& b1, BoidState const& b2);
 
 double norm(BoidState const& b1, BoidState const& b2);
 
+double velocity_norm(BoidState const& b);
+
 struct Components {
   double val_x;
   double val_y;
@@ -57,7 +57,7 @@ bool operator!=(Components const& c1, Components const& c2);
 int size(std::vector<BoidState> const& v);
 
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
-                                        BoidState b1, double d);
+                                        BoidState const& b1, double d);
 
 class SeparationRule {
   double const s_;
@@ -104,7 +104,10 @@ bool same_pos_check(BoidState const& b1, std::vector<BoidState> boids);
 
 void same_position(BoidState const& b1, std::vector<BoidState> boids);
 
-std::vector<BoidState> borders(std::vector<BoidState>& v); // è una prova la definizione è in boids.cpp non si muovono come dico io il problema è il commento nel main-> modificato anche evolve 
+std::vector<BoidState> borders(
+    std::vector<BoidState>& v);  // è una prova la definizione è in boids.cpp
+                                 // non si muovono come dico io il problema è il
+                                 // commento nel main-> modificato anche evolve
 
 class Boids {
   int const n_;

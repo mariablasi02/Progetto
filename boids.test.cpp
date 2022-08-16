@@ -122,7 +122,7 @@ TEST_CASE("Boid already in the group") {
 }
 
 TEST_CASE("Testing Separation rule") {
-  SUBCASE("General test ") {
+  /*SUBCASE("General test ") {
     BoidState b1{0., 1., 2., 3.};
     BoidState b2{0., 3., 5., 1.};
     BoidState b3{2., 3., -2., 3.};
@@ -137,7 +137,7 @@ TEST_CASE("Testing Separation rule") {
 
     CHECK(sr(a, b_).val_x == doctest::Approx(1.));
     CHECK(sr(a, b_).val_y == doctest::Approx(3.5));
-  }
+  }*/
   SUBCASE("Testing whit a boid of the vector") {
     BoidState b1{0., 1., 2., 3.};
     BoidState b2{0., 3., 5., 1.};
@@ -374,12 +374,12 @@ TEST_CASE("Testing evolution function") {
   }
   SUBCASE("Testing velocity_limits") {
     BoidState b1{3., 1., 275., 100.};
-    BoidState b2{2., 1., 78., 298};
-    BoidState b3{1., 4., 190, 300};
+    BoidState b2{2., 1., 78., 520};
+    BoidState b3{1., 4., 190, 600};
     SeparationRule s{0.2, 20};
     AlignmentRule a{0.3};
     CohesionRule c{1.3};
-    Boids boid{3, 2., s, a, c};
+    Boids boid{3, 40., s, a, c};
     boid.push_back(b1);
     boid.push_back(b2);
     boid.push_back(b3);
@@ -387,6 +387,8 @@ TEST_CASE("Testing evolution function") {
     CHECK((boid.TotalBoids())[0].v_y == 250);
     CHECK((boid.TotalBoids())[1].v_x == 250);
     CHECK((boid.TotalBoids())[2].v_x == 250);
+    CHECK((boid.TotalBoids())[1].v_y == 450);
+    CHECK((boid.TotalBoids())[2].v_y == 450);
   }
   SUBCASE("Testing borders") {
     BoidState b1{1179., 3., 4., 2.};

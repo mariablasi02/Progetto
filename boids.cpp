@@ -1,111 +1,13 @@
 #include "boids.hpp"
 
+#include <string.h>
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <limits>
 #include <numeric>
 #include <string>
-#include <string.h>
-
-BoidState& BoidState::operator+=(BoidState const& other) {
-  x += other.x;
-  y += other.y;
-  v_x += other.v_x;
-  v_y += other.v_y;
-  return *this;
-}
-
-BoidState& BoidState::operator*=(double const other) {
-  x *= other;
-  y *= other;
-  v_x *= other;
-  v_y *= other;
-  return *this;
-}
-
-BoidState& BoidState::operator*=(BoidState const other) {
-  x *= other.x;
-  y *= other.y;
-  v_x *= other.v_x;
-  v_y *= other.v_y;
-  return *this;
-}
-
-bool operator==(BoidState const& b1, BoidState const& b2) {
-  return {b1.x == b2.x && b1.y == b2.y && b1.v_x == b2.v_x && b1.v_y == b2.v_y};
-}
-
-bool operator!=(BoidState const& b1, BoidState const& b2) {
-  return {b1.x != b2.x || b1.y != b2.y || b1.v_x != b2.v_x ||
-          b1.v_y != b2.v_y};  // così basta che solo una delle quattro
-                              // condizioni non sia vera
-}
-
-BoidState operator+(BoidState const& b1, BoidState const& b2) {
-  auto result = b1;
-  return result += b2;
-}
-
-BoidState operator-(BoidState const& b1, BoidState const& b2) {
-  return {b1.x - b2.x, b1.y - b2.y, b1.v_x - b2.v_x, b1.v_y - b2.v_y};
-}
-
-BoidState operator*(BoidState const& b1, double const d) {
-  auto result = b1;
-  return result *= d;
-}
-
-BoidState operator*(BoidState const& b1, BoidState const& b2) {
-  auto result = b1;
-  return result *= b2;
-}
-
-double norm(BoidState const& b1, BoidState const& b2) {
-  auto result = (b1.x - b2.x) * (b1.x - b2.x) + (b1.y - b2.y) * (b1.y - b2.y);
-  assert(!(result < 0));
-  return std::sqrt(result);
-}
-
-double velocity_norm(BoidState const& b) {
-  auto result = (b.v_x * b.v_x + b.v_y * b.v_y);
-  ;
-  return std::sqrt(result);
-}
-
-Components& Components::operator+=(Components const& other) {
-  val_x += other.val_x;
-  val_y += other.val_y;
-  return *this;
-}
-
-Components& Components::operator*=(double const d) {
-  val_x *= d;
-  val_y *= d;
-  return *this;
-}
-
-Components operator+(Components const& c1, Components const& c2) {
-  auto result = c1;
-  return result += c2;
-}
-
-Components operator-(Components const& c1, Components const& c2) {
-  return {c1.val_x - c2.val_x, c2.val_y - c2.val_y};
-}
-
-Components operator*(Components const& c1, double const d) {
-  auto result = c1;
-  return result *= d;
-}
-
-bool operator==(Components const& c1, Components const& c2) {
-  return {c1.val_x == c2.val_x && c1.val_y == c2.val_y};
-}
-
-bool operator!=(Components const& c1, Components const& c2) {
-  return {c1.val_x != c2.val_x && c1.val_y != c2.val_y};
-}
 
 int size(std::vector<BoidState> const& v) {
   /* if (v.size() > static_cast<size_t>(std::numeric_limits<int>::max())) {
@@ -122,7 +24,7 @@ int size(std::vector<BoidState> const& v) {
 }
 
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
-                                        BoidState b1, double d) {
+                                        BoidState const& b1, double d) {
   auto p = pesci;
   auto n = pesci.size();
   // auto b1 = *p.begin();
@@ -199,24 +101,36 @@ void Boids::push_back(BoidState const& boid) {
   }
 }
 
-/* std::vector<BoidState> velocity_limit_(std::vector<BoidState>& b) {
+std::vector<BoidState> velocity_limit_(std::vector<BoidState>& b) {
   std::transform(b.begin(), b.end(), b.begin(), [](BoidState b_) {
-    if(b_.v_x < 250 && b_.v_x > 0){
+    /* if(b_.v_x < 250 && b_.v_x > 0){
       b_.v_x = 250;
+    } */
+    if (b_.v_x > 450) {
+      b_.v_x = 450;
     }
-    if(b_.v_y < 250 && b_.v_y > 0){
+    /* if(b_.v_y < 250 && b_.v_y > 0){
       b_.v_y = 250;
+    } */
+    if (b_.v_y > 450) {
+      b_.v_y = 450;
     }
-    if(b_.v_x > -250 && b_.v_x < 0){
+    /* if(b_.v_x > -250 && b_.v_x < 0){
       b_.v_x = -250;
+    } */
+    if (b_.v_x < -450) {
+      b_.v_x = -450;
     }
-    if(b_.v_y > -250 && b_.v_y < 0){
+    /* if(b_.v_y > -250 && b_.v_y < 0){
       b_.v_y = -250;
-    }  //
+    } */
+    if (b_.v_y < -450) {
+      b_.v_y = -450;
+    }
     return BoidState{b_.x, b_.y, b_.v_x, b_.v_y};
   });
   return b;
-} */
+}
 
 std::vector<BoidState> borders(std::vector<BoidState>& v) {
   std::transform(v.begin(), v.end(), v.begin(), [](BoidState b) {
@@ -245,7 +159,7 @@ void Boids::evolution(double const delta_t) {
   }
 
   borders(fishes);
-  //velocity_limit_(fishes);
+  // velocity_limit_(fishes);
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
 }
@@ -294,10 +208,11 @@ std::string state(Boids& b, double const delta_t) {
                          static_cast<int>(velocity.size());
   auto std_dev_velocity =
       std::sqrt(sums_vel2_medio - mean_velocity * mean_velocity);
-      auto pos = std::to_string(mean_position);
-      auto pos_stdev = std::to_string(std_dev_position);
-      auto speed = std::to_string(mean_velocity);
-      auto speed_stdev = std::to_string(std_dev_velocity);
-  return "Mean position and standard deviation: " + pos + "+/-" + pos_stdev + '\n' + "Mean velocity and standard deviation: " + speed + "+/-" + speed_stdev + '\n';
-
+  auto pos = std::to_string(mean_position);
+  auto pos_stdev = std::to_string(std_dev_position);
+  auto speed = std::to_string(mean_velocity);
+  auto speed_stdev = std::to_string(std_dev_velocity);
+  return "Mean position and standard deviation: " + pos + "+/-" + pos_stdev +
+         '\n' + "Mean velocity and standard deviation: " + speed + "+/-" +
+         speed_stdev + '\n';
 }
