@@ -287,8 +287,8 @@ TEST_CASE("Testing Cohesion rule") {
     CHECK(c1(v1, b1).val_y == doctest::Approx(-1.67).epsilon(0.01));
   }
 
-SUBCASE("Teting with negative cohesion constant"){
-  CohesionRule c1{-1.7};
+  SUBCASE("Teting with negative cohesion constant") {
+    CohesionRule c1{-1.7};
     BoidState b1{1.3, 2., 3.6, 4.};
     BoidState b2{2., 3., 4., 5.};
     BoidState b3{-1., -1.3, -1., -1.7};
@@ -302,9 +302,9 @@ SUBCASE("Teting with negative cohesion constant"){
     CHECK(c1(v1, b3).val_y == doctest::Approx(-4.47661).epsilon(0.01));
     CHECK(c1(v1, b4).val_x == doctest::Approx(-1.30).epsilon(0.01));
     CHECK(c1(v1, b4).val_y == doctest::Approx(-3.79667).epsilon(0.01));
-}
-SUBCASE("Cohesion constant as zero"){
-CohesionRule c1{0.0};
+  }
+  SUBCASE("Cohesion constant as zero") {
+    CohesionRule c1{0.0};
     BoidState b1{1., 2., 3.5, 4.};
     BoidState b2{2.6, 3., 4., 5.4};
     BoidState b3{-1., -1., -1., -1.};
@@ -312,9 +312,7 @@ CohesionRule c1{0.0};
     std::vector<BoidState> v1{b1, b2, b3, b4};
     CHECK(c1(v1, b1).val_x == doctest::Approx(0.0).epsilon(0.01));
     CHECK(c1(v1, b1).val_y == doctest::Approx(0.0).epsilon(0.01));
-}
-
-
+  }
 }
 
 TEST_CASE("Testing Neighbor-Control function") {
@@ -354,12 +352,12 @@ TEST_CASE("Testing singleboid function") {
 
 TEST_CASE("Testing evolution function") {
   SUBCASE("Testing everything without borders") {
-    BoidState b1{2., 3., 4., 2.};
-    BoidState b2{6., 1., -1, 1.};
-    BoidState b3{4., 3., 4., 1.};
-    SeparationRule s{5., 3.};
+    BoidState b1{2., 3., 350., 273.};
+    BoidState b2{6., 1., 300, 303.};
+    BoidState b3{4., 3., 340., 280.};
+    SeparationRule s{0.5, 3.};
     AllignmentRule a{0.5};
-    CohesionRule c{3.};
+    CohesionRule c{0.3};
     // std::vector<BoidState> vec{b1, b2, b3};
     Boids bb{3, 6., s, a, c};
     bb.push_back(b1);
@@ -367,12 +365,28 @@ TEST_CASE("Testing evolution function") {
     bb.push_back(b3);
     CHECK(bb.TotalBoids().size() == 3);
     auto b_new = bb.singleboid(bb.TotalBoids(), b1, 0.5);
-    CHECK(b_new.v_x == 21.75);
+    CHECK(b_new.v_x == 336.9);
     bb.evolution(0.5);
-    CHECK((bb.TotalBoids())[0].x == 12.875);
-    CHECK((bb.TotalBoids())[0].y == 2.25);
-    CHECK((bb.TotalBoids())[0].v_x == 21.75);
-    CHECK((bb.TotalBoids())[0].v_y == -1.5);
+    CHECK((bb.TotalBoids())[0].x == 170.45);
+    CHECK((bb.TotalBoids())[0].y == 143.975);
+    CHECK((bb.TotalBoids())[0].v_x == 336.9);
+    CHECK((bb.TotalBoids())[0].v_y == 281.95);
+  }
+  SUBCASE("Testing velocity_limits") {
+    BoidState b1{3., 1., 275., 100.};
+    BoidState b2{2., 1., 78., 298};
+    BoidState b3{1., 4., 190, 300};
+    SeparationRule s{0.2, 20};
+    AllignmentRule a{0.3};
+    CohesionRule c{1.3};
+    Boids boid{3, 2., s, a, c};
+    boid.push_back(b1);
+    boid.push_back(b2);
+    boid.push_back(b3);
+    boid.evolution(0.3);
+    CHECK((boid.TotalBoids())[0].v_y == 250);
+    CHECK((boid.TotalBoids())[1].v_x == 250);
+    CHECK((boid.TotalBoids())[2].v_x == 250);
   }
   SUBCASE("Testing borders") {
     BoidState b1{1179., 3., 4., 2.};

@@ -1,8 +1,8 @@
-#include "boids.hpp"
 #include <iostream>
 
+#include "boids.hpp"
 
-void check_borders(Boids& boids){
+/*void check_borders(Boids& boids){
     int i = 0;
     auto boidscopy = boids.TotalBoids();
     for(auto& b : boidscopy){
@@ -18,13 +18,13 @@ void check_borders(Boids& boids){
     if (rec.getPosition().y + rec.getGlobalBounds().height >691 ){
       rec.setPosition(rec.getPosition().x, 691.f- rec.getGlobalBounds().height);
     }*/
-    boids.TotalBoids() = boidscopy;
-      
-      ++i;  
-  
-    }
-}
-int main() {
+/* boids.TotalBoids() = boidscopy;
+
+    ++i;
+
+  }
+}*/
+/*int main() {
     BoidState b1{0., 3., 4., 2.};
     BoidState b2{6., 1., -1, 1.};
     BoidState b3{4., 3., 4., 1.};
@@ -37,15 +37,15 @@ int main() {
     flock.push_back(b3);
 
     auto v = flock.TotalBoids();
-    std::cout<< v[0].x << '\n';
+    std::cout<< v[0].x << '\n';*/
 /*switch(static_cast<int>(b.y)) {
         case 0:
-        boids.TotalBoids()[i].y = 690;      
+        boids.TotalBoids()[i].y = 690;
         break;
         case 691:
-        boids.TotalBoids()[i].y = 1.; 
+        boids.TotalBoids()[i].y = 1.;
         break;
-      } 
+      }
     switch(static_cast<int>(b.x)) {
         double result;
       case 0:
@@ -55,28 +55,46 @@ int main() {
       boids.TotalBoids()[i].x = 1.;
     }*/
 
+/*auto sum(BoidState a, BoidState b, BoidState c, BoidState d) {
+  auto sumx = a.x + b.x + c.x + d.x;
+  auto sumy = a.y + b.y + c.y + d.y;
+  auto sumvx = a.v_x + b.v_x + c.v_x + d.v_x;
+  auto sumvy = a.v_y + b.v_y + c.v_y + d.v_y;
 
-auto sum ( BoidState a, BoidState b, BoidState c, BoidState d){
- auto sumx = a.x +b.x + c.x+ d.x;
- auto sumy = a.y +b.y + c.y+d.y;
- auto sumvx = a.v_x +b.v_x + c.v_x+ d.v_x;
- auto sumvy= a.v_y +b.v_y + c.v_y+d.v_y;
-
- return Components{sumvx, sumvy};
+  return Components{sumvx, sumvy};
 }
 
- CohesionRule c1{-1.7};
-    BoidState b1{1.3, 2., 3.6, 4.};
-    BoidState b2{2., 3., 4., 5.};
-    BoidState b3{-1., -1.3, -1., -1.7};
-    BoidState b4{0., -1., 3., -2.};
-    std::vector<BoidState> v1{b1, b2, b3, b4};
+CohesionRule c1{-1.7};
+BoidState b1{1.3, 2., 3.6, 4.};
+BoidState b2{2., 3., 4., 5.};
+BoidState b3{-1., -1.3, -1., -1.7};
+BoidState b4{0., -1., 3., -2.};
+std::vector<BoidState> v1{b1, b2, b3, b4};
 
-  std::cout << "result: " << COM(v1, b3).val_x << '\n';
-  std::cout << "result: " << COM(v1, b3).val_y << '\n';
-  std::cout << "result: " << COM(v1,b4).val_x << '\n';
-  std::cout << "result: " << COM(v1,b4).val_y << '\n';
+std::cout << "result: " << COM(v1, b3).val_x << '\n';
+std::cout << "result: " << COM(v1, b3).val_y << '\n';
+std::cout << "result: " << COM(v1, b4).val_x << '\n';
+std::cout << "result: " << COM(v1, b4).val_y << '\n';
 
+// std::cout << "result: " << norm(b2, b3) << '\n';
+}*/
+#include <iostream>
 
-  //std::cout << "result: " << norm(b2, b3) << '\n';
+#include "boids.hpp"
+int main() {
+  BoidState b1{2., 3., 350., 273.};
+  BoidState b2{6., 1., 300, 303.};
+  BoidState b3{4., 3., 340., 280.};
+  SeparationRule s{0.5, 3.};
+  AllignmentRule a{0.5};
+  CohesionRule c{0.3};
+  std::vector<BoidState> v{b1, b2, b3};
+  auto vector = NeighborsControl(v, b1, 5.);
+  std::cout << vector.size() << '\n';
+  std::cout << "Components x and y of v1: " << s(v, b1).val_x << "x"
+            << s(v, b1).val_y << "y" << '\n';
+  std::cout << "Components x and y of v2: " << a(vector, b1).val_x << "x"
+            << a(vector, b1).val_y << "y" << '\n';
+  std::cout << "Components x and y of v3: " << c(vector, b1).val_x << "x"
+            << c(vector, b1).val_y << "y" << '\n';
 }
