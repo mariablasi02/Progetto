@@ -1,6 +1,8 @@
 // Compile with: g++ -Wall -Wextra -fsanitize=address boids.cpp rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system 
 
 //close the window from sfml button
+
+// parameters: s= 0.001, a = 0.9, c= 0.03 
 #include "boids.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
@@ -56,15 +58,15 @@ int main() {
 
   boids.setvector(vec_boids);
 
-  state(boids, 0.1);
 
   // std::cout << (bob.TotalBoids())[1].x << '\n';
 
 
-  auto const delta_t{sf::milliseconds(1)};
+  auto const delta_t{sf::milliseconds(10)};
   int const fps = 30;
   int const step_evolution{300 / fps};
 
+  std::cout << state(boids, delta_t.asSeconds()) <<'\n';
  
 
   sf::RenderWindow window(sf::VideoMode(1179, 691), "Sea");
