@@ -5,10 +5,19 @@
 #include <numeric>
 
 
+bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
+  if (!cont.empty()) {
+    auto it = std::find(cont.begin(), cont.end(), c);
+    return it != cont.end();
+  } else {
+    return false;
+  }
+}
+
 Components SeparationRule::operator()(std::vector<BoidState> const& b,
                                       BoidState const& b1) const {
   assert(size(b) > 1);
-  assert(same_pos_check(b1, b) == false);
+  assert(check_ownership(b, b1));
   auto boids = NeighborsControl(b, b1, distance_s_);
   auto boid_it = boids.begin();
 
@@ -29,14 +38,7 @@ Components SeparationRule::operator()(std::vector<BoidState> const& b,
   return Components{-s_ * sum_x, -s_ * sum_y};
 }
 
-bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
-  if (!cont.empty()) {
-    auto it = std::find(cont.begin(), cont.end(), c);
-    return it != cont.end();
-  } else {
-    return false;
-  }
-}
+
 
 double AlignmentRule::get_a() const { return a_; }
 

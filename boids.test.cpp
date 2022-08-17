@@ -331,8 +331,16 @@ TEST_CASE("Testing Neighbor-Control function") {
   pesci.push_back(b2);
   pesci.push_back(b3);
   pesci.push_back(b4);
-  auto b = NeighborsControl(pesci.TotalBoids(), b1, 3.);
-  CHECK(static_cast<int>(b.size()) == 2);
+  auto n = NeighborsControl(pesci.TotalBoids(), b1, 3.);
+  SUBCASE("Testing with a vector of four boids"){  
+  CHECK(static_cast<int>(n.size()) == 2);
+  }
+  SUBCASE("Testing with a boid on the border"){
+    BoidState b5{1.,5.,0.,0.};
+    pesci.push_back(b5);
+    auto n = NeighborsControl(pesci.TotalBoids(), b1, 3.);
+    CHECK(static_cast<int>(n.size()) == 3);
+  }
 }
 
 TEST_CASE("Testing singleboid function") {
@@ -413,6 +421,19 @@ TEST_CASE("Testing evolution function") {
     CHECK((bb.TotalBoids())[1].x == 1179.);
     CHECK((bb.TotalBoids())[2].y == 0.);
     CHECK((bb.TotalBoids())[3].y == 691.);
+  }
+  SUBCASE("Testing with a negative value of time"){
+    BoidState n1{1.507, 1.655, 2.414, 1.31};
+    BoidState n2{1.7335, 0.9675, 3.427, -0.065};
+    BoidState n3{2.6295, 2.3275, -4.741, -3.345};
+    SeparationRule s{3, 5};
+    AlignmentRule a{0.3};
+    CohesionRule c{0.9};
+    Boids flock{3, 300., s, a, c};
+    flock.push_back(n1);
+    flock.push_back(n2);
+    flock.push_back(n3);
+    CHECK_THROWS(flock.evolution(-0.5));
   }
 }
 

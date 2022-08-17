@@ -118,26 +118,7 @@ int main() {
     window.draw(sprite);
     for(auto& b : boidscopy){
       triangle.setPosition(b.x, b.y);
-      /* switch(static_cast<int>(b.y)) {
-        case 0:
-        triangle.move(0.f, 690); 
-        boids.TotalBoids()[i].y = 690;      
-        break;
-        case 691:
-        triangle.move(0.f, -690);
-        boids.TotalBoids()[i].y = 1.; 
-        break;
-      } 
-    switch(static_cast<int>(b.x)) {
-      case 0:
-      triangle.move(1178,0.f);
-      boids.TotalBoids()[i].x = 1178;
-      break;
-      case 1179:
-      triangle.move(-1178,0.f);
-      boids.TotalBoids()[i].x = 1.;
-    }
-      ++i; */
+      
       window.draw(triangle);
   
     }
