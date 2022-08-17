@@ -5,6 +5,14 @@
 
 #include "boids.hpp"
 
+bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
+  if (!cont.empty()) {
+    auto it = std::find(cont.begin(), cont.end(), c);
+    return it != cont.end();
+  } else {
+    return false;
+  }
+}
 Components SeparationRule::operator()(std::vector<BoidState> const& b,
                                       BoidState const& b1) const {
   assert(size(b) > 1);
@@ -29,15 +37,6 @@ Components SeparationRule::operator()(std::vector<BoidState> const& b,
   return Components{-s_ * sum_x, -s_ * sum_y};
 }
 
-bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
-  if (!cont.empty()) {
-    auto it = std::find(cont.begin(), cont.end(), c);
-    return it != cont.end();
-  } else {
-    return false;
-  }
-}
-
 double AlignmentRule::get_a() const { return a_; }
 
 Components AlignmentRule::operator()(std::vector<BoidState> const& boids,
@@ -50,7 +49,8 @@ Components AlignmentRule::operator()(std::vector<BoidState> const& boids,
                     ((sum.v_y / (size(boids) - 1)) - b1.v_y) * a_};
 }
 
-Components centre_of_mass(std::vector<BoidState> const& vec, BoidState const& b1) {
+Components centre_of_mass(std::vector<BoidState> const& vec,
+                          BoidState const& b1) {
   assert((size(vec)) > 1);
   auto den = (static_cast<double>(size(vec)) - 1.);
   auto sum =

@@ -109,17 +109,20 @@ void Boids::push_back(BoidState const& boid) {
 
 std::vector<BoidState> velocity_limit(std::vector<BoidState>& b) {
   std::transform(b.begin(), b.end(), b.begin(), [](BoidState& b_) {
-    if (b_.v_x > 10) {
-      b_.v_x = 10.;
+    if (b_.v_x > 1.3) {
+      b_.v_x = 1.3;
     }
-    if (b_.v_y > 10) {
-      b_.v_y = 10.;
+
+    if (b_.v_y > 1.) {
+      b_.v_y = 1.;
     }
-    if (b_.v_x < -10) {
-      b_.v_x = -10.;
+
+    if (b_.v_x < -1.) {
+      b_.v_x = -1.;
     }
-    if (b_.v_y < -10) {
-      b_.v_y = -10.;
+
+    if (b_.v_y < -1.) {
+      b_.v_y = -1.;
     }
     return BoidState{b_.x, b_.y, b_.v_x, b_.v_y};
   });
@@ -138,6 +141,7 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
     } else if (b.y >= 691.) {
       b.y = 0.;
     }
+
     assert(b.x >= 0. && b.x <= 1179. && b.y >= 0. && b.y <= 691.);
     return BoidState{b.x, b.y, b.v_x, b.v_y};
   });
@@ -155,7 +159,7 @@ void Boids::evolution(double const delta_t) {
 
   borders(fishes);
   // velocity_limit(fishes);
-  
+
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
   assert(same_pos_check(boids_));
