@@ -1,9 +1,9 @@
-#include "boids.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <numeric>
 
+#include "boids.hpp"
 
 bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
   if (!cont.empty()) {
@@ -38,37 +38,34 @@ Components SeparationRule::operator()(std::vector<BoidState> const& b,
   return Components{-s_ * sum_x, -s_ * sum_y};
 }
 
-
-
 double AlignmentRule::get_a() const { return a_; }
 
 Components AlignmentRule::operator()(std::vector<BoidState> const& boids,
                                      BoidState const& b1) const {
   assert(size(boids) > 1);
   assert(check_ownership(boids, b1));
-    auto sum = std::accumulate(boids.begin(), boids.end(),
-                                    BoidState{0., 0., 0., 0.} - b1);
-    return Components{((sum.v_x / (size(boids) - 1)) - b1.v_x) * a_,
-                      ((sum.v_y / (size(boids) - 1)) - b1.v_y) * a_};
-  
+  auto sum = std::accumulate(boids.begin(), boids.end(),
+                             BoidState{0., 0., 0., 0.} - b1);
+  return Components{((sum.v_x / (size(boids) - 1)) - b1.v_x) * a_,
+                    ((sum.v_y / (size(boids) - 1)) - b1.v_y) * a_};
 }
 
-Components COM(std::vector<BoidState> const& vec, BoidState const& b1) {
-  assert((size(vec)) > 1) ;
-    auto den = (static_cast<double>(size(vec)) - 1.);
+Components centre_of_mass(std::vector<BoidState> const& vec,
+                          BoidState const& b1) {
+  assert((size(vec)) > 1);
+  auto den = (static_cast<double>(size(vec)) - 1.);
   auto sum =
       std::accumulate(vec.begin(), vec.end(), BoidState{0., 0., 0., 0.}) - b1;
 
-    return {sum.x / den, sum.y / den};
- 
+  return {sum.x / den, sum.y / den};
 }
 
 Components CohesionRule::operator()(std::vector<BoidState> const& cboids,
                                     BoidState const& b1) const {
-  assert(size(cboids) >1);
+  assert(size(cboids) > 1);
   assert(check_ownership(cboids, b1));
 
-  auto position_of_c = COM(cboids, b1);
+  auto position_of_c = centre_of_mass(cboids, b1);
 
   BoidState com{position_of_c.val_x, position_of_c.val_y, 0., 0.};
   auto result = (com - b1) * cohesion_const_;

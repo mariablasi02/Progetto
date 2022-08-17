@@ -3,19 +3,21 @@
 #include "boids.hpp"
 
 int main() {
-    BoidState b1{0.3, 1., 2., 0.5};
-    BoidState b2{0.02, 1., 0.1, -2};
-    BoidState b3{5, 4., -1, -0.6};
-    SeparationRule s{3, 5};
-    AlignmentRule a{0.3};
-    CohesionRule c{0.9};
-    Boids Nemo{3, 300., s, a, c};
-    Nemo.push_back(b1);
-    Nemo.push_back(b2);
-    Nemo.push_back(b3);
-    Nemo.evolution(0.5);
-    std::cout <<"x: " << Nemo.TotalBoids()[0].x << '\t' << "y: " << Nemo.TotalBoids()[0].y << '\t' << "v_x: " << Nemo.TotalBoids()[0].v_x << '\t' << "v_y: " << Nemo.TotalBoids()[0].v_y << '\n';
-    std::cout <<"x: " << Nemo.TotalBoids()[1].x << '\t' << "y: " << Nemo.TotalBoids()[1].y << '\t' << "v_x: " << Nemo.TotalBoids()[1].v_x << '\t' << "v_y: " << Nemo.TotalBoids()[1].v_y << '\n';
-    std::cout <<"x: " << Nemo.TotalBoids()[2].x << '\t' << "y: " << Nemo.TotalBoids()[2].y << '\t' << "v_x: " << Nemo.TotalBoids()[2].v_x << '\t' << "v_y: " << Nemo.TotalBoids()[2].v_y << '\n';
   
+  BoidState b1{3., 1., 0.3, 2.0};
+  BoidState b2{2., 1., 1.7, -0.7};
+  BoidState b3{1., 4., -0.5, 0.4};
+  SeparationRule s{0.2, 20};
+  AlignmentRule a{0.3};
+  CohesionRule c{1.3};
+  std::vector<BoidState> v{b1, b2, b3};
+  auto vector = NeighborsControl(v, b2, 40.);
+  std::cout << vector.size() << '\n';
+  std::cout << "Components x and y of v1: " << s(vector, b2).val_x << "x"
+            << s(v, b1).val_y << "y" << '\n';
+  std::cout << "Components x and y of v2: " << a(vector, b2).val_x << "x"
+            << a(vector, b1).val_y << "y" << '\n';
+  std::cout << "Components x and y of v3: " << c(vector, b2).val_x << "x"
+            << c(vector, b1).val_y << "y" << '\n';
+
 }
