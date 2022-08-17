@@ -342,6 +342,11 @@ TEST_CASE("Testing same_pos_check") {
   BoidState b4{2., 1., 2., 1.};
   std::vector<BoidState> boids{b1, b2, b3, b4};
   CHECK(same_pos_check(boids) == false);
+  BoidState b5{2., 1., 2., 1.};
+  BoidState b6{1., 4., 0.3, 1.2};
+  BoidState b7{1., 2.1, 0.2, 2.};
+  std::vector<BoidState> boid{b5, b6, b7};
+  CHECK(same_pos_check(boid) == true);
 }
 
 TEST_CASE("Testing singleboid function") {
