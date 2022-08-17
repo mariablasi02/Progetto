@@ -57,7 +57,7 @@ bool operator!=(Components const& c1, Components const& c2);
 int size(std::vector<BoidState> const& v);
 
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
-                                        BoidState const& b1, double d);
+                                        BoidState const& b1, double const d);
 
 class SeparationRule {
   double const s_;
@@ -84,11 +84,11 @@ class AlignmentRule {
 
   double get_a() const;
 
-  Components operator()(std::vector<BoidState> boids,
+  Components operator()(std::vector<BoidState> const& boids,
                         BoidState const& b1) const;
 };
 
-Components COM(std::vector<BoidState> const& vec, BoidState const& b1);
+Components centre_of_mass(std::vector<BoidState> const& vec, BoidState const& b1);
 
 class CohesionRule {
   double const cohesion_const_;
@@ -100,9 +100,11 @@ class CohesionRule {
                         BoidState const& b1) const;
 };
 
-bool same_pos_check(BoidState const& b1, std::vector<BoidState> boids);
+bool same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids);
 
-void same_position(BoidState const& b1, std::vector<BoidState> boids);
+bool same_pos_check(std::vector<BoidState> const& boid);
+
+std::vector<BoidState> velocity_limit(std::vector<BoidState>& b);
 
 std::vector<BoidState> borders(
     std::vector<BoidState>& v);  // è una prova la definizione è in boids.cpp

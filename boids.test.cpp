@@ -122,6 +122,8 @@ TEST_CASE("Boid already in the group") {
 }
 
 TEST_CASE("Testing Separation rule") {
+
+  //PARTE L'ASSERT, GIUSTO COSI'
   /*SUBCASE("General test ") {
     BoidState b1{0., 1., 2., 3.};
     BoidState b2{0., 3., 5., 1.};
@@ -236,32 +238,35 @@ TEST_CASE("Testing alignment rule") {
   }
 }
 
-TEST_CASE("Testing function COM") {
-  SUBCASE("Testing function COM") {
+TEST_CASE("Testing function cente_of_mass") {
+  SUBCASE("Testing function centre_of_mass") {
     BoidState b1{1., 2., 3., 4.};
     BoidState b2{2., 3., 4., 5.};
     BoidState b3{-1., 5., 6., 7.};
     std::vector<BoidState> vec{b1, b2, b3};
 
-    CHECK(COM(vec, b1) == Components{0.5, 4.0});
-    CHECK(COM(vec, b1).val_x == 0.5);
+    CHECK(centre_of_mass(vec, b1) == Components{0.5, 4.0});
+    CHECK(centre_of_mass(vec, b1).val_x == 0.5);
 
-    CHECK(COM(vec, b2) == Components{0.0, 3.5});
-    CHECK(COM(vec, b2).val_y == 3.5);
+    CHECK(centre_of_mass(vec, b2) == Components{0.0, 3.5});
+    CHECK(centre_of_mass(vec, b2).val_y == 3.5);
   }
-  SUBCASE("Testing with a empty vector") {
+
+  //in questo caso parte l'assert, giusto così
+  
+  /* SUBCASE("Testing with a empty vector") {
     BoidState b1{2., 3., 6., 1.5};
     std::vector<BoidState> v1{};
-    CHECK(COM(v1, b1).val_x == 2.0);
-    CHECK(COM(v1, b1).val_y == 3.0);
+    CHECK(centre_of_mass(v1, b1).val_x == 2.0);
+    CHECK(centre_of_mass(v1, b1).val_y == 3.0);
   }
 
   SUBCASE("Testing with a single boid") {
     BoidState b1{2.7, 3.9, 6.1, 1.5};
     std::vector<BoidState> v1{b1};
-    CHECK(COM(v1, b1).val_x == 2.7);
-    CHECK(COM(v1, b1).val_y == 3.9);
-  }
+    CHECK(centre_of_mass(v1, b1).val_x == 2.7);
+    CHECK(centre_of_mass(v1, b1).val_y == 3.9);
+  } */
 }
 
 TEST_CASE("Testing Cohesion rule") {
@@ -331,6 +336,14 @@ TEST_CASE("Testing Neighbor-Control function") {
   auto b = NeighborsControl(pesci.TotalBoids(), b1, 3.);
   CHECK(static_cast<int>(b.size()) == 2);
 }
+TEST_CASE("Testing same_pos_check"){
+  BoidState b1{2., 1., 2., 1.};
+  BoidState b2{1., 4., 0.3, 1.2};
+  BoidState b3{1., 2.1, 0.2, 2.};
+  BoidState b4{2., 1., 2., 1.};
+  std::vector<BoidState> boids{b1, b2, b3, b4};
+  CHECK(same_pos_check(boids) == false);
+}
 
 TEST_CASE("Testing singleboid function") {
   SUBCASE("boid in a group of three") {
@@ -372,7 +385,7 @@ TEST_CASE("Testing evolution function") {
     CHECK((bb.TotalBoids())[0].v_x == 336.9);
     CHECK((bb.TotalBoids())[0].v_y == 281.95);
   }
-  SUBCASE("Testing velocity_limits") {
+ /* SUBCASE("Testing velocity_limits") {
     BoidState b1{3., 1., 275., 100.};
     BoidState b2{2., 1., 78., 520};
     BoidState b3{1., 4., 190, 600};
@@ -389,7 +402,7 @@ TEST_CASE("Testing evolution function") {
     CHECK((boid.TotalBoids())[2].v_x == 250);
     CHECK((boid.TotalBoids())[1].v_y == 450);
     CHECK((boid.TotalBoids())[2].v_y == 450);
-  }
+  }*/
   SUBCASE("Testing borders") {
     BoidState b1{1179., 3., 4., 2.};
     BoidState b2{-4.3, 700., 1., 3.};
@@ -413,17 +426,6 @@ TEST_CASE("Testing evolution function") {
   }
 }
 
-TEST_CASE("Testing Boids with the same position") {
-  SUBCASE("Testing Boids") {
-    BoidState b1{7., 2., 2., 3.};
-    BoidState b2{3., 2., 3., 4.};
-    BoidState b3{6., 2., 3., 3.};
-    std::vector<BoidState> vec{b1, b2, b3};
-    BoidState b{1., 2., 2., 3.};
-    same_position(b, vec);
-    CHECK(static_cast<int>(vec.size()) == 3);
-  }
-}
 
 /*TEST_CASE("Testing mean and std dev") {
     SUBCASE("Testing std_dev_position") {}

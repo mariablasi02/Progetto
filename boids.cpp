@@ -24,22 +24,25 @@ int size(std::vector<BoidState> const& v) {
 }
 
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
-                                        BoidState const& b1, double d) {
+                                        BoidState const& b1, double const d) {
   auto p = pesci;
-  auto n = pesci.size();
-  // auto b1 = *p.begin();
+  auto n = size(pesci);
+
   p.erase(std::remove_if(p.begin(), p.end(),
-                         [b1, d](BoidState b) { return (norm(b1, b) > d); }),
+                         [&b1, d](BoidState const& b) {
+                           return (norm(b1, b) > d);
+                         }),  // provato a sistemare by ref by value, funzia?
           p.end());
-  assert(pesci.size() == n);
+  assert(size(pesci) == n);
 
   return p;
 }
 
-bool same_pos_check(BoidState const& b1, std::vector<BoidState> boids) {
+bool same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids) {
   auto same_position_it =
-      std::find_if(boids.begin(), boids.end(),
-                   [b1](BoidState b) { return b.x == b1.x && b.y == b1.y; });
+      std::find_if(boids.begin(), boids.end(), [&b1](BoidState const& b) {
+        return b.x == b1.x && b.y == b1.y;
+      });  // uguale a sopra per le lambda
   if (same_position_it != boids.end()) {
     return false;
   } else {
@@ -47,16 +50,22 @@ bool same_pos_check(BoidState const& b1, std::vector<BoidState> boids) {
   }
 }
 
-void same_position(BoidState const& b1, std::vector<BoidState> boids) {
-  auto it = boids.begin();
-  for (; it != boids.end(); ++it) {
-    auto same_position_it =
-        std::find_if(boids.begin(), boids.end(),
-                     [b1](BoidState b) { return b.x == b1.x && b.y == b1.y; });
-    if (same_position_it != boids.end()) {
-      boids.erase(same_position_it);
+bool same_pos_check(std::vector<BoidState> const& boid) {
+  auto it = boid.begin();
+  for (; it != boid.end(); ++it) {
+    auto c = *it;
+    auto it_ = std::next(it);
+    auto same_pos_it = std::find_if(it_, boid.end(), [&c](BoidState const& n) {
+      return c.x == n.x && c.y == n.y;
+    });
+    if (same_pos_it != boid.end()) {
+      break;
     }
-    assert(same_pos_check(b1, boids));
+  }
+  if (it != boid.end()) {
+    return false;
+  } else {
+    return true;
   }
 }
 
@@ -68,9 +77,6 @@ BoidState Boids::singleboid(std::vector<BoidState> const& vec,
     auto v_2 = a_(vec, b1);
     auto v_3 = c_(vec, b1);
     auto v_new = v_old + v_1 + v_2 + v_3;
-    // assert(v_1.val_x != 0. && v_1.val_y != 0.);
-    // assert(v_2.val_x != 0. && v_2.val_y != 0.);
-    // assert(v_3.val_x != 0. && v_3.val_y != 0.);
     return {b1.x + v_new.val_x * delta_t, b1.y + v_new.val_y * delta_t,
             v_new.val_x, v_new.val_y};
   } else {
@@ -101,31 +107,19 @@ void Boids::push_back(BoidState const& boid) {
   }
 }
 
-std::vector<BoidState> velocity_limit_(std::vector<BoidState>& b) {
-  std::transform(b.begin(), b.end(), b.begin(), [](BoidState b_) {
-    /* if(b_.v_x < 250 && b_.v_x > 0){
-      b_.v_x = 250;
-    } */
-    if (b_.v_x > 100) {
-      b_.v_x = 100;
+std::vector<BoidState> velocity_limit(std::vector<BoidState>& b) {
+  std::transform(b.begin(), b.end(), b.begin(), [](BoidState& b_) {
+    if (b_.v_x > 10) {
+      b_.v_x = 10.;
     }
-    /* if(b_.v_y < 250 && b_.v_y > 0){
-      b_.v_y = 250;
-    } */
-    if (b_.v_y > 100) {
-      b_.v_y = 100;
+    if (b_.v_y > 10) {
+      b_.v_y = 10.;
     }
-    /* if(b_.v_x > -250 && b_.v_x < 0){
-      b_.v_x = -250;
-    } */
-    if (b_.v_x < -100) {
-      b_.v_x = -100;
+    if (b_.v_x < -10) {
+      b_.v_x = -10.;
     }
-    /* if(b_.v_y > -250 && b_.v_y < 0){
-      b_.v_y = -250;
-    } */
-    if (b_.v_y < -100) {
-      b_.v_y = -100;
+    if (b_.v_y < -10) {
+      b_.v_y = -10.;
     }
     return BoidState{b_.x, b_.y, b_.v_x, b_.v_y};
   });
@@ -133,7 +127,7 @@ std::vector<BoidState> velocity_limit_(std::vector<BoidState>& b) {
 }
 
 std::vector<BoidState> borders(std::vector<BoidState>& v) {
-  std::transform(v.begin(), v.end(), v.begin(), [](BoidState b) {
+  std::transform(v.begin(), v.end(), v.begin(), [](BoidState& b) {
     if (b.x <= 0.) {
       b.x = 1179.;
     } else if (b.x >= 1179.) {
@@ -151,17 +145,20 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
 }
 
 void Boids::evolution(double const delta_t) {
-  Boids b{n(), d(), s(), a(), c()};
+  // Boids b{n_, d_, s_, a_, c_}; //prima era b{n(), ...};
   std::vector<BoidState> fishes;
   for (auto fish : boids_) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
-    fishes.push_back(b.singleboid(nearfishes, fish, delta_t));
+    fishes.push_back(
+        singleboid(nearfishes, fish, delta_t));  // prima era b.singleboid(...)
   }
 
   borders(fishes);
-  velocity_limit_(fishes);
+  // velocity_limit(fishes);
+  
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
+  assert(same_pos_check(boids_));
 }
 
 void Boids::setvector(std::vector<BoidState> const& b) {  // prova
@@ -172,8 +169,7 @@ std::string state(Boids& b, double const delta_t) {
   b.evolution(delta_t);
   auto vec = b.TotalBoids();
 
-  std::vector<double> position;
-  std::vector<double> velocity;
+  std::vector<double> position{};
 
   auto it = vec.begin();
 
@@ -187,15 +183,18 @@ std::string state(Boids& b, double const delta_t) {
   auto mean_position = (std::accumulate(position.begin(), position.end(), 0.)) /
                        static_cast<int>(position.size());
 
-  auto sums_pos2_medio = (std::inner_product(position.begin(), position.end(),
-                                             position.begin(), 0.)) /
-                         static_cast<int>(position.size());
+  auto sums_pos2_med = (std::inner_product(position.begin(), position.end(),
+                                           position.begin(), 0.)) /
+                       static_cast<int>(position.size());
   auto std_dev_position =
-      std::sqrt(sums_pos2_medio - mean_position * mean_position);
+      std::sqrt(sums_pos2_med - mean_position * mean_position) /
+      std::sqrt(static_cast<int>(position.size()));
 
   auto sum =
       std::accumulate(vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
   Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
+
+  std::vector<double> velocity{};
 
   for (auto i : vec) {
     velocity.push_back(velocity_norm(i));
@@ -203,16 +202,18 @@ std::string state(Boids& b, double const delta_t) {
   auto mean_velocity = std::sqrt(mean_vel.val_x * mean_vel.val_x +
                                  mean_vel.val_y * mean_vel.val_y);
 
-  auto sums_vel2_medio = (std::inner_product(velocity.begin(), velocity.end(),
-                                             velocity.begin(), 0.)) /
-                         static_cast<int>(velocity.size());
+  auto sums_vel2_med = (std::inner_product(velocity.begin(), velocity.end(),
+                                           velocity.begin(), 0.)) /
+                       static_cast<int>(velocity.size());
   auto std_dev_velocity =
-      std::sqrt(sums_vel2_medio - mean_velocity * mean_velocity);
+      std::sqrt(sums_vel2_med - mean_velocity * mean_velocity) /
+      std::sqrt(static_cast<int>(velocity.size()));
+
   auto pos = std::to_string(mean_position);
   auto pos_stdev = std::to_string(std_dev_position);
   auto speed = std::to_string(mean_velocity);
   auto speed_stdev = std::to_string(std_dev_velocity);
-  return "Mean position and standard deviation: " + pos + "+/-" + pos_stdev +
-         '\n' + "Mean velocity and standard deviation: " + speed + "+/-" +
+  return "Mean position and standard deviation: " + pos + " +/- " + pos_stdev +
+         '\n' + "Mean velocity and standard deviation: " + speed + " +/- " +
          speed_stdev + '\n';
 }
