@@ -1,6 +1,7 @@
 #include "boids.hpp"
 
 #include <string.h>
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -26,9 +27,11 @@ std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
                                         BoidState const& b1, double const d) {
   auto p = pesci;
   auto n = size(pesci);
-  
+
   p.erase(std::remove_if(p.begin(), p.end(),
-                         [&b1, d](BoidState const& b) { return (norm(b1, b) > d); }), //provato a sistemare by ref by value, funzia?
+                         [&b1, d](BoidState const& b) {
+                           return (norm(b1, b) > d);
+                         }),  // provato a sistemare by ref by value, funzia?
           p.end());
   assert(size(pesci) == n);
 
@@ -37,16 +40,15 @@ std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
 
 bool same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids) {
   auto same_position_it =
-      std::find_if(boids.begin(), boids.end(),
-                   [&b1](BoidState const& b) { return b.x == b1.x && b.y == b1.y; }); //uguale a sopra per le lambda
+      std::find_if(boids.begin(), boids.end(), [&b1](BoidState const& b) {
+        return b.x == b1.x && b.y == b1.y;
+      });  // uguale a sopra per le lambda
   if (same_position_it != boids.end()) {
     return false;
   } else {
     return true;
   }
 }
-
-
 
 BoidState Boids::singleboid(std::vector<BoidState> const& vec,
                             BoidState const& b1, double const delta_t) const {
@@ -86,36 +88,27 @@ void Boids::push_back(BoidState const& boid) {
   }
 }
 
- std::vector<BoidState> velocity_limit(std::vector<BoidState>& b) {
+std::vector<BoidState> velocity_limit(std::vector<BoidState>& b) {
   std::transform(b.begin(), b.end(), b.begin(), [](BoidState& b_) {
-    /* if(b_.v_x < 250 && b_.v_x > 0){
-      b_.v_x = 250;
-    } */
-    if (b_.v_x > 20) {
-      b_.v_x = 20.;
+    if (b_.v_x > 1.3) {
+      b_.v_x = 1.3;
     }
-    /* if(b_.v_y < 250 && b_.v_y > 0){
-      b_.v_y = 250;
-    } */
-    if (b_.v_y > 20) {
-      b_.v_y = 20.;
+
+    if (b_.v_y > 1.) {
+      b_.v_y = 1.;
     }
-    /* if(b_.v_x > -250 && b_.v_x < 0){
-      b_.v_x = -250;
-    } */
-    if (b_.v_x < -20) {
-      b_.v_x = -20.;
+
+    if (b_.v_x < -1.) {
+      b_.v_x = -1.;
     }
-    /* if(b_.v_y > -250 && b_.v_y < 0){
-      b_.v_y = -250;
-    } */
-    if (b_.v_y < -20) {
-      b_.v_y = -20.;
+
+    if (b_.v_y < -1.) {
+      b_.v_y = -1.;
     }
     return BoidState{b_.x, b_.y, b_.v_x, b_.v_y};
   });
   return b;
-} 
+}
 
 std::vector<BoidState> borders(std::vector<BoidState>& v) {
   std::transform(v.begin(), v.end(), v.begin(), [](BoidState& b) {
@@ -129,6 +122,7 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
     } else if (b.y >= 691.) {
       b.y = 0.;
     }
+
     assert(b.x >= 0. && b.x <= 1179. && b.y >= 0. && b.y <= 691.);
     return BoidState{b.x, b.y, b.v_x, b.v_y};
   });
@@ -136,11 +130,12 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
 }
 
 void Boids::evolution(double const delta_t) {
-  //Boids b{n_, d_, s_, a_, c_}; //prima era b{n(), ...};
+  // Boids b{n_, d_, s_, a_, c_}; //prima era b{n(), ...};
   std::vector<BoidState> fishes;
   for (auto fish : boids_) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
-    fishes.push_back(singleboid(nearfishes, fish, delta_t)); //prima era b.singleboid(...)
+    fishes.push_back(
+        singleboid(nearfishes, fish, delta_t));  // prima era b.singleboid(...)
   }
 
   borders(fishes);
@@ -172,11 +167,11 @@ std::string state(Boids& b, double const delta_t) {
                        static_cast<int>(position.size());
 
   auto sums_pos2_med = (std::inner_product(position.begin(), position.end(),
-                                             position.begin(), 0.)) /
-                         static_cast<int>(position.size());
+                                           position.begin(), 0.)) /
+                       static_cast<int>(position.size());
   auto std_dev_position =
       std::sqrt(sums_pos2_med - mean_position * mean_position) /
-                         std::sqrt(static_cast<int>(position.size()));
+      std::sqrt(static_cast<int>(position.size()));
 
   auto sum =
       std::accumulate(vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
@@ -191,10 +186,11 @@ std::string state(Boids& b, double const delta_t) {
                                  mean_vel.val_y * mean_vel.val_y);
 
   auto sums_vel2_med = (std::inner_product(velocity.begin(), velocity.end(),
-                                             velocity.begin(), 0.)) /
-                         static_cast<int>(velocity.size());
+                                           velocity.begin(), 0.)) /
+                       static_cast<int>(velocity.size());
   auto std_dev_velocity =
-      std::sqrt(sums_vel2_med - mean_velocity * mean_velocity)/std::sqrt(static_cast<int>(velocity.size()));
+      std::sqrt(sums_vel2_med - mean_velocity * mean_velocity) /
+      std::sqrt(static_cast<int>(velocity.size()));
 
   auto pos = std::to_string(mean_position);
   auto pos_stdev = std::to_string(std_dev_position);

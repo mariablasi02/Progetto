@@ -250,8 +250,8 @@ TEST_CASE("Testing function COM") {
     CHECK(COM(vec, b2).val_y == 3.5);
   }
 
-  //in questo caso parte l'assert, giusto così
-  
+  // in questo caso parte l'assert, giusto così
+
   /* SUBCASE("Testing with a empty vector") {
     BoidState b1{2., 3., 6., 1.5};
     std::vector<BoidState> v1{};
@@ -355,12 +355,12 @@ TEST_CASE("Testing singleboid function") {
 
 TEST_CASE("Testing evolution function") {
   SUBCASE("Testing everything without borders") {
-    BoidState b1{2., 3., 350., 273.};
-    BoidState b2{6., 1., 300, 303.};
-    BoidState b3{4., 3., 340., 280.};
-    SeparationRule s{0.5, 3.};
+    BoidState b1{2., 3., 4., 2.};
+    BoidState b2{6., 1., -1., 1.};
+    BoidState b3{4., 3., 4., 1.};
+    SeparationRule s{5, 3.};
     AlignmentRule a{0.5};
-    CohesionRule c{0.3};
+    CohesionRule c{3};
     // std::vector<BoidState> vec{b1, b2, b3};
     Boids bb{3, 6., s, a, c};
     bb.push_back(b1);
@@ -368,17 +368,17 @@ TEST_CASE("Testing evolution function") {
     bb.push_back(b3);
     CHECK(bb.TotalBoids().size() == 3);
     auto b_new = bb.singleboid(bb.TotalBoids(), b1, 0.5);
-    CHECK(b_new.v_x == 336.9);
+    CHECK(b_new.v_x == 21.75);
     bb.evolution(0.5);
-    CHECK((bb.TotalBoids())[0].x == 170.45);
-    CHECK((bb.TotalBoids())[0].y == 143.975);
-    CHECK((bb.TotalBoids())[0].v_x == 336.9);
-    CHECK((bb.TotalBoids())[0].v_y == 281.95);
+    CHECK((bb.TotalBoids())[0].x == 12.875);
+    CHECK((bb.TotalBoids())[0].y == 2.25);
+    CHECK((bb.TotalBoids())[0].v_x == 1.3);
+    CHECK((bb.TotalBoids())[0].v_y == -1.0);
   }
   SUBCASE("Testing velocity_limits") {
-    BoidState b1{3., 1., 275., 100.};
-    BoidState b2{2., 1., 78., 520};
-    BoidState b3{1., 4., 190, 600};
+    BoidState b1{3., 1., 0.3, 2.0};
+    BoidState b2{2., 1., 1.7, -0.7};
+    BoidState b3{1., 4., -0.5, 0.4};
     SeparationRule s{0.2, 20};
     AlignmentRule a{0.3};
     CohesionRule c{1.3};
@@ -387,11 +387,10 @@ TEST_CASE("Testing evolution function") {
     boid.push_back(b2);
     boid.push_back(b3);
     boid.evolution(0.3);
-    CHECK((boid.TotalBoids())[0].v_y == 250);
-    CHECK((boid.TotalBoids())[1].v_x == 250);
-    CHECK((boid.TotalBoids())[2].v_x == 250);
-    CHECK((boid.TotalBoids())[1].v_y == 450);
-    CHECK((boid.TotalBoids())[2].v_y == 450);
+    CHECK((boid.TotalBoids())[0].v_x == -1.0);
+    CHECK((boid.TotalBoids())[0].v_y == 1.0);
+    CHECK((boid.TotalBoids())[1].v_x == doctest::Approx(1.16));
+    CHECK((boid.TotalBoids())[1].v_y == 1.0);
   }
   SUBCASE("Testing borders") {
     BoidState b1{1179., 3., 4., 2.};
@@ -415,7 +414,6 @@ TEST_CASE("Testing evolution function") {
     CHECK((bb.TotalBoids())[3].y == 691.);
   }
 }
-
 
 /*TEST_CASE("Testing mean and std dev") {
     SUBCASE("Testing std_dev_position") {}
