@@ -127,7 +127,6 @@ int main() {
     window.draw(sprite);
     for (auto& b : boidscopy) {
       triangle.setPosition(b.x, b.y);
-
       window.draw(triangle);
     }
     window.draw(rect);

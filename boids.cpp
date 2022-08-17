@@ -149,7 +149,9 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
 }
 
 void Boids::evolution(double const delta_t) {
-  // Boids b{n_, d_, s_, a_, c_}; //prima era b{n(), ...};
+  if (delta_t < 0  || delta_t == 0){
+    throw std::runtime_error{"Time must be a positive value"};
+  }
   std::vector<BoidState> fishes;
   for (auto fish : boids_) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
