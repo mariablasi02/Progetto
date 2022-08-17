@@ -1,6 +1,8 @@
-// Compile with: g++ -Wall -Wextra -fsanitize=address boids.cpp rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system 
+// Compile with: g++ -Wall -Wextra -fsanitize=address boids.cpp rulesofflight.cpp operators.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system 
 
 //close the window from sfml button
+
+// parameters: s= 0.001, a = 0.9, c= 0.03 
 #include "boids.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
@@ -24,7 +26,7 @@ int main() {
   std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> pos_x(0,1179);
   std::uniform_real_distribution<double> pos_y(0, 690);
-  std::uniform_real_distribution<double> speed(-100, 100);
+  std::uniform_real_distribution<double> speed(-1.5, 1.5);
 
   std::cout << "Insert number of boids (at least 2): " << '\n';
   int n;
@@ -42,7 +44,7 @@ int main() {
 
   std::cin >> s >> a >> c;
   
-  Boids boids{n, 400., SeparationRule{s, 25.}, AlignmentRule{a},
+  Boids boids{n, 550., SeparationRule{s, 600.}, AlignmentRule{a},
             CohesionRule{c}};
 
   auto vec_boids = boids.TotalBoids();
@@ -56,15 +58,15 @@ int main() {
 
   boids.setvector(vec_boids);
 
-  state(boids, 0.1);
 
   // std::cout << (bob.TotalBoids())[1].x << '\n';
 
 
-  auto const delta_t{sf::milliseconds(1)};
-  int const fps = 30;
-  int const step_evolution{300 / fps};
+  auto const delta_t{sf::milliseconds(1000)};
+  int const fps = 10;
+  int const step_evolution{1000 / fps};
 
+  std::cout << state(boids, delta_t.asSeconds()) <<'\n';
  
 
   sf::RenderWindow window(sf::VideoMode(1179, 691), "Sea");

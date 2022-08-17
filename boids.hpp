@@ -33,6 +33,8 @@ BoidState operator*(BoidState const& b1, BoidState const& b2);
 
 double norm(BoidState const& b1, BoidState const& b2);
 
+double velocity_norm(BoidState const& b);
+
 struct Components {
   double val_x;
   double val_y;
