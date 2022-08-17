@@ -1,8 +1,8 @@
-// Compile with: g++ -Wall -Wextra -fsanitize=address boids.cpp rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system 
+// Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system 
 
 //close the window from sfml button
 
-// parameters: s= 0.001, a = 0.9, c= 0.03 
+// parameters: s= 0.001, a = 0.9, c= 0.03  for 1 ms
 #include "boids.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
@@ -24,7 +24,7 @@ auto evolve(Boids& boids, int sp_evolution, sf::Time delta_t) {
 int main() {
   std::random_device rd;
   std::default_random_engine gen(rd());
-  std::uniform_real_distribution<double> pos_x(0,1179);
+  std::uniform_real_distribution<double> pos_x(0, 1179);
   std::uniform_real_distribution<double> pos_y(0, 690);
   std::uniform_real_distribution<double> speed(-100, 100);
 
@@ -44,16 +44,20 @@ int main() {
 
   std::cin >> s >> a >> c;
   
-  Boids boids{n, 200., SeparationRule{s, 25.}, AlignmentRule{a},
+  Boids boids{n, 300., SeparationRule{s, 25.}, AlignmentRule{a},
             CohesionRule{c}};
 
   auto vec_boids = boids.TotalBoids();
+
+//controllo boids stassa posizione -> capire come fare controllo sulla posizione
 
   vec_boids.resize(n);
   
   std::generate(vec_boids.begin(), vec_boids.end(), [&gen, &pos_x, &pos_y, &speed]() -> BoidState {
     return {pos_x(gen), pos_y(gen), speed(gen), speed(gen)};
   });
+
+
   // std::cout << bob1[1].x <<'\n';
 
   boids.setvector(vec_boids);
@@ -62,9 +66,10 @@ int main() {
   // std::cout << (bob.TotalBoids())[1].x << '\n';
 
 
-  auto const delta_t{sf::milliseconds(10)};
+  auto const delta_t{sf::milliseconds(500)};
+
   int const fps = 30;
-  int const step_evolution{300 / fps};
+  int const step_evolution{3000 / fps};
 
   std::cout << state(boids, delta_t.asSeconds()) <<'\n';
  
@@ -107,13 +112,13 @@ int main() {
     }
     auto boidscopy = evolve(boids, step_evolution, delta_t);
     stats.setString(state(boids, delta_t.asSeconds()));
-    int i = 0;
+    //int i = 0;
 
     window.clear();
     window.draw(sprite);
     for(auto& b : boidscopy){
       triangle.setPosition(b.x, b.y);
-      switch(static_cast<int>(b.y)) {
+      /* switch(static_cast<int>(b.y)) {
         case 0:
         triangle.move(0.f, 690); 
         boids.TotalBoids()[i].y = 690;      
@@ -132,7 +137,7 @@ int main() {
       triangle.move(-1178,0.f);
       boids.TotalBoids()[i].x = 1.;
     }
-      ++i;
+      ++i; */
       window.draw(triangle);
   
     }

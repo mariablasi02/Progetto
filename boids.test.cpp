@@ -249,7 +249,10 @@ TEST_CASE("Testing function COM") {
     CHECK(COM(vec, b2) == Components{0.0, 3.5});
     CHECK(COM(vec, b2).val_y == 3.5);
   }
-  SUBCASE("Testing with a empty vector") {
+
+  //in questo caso parte l'assert, giusto così
+  
+  /* SUBCASE("Testing with a empty vector") {
     BoidState b1{2., 3., 6., 1.5};
     std::vector<BoidState> v1{};
     CHECK(COM(v1, b1).val_x == 2.0);
@@ -261,7 +264,7 @@ TEST_CASE("Testing function COM") {
     std::vector<BoidState> v1{b1};
     CHECK(COM(v1, b1).val_x == 2.7);
     CHECK(COM(v1, b1).val_y == 3.9);
-  }
+  } */
 }
 
 TEST_CASE("Testing Cohesion rule") {
@@ -413,17 +416,6 @@ TEST_CASE("Testing evolution function") {
   }
 }
 
-TEST_CASE("Testing Boids with the same position") {
-  SUBCASE("Testing Boids") {
-    BoidState b1{7., 2., 2., 3.};
-    BoidState b2{3., 2., 3., 4.};
-    BoidState b3{6., 2., 3., 3.};
-    std::vector<BoidState> vec{b1, b2, b3};
-    BoidState b{1., 2., 2., 3.};
-    same_position(b, vec);
-    CHECK(static_cast<int>(vec.size()) == 3);
-  }
-}
 
 /*TEST_CASE("Testing mean and std dev") {
     SUBCASE("Testing std_dev_position") {}
