@@ -1,5 +1,4 @@
-// Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp
-// rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system close
+// Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system close
 // the window from sfml button parameters: s ~ 1, a ~ 0.5, c ~ 1 for 1 s
 // parameters: s= 0.001, a = 0.9, c= 0.03  for 1 ms
 #include <SFML/Graphics.hpp>
@@ -19,6 +18,18 @@ auto evolve(Boids& boids, int sp_evolution, sf::Time delta_t) {
     boids.evolution(unit_of_t);
   }
   return boids.TotalBoids();
+}
+
+auto simulate(Boids& b, double duration, int step_evolution, int prescale){
+    std::vector<std::string> b_states;
+    double delta_t{duration/step_evolution};
+    for (int step = 0; step != step_evolution; ++step){
+      if (step % prescale == 0){
+        b_states.push_back(state(b, delta_t)); //state of the chain after delta_t
+      }
+    }
+    std::cout << b_states.size();
+    return b_states;
 }
 
 int main() {
@@ -73,11 +84,11 @@ int main() {
     }
   }
 
-  // std::cout << bob1[1].x <<'\n';
+  auto b_states = simulate(boids, 30, 3000, 100);
+  std::for_each(b_states.begin(), b_states.end(),[](std::string const& state){std::cout << state << '\n';});
+
 
   boids.setvector(vec_boids);
-
-  // std::cout << (bob.TotalBoids())[1].x << '\n';
 
   auto const delta_t{sf::seconds(1)};
 
