@@ -164,7 +164,11 @@ void Boids::evolution(double const delta_t) {
 
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
+<<<<<<< HEAD
   //assert(same_pos_check(boids_));
+=======
+  assert(same_pos_check(boids_)==true);
+>>>>>>> 25ced577dbf45fa7d216a68f749bbefa18702869
 }
 
 void Boids::setvector(std::vector<BoidState> const& b) {  // prova
