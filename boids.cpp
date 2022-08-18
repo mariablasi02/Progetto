@@ -35,7 +35,7 @@ std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
   return p;
 }
 
-auto same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids) {
+bool same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids) {
   auto same_position_it =
       std::find_if(boids.begin(), boids.end(), [&b1](BoidState const& b) {
         return b.x == b1.x && b.y == b1.y;
@@ -47,7 +47,7 @@ auto same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids) {
   }
 }
 
-auto same_pos_check(std::vector<BoidState> const& boid) {
+bool same_pos_check(std::vector<BoidState> const& boid) {
   auto it = boid.begin();
   for (; it != boid.end(); ++it) {
     auto c = *it;

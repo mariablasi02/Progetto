@@ -4,7 +4,7 @@
 
 #include "boids.hpp"
 
-auto check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
+bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
   if (!cont.empty()) {
     auto it = std::find(cont.begin(), cont.end(), c);
     return it != cont.end();

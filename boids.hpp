@@ -59,7 +59,7 @@ int size(std::vector<BoidState> const& v);
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
                                         BoidState const& b1, double const d);
 
-auto check_ownership(std::vector<BoidState> const& cont, BoidState const& c);
+bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c);
 
 class SeparationRule {
   double const s_;
@@ -101,9 +101,9 @@ class CohesionRule {
                         BoidState const& b1) const;
 };
 
-auto same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids);
+bool same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids);
 
-auto same_pos_check(std::vector<BoidState> const& boid);
+bool same_pos_check(std::vector<BoidState> const& boid);
 
 std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec);
 
