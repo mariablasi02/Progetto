@@ -1,11 +1,10 @@
 #include <algorithm>
 #include <cmath>
-#include <limits>
 #include <numeric>
 
 #include "boids.hpp"
 
-bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
+auto check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
   if (!cont.empty()) {
     auto it = std::find(cont.begin(), cont.end(), c);
     return it != cont.end();

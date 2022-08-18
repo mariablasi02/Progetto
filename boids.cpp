@@ -1,11 +1,8 @@
 #include "boids.hpp"
 
-#include <string.h>
-
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <limits>
 #include <numeric>
 #include <string>
 
@@ -38,7 +35,7 @@ std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
   return p;
 }
 
-bool same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids) {
+auto same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids) {
   auto same_position_it =
       std::find_if(boids.begin(), boids.end(), [&b1](BoidState const& b) {
         return b.x == b1.x && b.y == b1.y;
@@ -50,7 +47,7 @@ bool same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids) {
   }
 }
 
-bool same_pos_check(std::vector<BoidState> const& boid) {
+auto same_pos_check(std::vector<BoidState> const& boid) {
   auto it = boid.begin();
   for (; it != boid.end(); ++it) {
     auto c = *it;
@@ -68,65 +65,27 @@ bool same_pos_check(std::vector<BoidState> const& boid) {
     return true;
   }
 }
+std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec) {
+  std::transform(boidsvec.begin(), boidsvec.end(), boidsvec.begin(),
+                 [](BoidState& b) {
+                   if (b.v_x > 1.3) {
+                     b.v_x = 1.3;
+                   }
 
-BoidState Boids::singleboid(std::vector<BoidState> const& vec,
-                            BoidState const& b1, double const delta_t) const {
-  if (size(vec) > 1) {
-    Components v_old = {b1.v_x, b1.v_y};
-    auto v_1 = s_(vec, b1);
-    auto v_2 = a_(vec, b1);
-    auto v_3 = c_(vec, b1);
-    auto v_new = v_old + v_1 + v_2 + v_3;
-    return {b1.x + v_new.val_x * delta_t, b1.y + v_new.val_y * delta_t,
-            v_new.val_x, v_new.val_y};
-  } else {
-    return {b1.x + b1.v_x * delta_t, b1.y + b1.v_y * delta_t, b1.v_x, b1.v_y};
-  }
-}
+                   if (b.v_y > 1.) {
+                     b.v_y = 1.;
+                   }
 
-std::vector<BoidState> Boids::TotalBoids() const { return boids_; }
+                   if (b.v_x < -1.) {
+                     b.v_x = -1.;
+                   }
 
-int Boids::n() const { return n_; }
-
-double Boids::d() const { return d_; }
-
-SeparationRule Boids::s() const { return s_; }
-
-AlignmentRule Boids::a() const {
-  assert(a_.get_a() < 1.);
-  return a_;
-}
-
-CohesionRule Boids::c() const { return c_; }
-
-void Boids::push_back(BoidState const& boid) {
-  if (same_pos_check(boid, boids_) == true) {
-    boids_.push_back(boid);
-  } else {
-    throw std::runtime_error{"Error: this boid is already in the goup"};
-  }
-}
-
-std::vector<BoidState> velocity_limit(std::vector<BoidState>& b) {
-  std::transform(b.begin(), b.end(), b.begin(), [](BoidState& b_) {
-    if (b_.v_x > 1.3) {
-      b_.v_x = 1.3;
-    }
-
-    if (b_.v_y > 1.) {
-      b_.v_y = 1.;
-    }
-
-    if (b_.v_x < -1.) {
-      b_.v_x = -1.;
-    }
-
-    if (b_.v_y < -1.) {
-      b_.v_y = -1.;
-    }
-    return BoidState{b_.x, b_.y, b_.v_x, b_.v_y};
-  });
-  return b;
+                   if (b.v_y < -1.) {
+                     b.v_y = -1.;
+                   }
+                   return BoidState{b.x, b.y, b.v_x, b.v_y};
+                 });
+  return boidsvec;
 }
 
 std::vector<BoidState> borders(std::vector<BoidState>& v) {
@@ -148,8 +107,33 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
   return v;
 }
 
+BoidState Boids::singleboid(std::vector<BoidState> const& vec,
+                            BoidState const& b1, double const delta_t) const {
+  if (size(vec) > 1) {
+    Components v_old = {b1.v_x, b1.v_y};
+    auto v_1 = s_(vec, b1);
+    auto v_2 = a_(vec, b1);
+    auto v_3 = c_(vec, b1);
+    auto v_new = v_old + v_1 + v_2 + v_3;
+    return {b1.x + v_new.val_x * delta_t, b1.y + v_new.val_y * delta_t,
+            v_new.val_x, v_new.val_y};
+  } else {
+    return {b1.x + b1.v_x * delta_t, b1.y + b1.v_y * delta_t, b1.v_x, b1.v_y};
+  }
+}
+
+std::vector<BoidState> Boids::TotalBoids() const { return boids_; }
+
+void Boids::push_back(BoidState const& boid) {
+  if (same_pos_check(boid, boids_) == true) {
+    boids_.push_back(boid);
+  } else {
+    throw std::runtime_error{"Error: this boid is already in the goup"};
+  }
+}
+
 void Boids::evolution(double const delta_t) {
-  if (delta_t < 0  || delta_t == 0){
+  if (delta_t < 0 || delta_t == 0) {
     throw std::runtime_error{"Time must be a positive value"};
   }
   std::vector<BoidState> fishes;
@@ -164,7 +148,7 @@ void Boids::evolution(double const delta_t) {
 
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
-  assert(same_pos_check(boids_)==true);
+  assert(same_pos_check(boids_) == true);
 }
 
 void Boids::setvector(std::vector<BoidState> const& b) {  // prova

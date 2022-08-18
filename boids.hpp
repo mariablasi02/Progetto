@@ -59,6 +59,8 @@ int size(std::vector<BoidState> const& v);
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
                                         BoidState const& b1, double const d);
 
+auto check_ownership(std::vector<BoidState> const& cont, BoidState const& c);
+
 class SeparationRule {
   double const s_;
   double const distance_s_;
@@ -69,8 +71,6 @@ class SeparationRule {
   Components operator()(std::vector<BoidState> const& b,
                         BoidState const& b1) const;
 };
-
-bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c);
 
 class AlignmentRule {
   double const a_;
@@ -88,7 +88,8 @@ class AlignmentRule {
                         BoidState const& b1) const;
 };
 
-Components centre_of_mass(std::vector<BoidState> const& vec, BoidState const& b1);
+Components centre_of_mass(std::vector<BoidState> const& vec,
+                          BoidState const& b1);
 
 class CohesionRule {
   double const cohesion_const_;
@@ -100,16 +101,16 @@ class CohesionRule {
                         BoidState const& b1) const;
 };
 
-bool same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids);
+auto same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids);
 
-bool same_pos_check(std::vector<BoidState> const& boid);
+auto same_pos_check(std::vector<BoidState> const& boid);
 
-std::vector<BoidState> velocity_limit(std::vector<BoidState>& b);
+std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec);
 
 std::vector<BoidState> borders(
     std::vector<BoidState>& v);  // è una prova la definizione è in boids.cpp
                                  // non si muovono come dico io il problema è il
-                                 // commento nel main-> modificato anche evolve
+// commento nel main-> modificato anche evolve
 
 class Boids {
   int const n_;
@@ -131,16 +132,6 @@ class Boids {
                        double const delta_t) const;
 
   std::vector<BoidState> TotalBoids() const;
-
-  int n() const;
-
-  double d() const;
-
-  SeparationRule s() const;
-
-  AlignmentRule a() const;
-
-  CohesionRule c() const;
 
   void push_back(BoidState const& boid);
 

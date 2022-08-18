@@ -1,5 +1,6 @@
-// Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system 
-// close the window from sfml button parameters: s ~ 1, a ~ 0.5, c ~ 1 for 1 s
+// Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp
+// rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system close
+// the window from sfml button parameters: s ~ 1, a ~ 0.5, c ~ 1 for 1 s
 // parameters: s= 0.001, a = 0.9, c= 0.03  for 1 ms
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
@@ -9,22 +10,20 @@
 #include <iostream>
 #include <random>
 
-
 #include "boids.hpp"
 
-
-auto simulate(Boids& b, double duration, int step_evolution, int prescale){
-    std::vector<std::string> b_states;
-    double delta_t{duration/step_evolution};
-    for (int step = 0; step != step_evolution; ++step){
-      if (step % prescale == 0){
-        b_states.push_back(state(b, delta_t)); //state of the chain after delta_t
-      }
+auto simulate(Boids& b, double duration, int step_evolution, int prescale) {
+  std::vector<std::string> b_states;
+  double delta_t{duration / step_evolution};
+  for (int step = 0; step != step_evolution; ++step) {
+    if (step % prescale == 0) {
+      b_states.push_back(state(b, delta_t));  // state of the chain after
+                                              // delta_t
     }
-    
-    return b_states;
-}
+  }
 
+  return b_states;
+}
 
 auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   double const unit_of_t{delta_t.asSeconds()};
@@ -34,7 +33,6 @@ auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   }
   return boids.TotalBoids();
 }
-
 
 int main() {
   std::random_device rd;
@@ -95,16 +93,19 @@ int main() {
   // std::cout << (bob.TotalBoids())[1].x << '\n';
 
   auto const delta_t{sf::seconds(1)};
-  
+
   int const fps{30};
   int const step_evolution{3000 / fps};
-  //int const prescale{10}; //width of time interval between a measurment and the following
+  // int const prescale{10}; //width of time interval between a measurment and
+  // the following
 
   auto const b_states = simulate(boids, 30.0, 3000, 100);
 
-  std::for_each(b_states.begin(), b_states.end(),[](std::string const& state){std::cout << state << '\n';});
+  std::for_each(b_states.begin(), b_states.end(),
+                [](std::string const& state) { std::cout << state << '\n'; });
 
-  std::cout << "State of the boids summary: "<< state(boids, delta_t.asSeconds()) << '\n'; //at delta_t
+  std::cout << "State of the boids summary: "
+            << state(boids, delta_t.asSeconds()) << '\n';  // at delta_t
 
   sf::RenderWindow window(sf::VideoMode(1179, 691), "Sea");
   window.setFramerateLimit(fps);
