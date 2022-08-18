@@ -1,8 +1,6 @@
 // Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp
-// rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system
-
-// close the window from sfml button
-// parameters: s ~ 1, a ~ 0.5, c ~ 1 for 1 s
+// rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system close
+// the window from sfml button parameters: s ~ 1, a ~ 0.5, c ~ 1 for 1 s
 // parameters: s= 0.001, a = 0.9, c= 0.03  for 1 ms
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
@@ -64,20 +62,20 @@ int main() {
                 [&gen, &pos_x, &pos_y, &speed]() -> BoidState {
                   return {pos_x(gen), pos_y(gen), speed(gen), speed(gen)};
                 });
-  
+
   auto it = vec_boids.begin();
   for (; it != vec_boids.end(); ++it) {
     auto c = *it;
     auto next = std::next(it);
-    auto same_pos_it = std::find_if(next, vec_boids.end(), [&c](BoidState const& n) {
-      return c.x == n.x && c.y == n.y;
-    });
+    auto same_pos_it = std::find_if(
+        next, vec_boids.end(),
+        [&c](BoidState const& n) { return c.x == n.x && c.y == n.y; });
     if (same_pos_it != vec_boids.end()) {
       vec_boids.erase(same_pos_it);
-      vec_boids.push_back(BoidState{pos_x(gen), pos_y(gen), speed(gen), speed(gen)});
+      vec_boids.push_back(
+          BoidState{pos_x(gen), pos_y(gen), speed(gen), speed(gen)});
     }
   }
-
 
   // std::cout << bob1[1].x <<'\n';
 
@@ -102,7 +100,7 @@ int main() {
   sprite.setTexture(texture);
 
   sf::CircleShape triangle;
-  triangle.setRadius(10.f);
+  triangle.setRadius(7.f);
   triangle.setPointCount(3);
   triangle.setFillColor(sf::Color(245, 152, 66));
 
@@ -133,7 +131,6 @@ int main() {
     window.draw(sprite);
     for (auto& b : boidscopy) {
       triangle.setPosition(b.x, b.y);
-
       window.draw(triangle);
     }
     window.draw(rect);

@@ -50,6 +50,25 @@ bool same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids) {
   }
 }
 
+bool same_pos_check(std::vector<BoidState> const& boid) {
+  auto it = boid.begin();
+  for (; it != boid.end(); ++it) {
+    auto c = *it;
+    auto it_ = std::next(it);
+    auto same_pos_it = std::find_if(it_, boid.end(), [&c](BoidState const& n) {
+      return c.x == n.x && c.y == n.y;
+    });
+    if (same_pos_it != boid.end()) {
+      break;
+    }
+  }
+  if (it != boid.end()) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 BoidState Boids::singleboid(std::vector<BoidState> const& vec,
                             BoidState const& b1, double const delta_t) const {
   if (size(vec) > 1) {
@@ -130,7 +149,9 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
 }
 
 void Boids::evolution(double const delta_t) {
-  // Boids b{n_, d_, s_, a_, c_}; //prima era b{n(), ...};
+  if (delta_t < 0  || delta_t == 0){
+    throw std::runtime_error{"Time must be a positive value"};
+  }
   std::vector<BoidState> fishes;
   for (auto fish : boids_) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
@@ -140,8 +161,10 @@ void Boids::evolution(double const delta_t) {
 
   borders(fishes);
   velocity_limit(fishes);
+
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
+  assert(same_pos_check(boids_));
 }
 
 void Boids::setvector(std::vector<BoidState> const& b) {  // prova

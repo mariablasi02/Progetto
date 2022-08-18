@@ -1,9 +1,9 @@
-#include "boids.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <numeric>
 
+#include "boids.hpp"
 
 bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
   if (!cont.empty()) {
@@ -13,10 +13,11 @@ bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
     return false;
   }
 }
+
 Components SeparationRule::operator()(std::vector<BoidState> const& b,
                                       BoidState const& b1) const {
   assert(size(b) > 1);
-  assert(same_pos_check(b1, b) == false);
+  assert(check_ownership(b, b1));
   auto boids = NeighborsControl(b, b1, distance_s_);
   auto boid_it = boids.begin();
 
@@ -37,7 +38,6 @@ Components SeparationRule::operator()(std::vector<BoidState> const& b,
   return Components{-s_ * sum_x, -s_ * sum_y};
 }
 
-
 double AlignmentRule::get_a() const { return a_; }
 
 Components AlignmentRule::operator()(std::vector<BoidState> const& boids,
@@ -50,7 +50,8 @@ Components AlignmentRule::operator()(std::vector<BoidState> const& boids,
                     ((sum.v_y / (size(boids) - 1)) - b1.v_y) * a_};
 }
 
-Components COM(std::vector<BoidState> const& vec, BoidState const& b1) {
+Components centre_of_mass(std::vector<BoidState> const& vec,
+                          BoidState const& b1) {
   assert((size(vec)) > 1);
   auto den = (static_cast<double>(size(vec)) - 1.);
   auto sum =
@@ -64,7 +65,7 @@ Components CohesionRule::operator()(std::vector<BoidState> const& cboids,
   assert(size(cboids) > 1);
   assert(check_ownership(cboids, b1));
 
-  auto position_of_c = COM(cboids, b1);
+  auto position_of_c = centre_of_mass(cboids, b1);
 
   BoidState com{position_of_c.val_x, position_of_c.val_y, 0., 0.};
   auto result = (com - b1) * cohesion_const_;
