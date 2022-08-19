@@ -1,3 +1,11 @@
+// Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp
+// rulesofflight.cpp boids.test.cpp 
+// Execute with: ./a.out
+// Build using cmake in debug mode: cmake --build build
+// Build using cmake in release mode: cmake --build build_release
+// Execute using cmake in debug mode (suggested): build/boids.t
+// Execute using cmake in release mode: build_release/boids.t
+// Execute using cmake: cmake --build build --target test
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "boids.hpp"
@@ -147,10 +155,10 @@ TEST_CASE("Testing Separation rule") {
     std::vector<BoidState> a{b1, b2, b3, b4};
     SeparationRule sr{0.7, 3};
 
-    CHECK(sr(a, b1).val_x == doctest::Approx(2.8));
-    CHECK(sr(a, b1).val_y == doctest::Approx(2.8));
-    CHECK(sr(a, b4).val_x == doctest::Approx(-2.8));
-    CHECK(sr(a, b4).val_y == doctest::Approx(2.8));
+    CHECK(sr(a, b1).val_x == doctest::Approx(-2.8));
+    CHECK(sr(a, b1).val_y == doctest::Approx(-2.8));
+    CHECK(sr(a, b4).val_x == doctest::Approx(2.8));
+    CHECK(sr(a, b4).val_y == doctest::Approx(-2.8));
   }
   SUBCASE("Testing NeighborsControl in SeparationRule") {
     BoidState b1{0., 1., 2., 3.};
@@ -159,8 +167,8 @@ TEST_CASE("Testing Separation rule") {
     BoidState b4{2., 1., 2., 1.};
     std::vector<BoidState> a{b1, b2, b3, b4};
     SeparationRule sr{0.7, 2.2};
-    CHECK(sr(a, b1).val_x == doctest::Approx(1.4));
-    CHECK(sr(a, b1).val_y == doctest::Approx(1.4));
+    CHECK(sr(a, b1).val_x == doctest::Approx(-1.4));
+    CHECK(sr(a, b1).val_y == doctest::Approx(-1.4));
   }
   SUBCASE("Testing a negative separation constant") {
     BoidState b1{2., 1., 2., 3.};
@@ -168,10 +176,10 @@ TEST_CASE("Testing Separation rule") {
     BoidState b3{2., 3., -2., 3.};
     std::vector<BoidState> v{b1, b2, b3};
     SeparationRule sr{-0.7, 3.0};
-    CHECK(sr(v, b1).val_x == doctest::Approx(1.4));
-    CHECK(sr(v, b1).val_y == doctest::Approx(-2.8));
-    CHECK(sr(v, b2).val_x == doctest::Approx(-2.8));
-    CHECK(sr(v, b2).val_y == doctest::Approx(1.4));
+    CHECK(sr(v, b1).val_x == doctest::Approx(-1.4));
+    CHECK(sr(v, b1).val_y == doctest::Approx(2.8));
+    CHECK(sr(v, b2).val_x == doctest::Approx(2.8));
+    CHECK(sr(v, b2).val_y == doctest::Approx(-1.4));
   }
   SUBCASE("Testing as separation constant is zero") {
     BoidState b1{4., 1., 2., 3.};
@@ -341,11 +349,11 @@ TEST_CASE("Testing Neighbor-Control function") {
   pesci.push_back(b3);
   pesci.push_back(b4);
   auto n = NeighborsControl(pesci.TotalBoids(), b1, 3.);
-  SUBCASE("Testing with a vector of four boids"){  
-  CHECK(static_cast<int>(n.size()) == 2);
+  SUBCASE("Testing with a vector of four boids") {
+    CHECK(static_cast<int>(n.size()) == 2);
   }
-  SUBCASE("Testing with a boid on the border"){
-    BoidState b5{1.,5.,0.,0.};
+  SUBCASE("Testing with a boid on the border") {
+    BoidState b5{1., 5., 0., 0.};
     pesci.push_back(b5);
     auto n = NeighborsControl(pesci.TotalBoids(), b1, 3.);
     CHECK(static_cast<int>(n.size()) == 3);
@@ -444,7 +452,7 @@ TEST_CASE("Testing evolution function") {
     CHECK((bb.TotalBoids())[2].y == 0.);
     CHECK((bb.TotalBoids())[3].y == 691.);
   }
-  SUBCASE("Testing with a negative value of time"){
+  SUBCASE("Testing with a negative value of time") {
     BoidState n1{1.507, 1.655, 2.414, 1.31};
     BoidState n2{1.7335, 0.9675, 3.427, -0.065};
     BoidState n3{2.6295, 2.3275, -4.741, -3.345};

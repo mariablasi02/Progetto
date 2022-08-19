@@ -1,7 +1,5 @@
 #include "boids.hpp"
 
-#include <string.h>
-
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -61,6 +59,47 @@ bool same_pos_check(std::vector<BoidState> const& boid) {
     return true;
   }
 }
+std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec) {
+  std::transform(boidsvec.begin(), boidsvec.end(), boidsvec.begin(),
+                 [](BoidState& b) {
+                   if (b.v_x > 1.3) {
+                     b.v_x = 1.3;
+                   }
+
+                   if (b.v_y > 1.) {
+                     b.v_y = 1.;
+                   }
+
+                   if (b.v_x < -1.) {
+                     b.v_x = -1.;
+                   }
+
+                   if (b.v_y < -1.) {
+                     b.v_y = -1.;
+                   }
+                   return BoidState{b.x, b.y, b.v_x, b.v_y};
+                 });
+  return boidsvec;
+}
+
+std::vector<BoidState> borders(std::vector<BoidState>& v) {
+  std::transform(v.begin(), v.end(), v.begin(), [](BoidState& b) {
+    if (b.x <= 0.) {
+      b.x = 1179.;
+    } else if (b.x >= 1179.) {
+      b.x = 0.;
+    }
+    if (b.y <= 0.) {
+      b.y = 691.;
+    } else if (b.y >= 691.) {
+      b.y = 0.;
+    }
+
+    assert(b.x >= 0. && b.x <= 1179. && b.y >= 0. && b.y <= 691.);
+    return BoidState{b.x, b.y, b.v_x, b.v_y};
+  });
+  return v;
+}
 
 /*std::vector<BoidState> velocity_limit(std::vector<BoidState>& b) {
   std::transform(b.begin(), b.end(), b.begin(), [](BoidState& b_) {
@@ -110,19 +149,6 @@ BoidState Boids::singleboid(std::vector<BoidState> const& vec,
 
 std::vector<BoidState> Boids::TotalBoids() const { return boids_; }
 
-int Boids::n() const { return n_; }
-
-double Boids::d() const { return d_; }
-
-SeparationRule Boids::s() const { return s_; }
-
-AlignmentRule Boids::a() const {
-  assert(a_.get_a() < 1.);
-  return a_;
-}
-
-CohesionRule Boids::c() const { return c_; }
-
 void Boids::push_back(BoidState const& boid) {
   if (same_pos_check(boid, boids_) == true) {
     boids_.push_back(boid);
@@ -131,6 +157,7 @@ void Boids::push_back(BoidState const& boid) {
   }
 }
 
+<<<<<<< HEAD
 
 
 std::vector<BoidState> borders(std::vector<BoidState>& v) {
@@ -152,8 +179,10 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
   return v;
 }
 
+=======
+>>>>>>> 1bea66dce1cd47f557a73b56505ec82c6020cec6
 void Boids::evolution(double const delta_t) {
-  if (delta_t < 0  || delta_t == 0){
+  if (delta_t < 0 || delta_t == 0) {
     throw std::runtime_error{"Time must be a positive value"};
   }
   std::vector<BoidState> fishes;
@@ -168,7 +197,11 @@ void Boids::evolution(double const delta_t) {
 
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
+<<<<<<< HEAD
   //assert(same_pos_check(boids_));
+=======
+  assert(same_pos_check(boids_) == true);
+>>>>>>> 1bea66dce1cd47f557a73b56505ec82c6020cec6
 }
 
 void Boids::setvector(std::vector<BoidState> const& b) {  // prova
