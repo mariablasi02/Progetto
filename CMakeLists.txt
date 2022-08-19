@@ -32,7 +32,6 @@ if (BUILD_TESTING)
 
   # aggiungi l'eseguibile boids.t, da produrre a partire dai sorgenti indicati
   add_executable(boids.t boids.test.cpp boids.cpp operators.cpp rulesofflight.cpp)
-  # target_link_libraries(boids.t PRIVATE sfml-graphics)
   # aggiungi l'eseguibile boids.t alla lista dei test, con nome boids.t
   add_test(NAME boids.t COMMAND boids.t)
 
