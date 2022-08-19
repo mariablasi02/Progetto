@@ -151,4 +151,6 @@ class Boids {
 
 std::string state(Boids& b, double const delta_t);
 
+struct Stats; 
+
 #endif

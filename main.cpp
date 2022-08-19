@@ -20,10 +20,9 @@
 
 auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   double const unit_of_t{delta_t.asSeconds()};
-  for (int i{0}; i != step_evolution;
-       ++i) {  // attenzione!!!! potrebbe esserci problema di velocità
+  //for (int i{0}; i != step_evolution; ++i) {  // attenzione!!!! potrebbe esserci problema di velocità
     boids.evolution(unit_of_t);
-  }
+ // }
   return boids.TotalBoids();
 }
 
@@ -43,7 +42,7 @@ int main() {
   std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> pos_x(0, 1179);
   std::uniform_real_distribution<double> pos_y(0, 690);
-  std::uniform_real_distribution<double> speed(-1.5, 1.5);
+  std::uniform_real_distribution<double> speed(-80, 80);
 
   std::cout << "Insert number of boids (at least 2): " << '\n';
   int n;
@@ -61,7 +60,7 @@ int main() {
 
   std::cin >> s >> a >> c;
 
-  Boids boids{n, 180., SeparationRule{s, 18.}, AlignmentRule{a},
+  Boids boids{n, 250., SeparationRule{s, 50.}, AlignmentRule{a},
               CohesionRule{c}};
 
   auto vec_boids = boids.TotalBoids();
@@ -90,19 +89,17 @@ int main() {
     }
   }
 
-  auto b_states = simulate(boids, 30, 3000, 100);
-  std::for_each(b_states.begin(), b_states.end(),[](std::string const& state){std::cout << state << '\n';});
 
 
   boids.setvector(vec_boids);
 
-  auto const delta_t{sf::seconds(1)};
+  auto const delta_t{sf::seconds(0.1)};
   
   int const fps{30};
   int const step_evolution{3000 / fps};
   //int const prescale{10}; //width of time interval between a measurment and the following
 
-  auto const b_states = simulate(boids, 30.0, 3000, 100);
+  auto const b_states = simulate(boids, 60.0, 3000, 100);
 
   std::for_each(b_states.begin(), b_states.end(),[](std::string const& state){std::cout << state << '\n';});
 
@@ -126,7 +123,6 @@ int main() {
   font.loadFromFile("cmuntt.ttf");
   sf::Text stats;
   stats.setFont(font);
-  // stats.setString(state(boids, delta_t.asSeconds()));
   stats.setCharacterSize(15);
   stats.setPosition(sf::Vector2f(680., 0.f));
   sf::RectangleShape rect;

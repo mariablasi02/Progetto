@@ -186,6 +186,14 @@ TEST_CASE("Testing Separation rule") {
     CHECK(sr(v, b3).val_x == doctest::Approx(0.0));
     CHECK(sr(v, b3).val_y == doctest::Approx(0.0));
   }
+  SUBCASE("Boids very close"){
+    BoidState n1{5.,10.,0.,-1.};
+    BoidState n2{5.,9.9,0.,1.};
+    std::vector<BoidState> c{n1, n2};
+    SeparationRule sep{3.,10.};
+    CHECK(sep(c,n1).val_y == doctest::Approx(0.3));
+    CHECK(sep(c,n2).val_y == doctest::Approx(-0.3));
+  }
 }
 
 TEST_CASE("Testing alignment rule") {
@@ -451,8 +459,9 @@ TEST_CASE("Testing evolution function") {
   }
 }
 
-/*TEST_CASE("Testing mean and std dev") {
+TEST_CASE("Testing state function") {
+    SUBCASE("Testing distance"){}
     SUBCASE("Testing std_dev_position") {}
     SUBCASE("Testing std_dev_velocity") {}
   }
- */
+ 
