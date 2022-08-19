@@ -1,5 +1,5 @@
 {
-    "files.associations": {
+    /* "files.associations": {
         "stdexcept": "cpp",
         "array": "cpp",
         "atomic": "cpp",
@@ -55,5 +55,5 @@
         "streambuf": "cpp",
         "thread": "cpp",
         "typeinfo": "cpp"
-    }
+    } */
 }
