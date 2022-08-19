@@ -13,14 +13,21 @@
 #include <SFML/Window.hpp>
 #include <algorithm>
 #include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <random>
 
 #include "boids.hpp"
 
-
-
-
+int sign(){
+  std::srand(time(0));
+  int result{};
+  if(((std::rand()%10)+1)%2 == 0){
+  result = 1;}
+  else
+  result = -1;
+  return result;
+}
 
 auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   double const unit_of_t{delta_t.asSeconds()};
@@ -42,21 +49,12 @@ auto simulate(Boids& b, double duration, int step_evolution, int prescale){
 }
 
 
-auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
-  double const unit_of_t{delta_t.asSeconds()};
-  for (int i{0}; i != step_evolution;
-       ++i) {  // attenzione!!!! potrebbe esserci problema di velocità
-    boids.evolution(unit_of_t);
-  }
-  return boids.TotalBoids();
-}
-
 int main() {
   std::random_device rd;
   std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> pos_x(0, 1179);
   std::uniform_real_distribution<double> pos_y(0, 690);
-  std::uniform_real_distribution<double> speed(-80, 80);
+  std::uniform_real_distribution<double> speed(100, 150);
 
   std::cout << "Insert number of boids (at least 2): " << '\n';
   int n;
@@ -74,7 +72,7 @@ int main() {
 
   std::cin >> s >> a >> c;
 
-  Boids boids{n, 250., SeparationRule{s, 50.}, AlignmentRule{a},
+  Boids boids{n, 250., SeparationRule{s, 25.}, AlignmentRule{a},
               CohesionRule{c}};
 
   auto vec_boids = boids.TotalBoids();
@@ -86,7 +84,7 @@ int main() {
 
   std::generate(vec_boids.begin(), vec_boids.end(),
                 [&gen, &pos_x, &pos_y, &speed]() -> BoidState {
-                  return {pos_x(gen), pos_y(gen), speed(gen), speed(gen)};
+                  return {pos_x(gen), pos_y(gen), speed(gen) * sign(), speed(gen) * sign()};
                 });
 
   auto it = vec_boids.begin();
@@ -107,7 +105,7 @@ int main() {
 
   boids.setvector(vec_boids);
 
-  auto const delta_t{sf::seconds(0.1)};  
+  auto const delta_t{sf::seconds(0.5)};  
   int const fps{30};
   int const step_evolution{3000 / fps};
   // int const prescale{10}; //width of time interval between a measurment and

@@ -157,30 +157,7 @@ void Boids::push_back(BoidState const& boid) {
   }
 }
 
-<<<<<<< HEAD
 
-
-std::vector<BoidState> borders(std::vector<BoidState>& v) {
-  std::transform(v.begin(), v.end(), v.begin(), [](BoidState& b) {
-    if (b.x <= 0.) {
-      b.x = 1179.;
-    } else if (b.x >= 1179.) {
-      b.x = 0.;
-    }
-    if (b.y <= 0.) {
-      b.y = 691.;
-    } else if (b.y >= 691.) {
-      b.y = 0.;
-    }
-
-    assert(b.x >= 0. && b.x <= 1179. && b.y >= 0. && b.y <= 691.);
-    return BoidState{b.x, b.y, b.v_x, b.v_y};
-  });
-  return v;
-}
-
-=======
->>>>>>> 1bea66dce1cd47f557a73b56505ec82c6020cec6
 void Boids::evolution(double const delta_t) {
   if (delta_t < 0 || delta_t == 0) {
     throw std::runtime_error{"Time must be a positive value"};
@@ -197,24 +174,13 @@ void Boids::evolution(double const delta_t) {
 
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
-<<<<<<< HEAD
   //assert(same_pos_check(boids_));
-=======
-  assert(same_pos_check(boids_) == true);
->>>>>>> 1bea66dce1cd47f557a73b56505ec82c6020cec6
 }
 
 void Boids::setvector(std::vector<BoidState> const& b) {  // prova
   boids_ = b;
 }
 
-
-struct Stats{
-  double mean_distance;
-  double std_distance;
-  double mean_speed;
-  double std_speed;
-};
 
 Stats statistic(Boids& b, double const delta_t){
    b.evolution(delta_t);
