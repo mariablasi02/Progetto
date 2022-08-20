@@ -13,7 +13,15 @@ bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
   }
 }
 
-Components SeparationRule::operator()(std::vector<BoidState> const& b,
+Components SeparationRule::operator()(std::vector<BoidState> const& b, BoidState const& b1) const{
+  auto vec = NeighborsControl(b, b1, distance_s_);
+  std::transform(vec.begin(), vec.end(), vec.begin(), [&b1](BoidState& j) {return (j - b1);});
+  
+  auto sum = std::accumulate(vec.begin(), vec.end(), BoidState{0.,0.,0.,0.});
+  return {-s_ * sum.x, -s_ * sum.y};
+}
+
+/*Components SeparationRule::operator()(std::vector<BoidState> const& b,
                                       BoidState const& b1) const {
   assert(size(b) > 1);
   assert(check_ownership(b, b1));
@@ -35,7 +43,7 @@ Components SeparationRule::operator()(std::vector<BoidState> const& b,
   auto sum_y = std::accumulate(boidsdiff_y.begin(), boidsdiff_y.end(), 0.);
 
   return Components{-s_ * sum_x, -s_ * sum_y};
-}
+}*/
 
 double AlignmentRule::get_a() const { return a_; }
 

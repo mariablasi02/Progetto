@@ -1,11 +1,3 @@
-// Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp
-// rulesofflight.cpp boids.test.cpp 
-// Execute with: ./a.out
-// Build using cmake in debug mode: cmake --build build
-// Build using cmake in release mode: cmake --build build_release
-// Execute using cmake in debug mode (suggested): build/boids.t
-// Execute using cmake in release mode: build_release/boids.t
-// Execute using cmake: cmake --build build --target test
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "boids.hpp"
@@ -194,6 +186,14 @@ TEST_CASE("Testing Separation rule") {
     CHECK(sr(v, b3).val_x == doctest::Approx(0.0));
     CHECK(sr(v, b3).val_y == doctest::Approx(0.0));
   }
+  SUBCASE("Boids very close"){
+    BoidState n1{5.,10.,0.,-1.};
+    BoidState n2{5.,9.9,0.,1.};
+    std::vector<BoidState> c{n1, n2};
+    SeparationRule sep{3.,10.};
+    CHECK(sep(c,n1).val_y == doctest::Approx(0.3));
+    CHECK(sep(c,n2).val_y == doctest::Approx(-0.3));
+  }
 }
 
 TEST_CASE("Testing alignment rule") {
@@ -341,11 +341,11 @@ TEST_CASE("Testing Neighbor-Control function") {
   pesci.push_back(b3);
   pesci.push_back(b4);
   auto n = NeighborsControl(pesci.TotalBoids(), b1, 3.);
-  SUBCASE("Testing with a vector of four boids") {
-    CHECK(static_cast<int>(n.size()) == 2);
+  SUBCASE("Testing with a vector of four boids"){  
+  CHECK(static_cast<int>(n.size()) == 2);
   }
-  SUBCASE("Testing with a boid on the border") {
-    BoidState b5{1., 5., 0., 0.};
+  SUBCASE("Testing with a boid on the border"){
+    BoidState b5{1.,5.,0.,0.};
     pesci.push_back(b5);
     auto n = NeighborsControl(pesci.TotalBoids(), b1, 3.);
     CHECK(static_cast<int>(n.size()) == 3);
@@ -444,7 +444,7 @@ TEST_CASE("Testing evolution function") {
     CHECK((bb.TotalBoids())[2].y == 0.);
     CHECK((bb.TotalBoids())[3].y == 691.);
   }
-  SUBCASE("Testing with a negative value of time") {
+  SUBCASE("Testing with a negative value of time"){
     BoidState n1{1.507, 1.655, 2.414, 1.31};
     BoidState n2{1.7335, 0.9675, 3.427, -0.065};
     BoidState n3{2.6295, 2.3275, -4.741, -3.345};
@@ -459,8 +459,39 @@ TEST_CASE("Testing evolution function") {
   }
 }
 
-/*TEST_CASE("Testing mean and std dev") {
-    SUBCASE("Testing std_dev_position") {}
-    SUBCASE("Testing std_dev_velocity") {}
+TEST_CASE("Testing state function") {
+    
+    BoidState n1{20., 30., .4, 2.};
+    BoidState n2{10., 10., 1., 1.};
+    BoidState n3{40., 30., .4, 1.};
+    SeparationRule s{5, 3.};
+    AlignmentRule a{0.5};
+    CohesionRule c{3};
+    Boids bb{3, 60., s, a, c};
+    bb.push_back(n1);
+    bb.push_back(n2);
+    bb.push_back(n3);
+    auto data = statistic(bb, 0.2);
+    CHECK(data.mean_distance == doctest::Approx(25.26).epsilon(0.01));
+    CHECK(data.std_distance == doctest::Approx(3.99).epsilon(0.01));
+    CHECK(data.mean_speed == doctest::Approx(0.94).epsilon(0.01));
+    CHECK(data.std_speed == doctest::Approx(1.54).epsilon(0.01));
+
+    
+    BoidState b1{0., 0., 0., 0.};
+    BoidState b2{0., 10., 0., 1.};
+    BoidState b3{0., 30., 0., 1.};
+    Boids b{3, 60., s, a, c};
+    b.push_back(b1);
+    b.push_back(b2);
+    b.push_back(b3);
+    auto value = statistic(b, 0.2);
+    CHECK(value.mean_distance == doctest::Approx(19.46).epsilon(0.01));
+    CHECK(value.std_distance == doctest::Approx(4.53).epsilon(0.01));
+    CHECK(value.mean_speed == doctest::Approx(0.67).epsilon(0.01));
+    CHECK(value.std_speed == doctest::Approx(1.09).epsilon(0.01));
+
+    
+
   }
- */
+ 

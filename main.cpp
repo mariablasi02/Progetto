@@ -1,3 +1,4 @@
+
 // Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp
 // rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system
 // Execute with: ./a.out
@@ -6,45 +7,54 @@
 // Execute using cmake in debug mode: build/boids-sfml
 // Execute using cmake in release mode (suggested): build_release/boids-sfml
 // close the window from sfml button parameters: s ~ 1, a ~ 0.5, c ~ 1 for 1 s
-// parameters: s= 0.001, a = 0.9, c= 0.03  for 1 ms
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/Window.hpp>
 #include <algorithm>
 #include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <random>
 
 #include "boids.hpp"
 
-auto simulate(Boids& b, double duration, int step_evolution, int prescale) {
-  std::vector<std::string> b_states;
-  double delta_t{duration / step_evolution};
-  for (int step = 0; step != step_evolution; ++step) {
-    if (step % prescale == 0) {
-      b_states.push_back(state(b, delta_t));  // state of the chain after
-                                              // delta_t
-    }
-  }
-
-  return b_states;
+int sign(){
+  std::srand(time(0));
+  int result{};
+  if(((std::rand()%10)+1)%2 == 0){
+  result = 1;}
+  else
+  result = -1;
+  return result;
 }
 
 auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   double const unit_of_t{delta_t.asSeconds()};
-  for (int i{0}; i != step_evolution;
-       ++i) {  // attenzione!!!! potrebbe esserci problema di velocità
+  //for (int i{0}; i != step_evolution; ++i) {  // attenzione!!!! potrebbe esserci problema di velocità
     boids.evolution(unit_of_t);
-  }
+ // }
   return boids.TotalBoids();
 }
+
+auto simulate(Boids& b, double duration, int step_evolution, int prescale){
+    std::vector<std::string> b_states;
+    double delta_t{duration/step_evolution};
+    for (int step = 0; step != step_evolution; ++step){
+      if (step % prescale == 0){
+        b_states.push_back(state(b, delta_t)); //state of the chain after delta_t
+      }
+    }
+    return b_states;
+}
+
 
 int main() {
   std::random_device rd;
   std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> pos_x(0, 1179);
   std::uniform_real_distribution<double> pos_y(0, 690);
-  std::uniform_real_distribution<double> speed(-1.5, 1.5);
+  std::uniform_real_distribution<double> speed(100, 150);
 
   std::cout << "Insert number of boids (at least 2): " << '\n';
   int n;
@@ -62,7 +72,7 @@ int main() {
 
   std::cin >> s >> a >> c;
 
-  Boids boids{n, 180., SeparationRule{s, 18.}, AlignmentRule{a},
+  Boids boids{n, 250., SeparationRule{s, 25.}, AlignmentRule{a},
               CohesionRule{c}};
 
   auto vec_boids = boids.TotalBoids();
@@ -74,7 +84,7 @@ int main() {
 
   std::generate(vec_boids.begin(), vec_boids.end(),
                 [&gen, &pos_x, &pos_y, &speed]() -> BoidState {
-                  return {pos_x(gen), pos_y(gen), speed(gen), speed(gen)};
+                  return {pos_x(gen), pos_y(gen), speed(gen) * sign(), speed(gen) * sign()};
                 });
 
   auto it = vec_boids.begin();
@@ -91,20 +101,17 @@ int main() {
     }
   }
 
-  // std::cout << bob1[1].x <<'\n';
+
 
   boids.setvector(vec_boids);
 
-  // std::cout << (bob.TotalBoids())[1].x << '\n';
-
-  auto const delta_t{sf::seconds(1)};
-
+  auto const delta_t{sf::seconds(0.5)};  
   int const fps{30};
   int const step_evolution{3000 / fps};
   // int const prescale{10}; //width of time interval between a measurment and
   // the following
 
-  auto const b_states = simulate(boids, 30.0, 3000, 100);
+  auto const b_states = simulate(boids, 60.0, 3000, 100);
 
   std::for_each(b_states.begin(), b_states.end(),
                 [](std::string const& state) { std::cout << state << '\n'; });
@@ -130,7 +137,6 @@ int main() {
   font.loadFromFile("cmuntt.ttf");
   sf::Text stats;
   stats.setFont(font);
-  // stats.setString(state(boids, delta_t.asSeconds()));
   stats.setCharacterSize(15);
   stats.setPosition(sf::Vector2f(680., 0.f));
   sf::RectangleShape rect;

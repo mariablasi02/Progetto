@@ -7,12 +7,6 @@
 #include <string>
 
 int size(std::vector<BoidState> const& v) {
-  /* if (v.size() > static_cast<size_t>(std::numeric_limits<int>::max())) {
-    throw std::overflow_error {
-      "size_t value cannot be stored in a variable of
-          type int."};
-    }
-    else */
   // if (static_cast<int>(v.size()) > 1) {
   return (static_cast<int>(v.size()));  // risolvere problema eccezione
   //} else {
@@ -107,6 +101,28 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
   return v;
 }
 
+/*std::vector<BoidState> velocity_limit(std::vector<BoidState>& b) {
+  std::transform(b.begin(), b.end(), b.begin(), [](BoidState& b_) {
+    if (b_.v_x > 1.3) {
+      b_.v_x = 1.3;
+    }
+
+    if (b_.v_y > 1.) {
+      b_.v_y = 1.;
+    }
+
+    if (b_.v_x < -1.) {
+      b_.v_x = -1.;
+    }
+
+    if (b_.v_y < -1.) {
+      b_.v_y = -1.;
+    }
+    return BoidState{b_.x, b_.y, b_.v_x, b_.v_y};
+  });
+  return b;
+}*/
+
 BoidState Boids::singleboid(std::vector<BoidState> const& vec,
                             BoidState const& b1, double const delta_t) const {
   if (size(vec) > 1) {
@@ -115,6 +131,15 @@ BoidState Boids::singleboid(std::vector<BoidState> const& vec,
     auto v_2 = a_(vec, b1);
     auto v_3 = c_(vec, b1);
     auto v_new = v_old + v_1 + v_2 + v_3;
+    if (std::abs(v_new.val_x) > 10.) {
+      auto x = 2 / std::abs(v_new.val_x);
+      v_new.val_x *= x;
+    }
+    if (std::abs(v_new.val_y) > 10.) {
+      auto y = 2 / std::abs(v_new.val_y);
+      v_new.val_y *= y;
+    }
+
     return {b1.x + v_new.val_x * delta_t, b1.y + v_new.val_y * delta_t,
             v_new.val_x, v_new.val_y};
   } else {
@@ -144,85 +169,67 @@ void Boids::evolution(double const delta_t) {
   }
 
   borders(fishes);
-  velocity_limit(fishes);
+  // velocity_limit(fishes);
 
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
-  assert(same_pos_check(boids_) == true);
+  // assert(same_pos_check(boids_));
 }
 
 void Boids::setvector(std::vector<BoidState> const& b) {  // prova
   boids_ = b;
 }
 
-
-
-
-
-/* struct pos_vel{
-  double mean_position;
-  double std_dev_position;
-  double mean_velocity;
-  double std_dev_velocity;
-};
-
-
-
-pos_vel calcoli(Boids& b, double const delta_t){
+Stats statistic(Boids& b, double const delta_t) {
   b.evolution(delta_t);
   auto vec = b.TotalBoids();
-
-  std::vector<double> position{};
+  std::vector<double> distances{};
 
   auto it = vec.begin();
-
   for (; it != vec.end(); ++it) {
     auto it_2 = std::next(it);
     for (; it_2 != vec.end(); ++it_2) {
-      position.push_back(norm(*it, *it_2));
+      distances.push_back(norm(*it, *it_2));
       ;
     }
   }
-  auto mean_position = (std::accumulate(position.begin(), position.end(), 0.)) /
-                       static_cast<int>(position.size());
+  auto mean_dist = (std::accumulate(distances.begin(), distances.end(), 0.)) /
+                   static_cast<int>(distances.size());
 
-  auto sums_pos2_med = (std::inner_product(position.begin(), position.end(),
-                                           position.begin(), 0.)) /
-                       static_cast<int>(position.size());
-  auto std_dev_position =
-      std::sqrt(sums_pos2_med - mean_position * mean_position) /
-      std::sqrt(static_cast<int>(position.size()));
+  auto mean_dist2 = (std::inner_product(distances.begin(), distances.end(),
+                                        distances.begin(), 0.)) /
+                    static_cast<int>(distances.size());
+  auto std_dist = std::sqrt(mean_dist2 - mean_dist * mean_dist) /
+                  std::sqrt(static_cast<int>(distances.size()));
 
   auto sum =
       std::accumulate(vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
   Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
 
-  std::vector<double> velocity{};
+  std::vector<double> velocities{};
 
   for (auto i : vec) {
-    velocity.push_back(velocity_norm(i));
+    velocities.push_back(velocity_norm(i));
   }
-  auto mean_velocity = std::sqrt(mean_vel.val_x * mean_vel.val_x +
-                                 mean_vel.val_y * mean_vel.val_y);
+  auto mean_speed = std::sqrt(mean_vel.val_x * mean_vel.val_x +
+                              mean_vel.val_y * mean_vel.val_y);
 
-  auto sums_vel2_med = (std::inner_product(velocity.begin(), velocity.end(),
-                                           velocity.begin(), 0.)) /
-                       static_cast<int>(velocity.size());
-  auto std_dev_velocity =
-      std::sqrt(sums_vel2_med - mean_velocity * mean_velocity) /
-      std::sqrt(static_cast<int>(velocity.size()));
-      return {mean_position, std_dev_position, mean_velocity, std_dev_velocity};
+  auto mean_speed2 = (std::inner_product(velocities.begin(), velocities.end(),
+                                         velocities.begin(), 0.)) /
+                     static_cast<int>(velocities.size());
+  auto std_speed = std::sqrt(mean_speed2 - mean_speed * mean_speed) /
+                   std::sqrt(static_cast<int>(velocities.size()));
+  Stats data{mean_dist, std_dist, mean_speed, std_speed};
+  return data;
 }
 
-
-
 std::string state(Boids& b, double const delta_t) {
-  auto value = calcoli(b, delta_t);
-  auto pos = std::to_string(value.mean_position);
-  auto pos_stdev = std::to_string(value.std_dev_position);
-  auto speed = std::to_string(value.mean_velocity);
-  auto speed_stdev = std::to_string(value.std_dev_velocity);
-  return "Mean position and standard deviation: " + pos + " +/- " + pos_stdev +
-         '\n' + "Mean velocity and standard deviation: " + speed + " +/- " +
-         speed_stdev + '\n';
-} */
+  auto data = statistic(b, delta_t);
+
+  return "Mean position and standard deviation: " +
+         std::to_string(data.mean_distance) + " +/- " +
+         std::to_string(data.std_distance) + '\n' +
+         "Mean velocity and standard deviation: " +
+         std::to_string(data.mean_speed) + " +/- " +
+         std::to_string(data.std_speed) + '\n';
+}
