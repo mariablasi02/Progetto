@@ -18,7 +18,7 @@
 
 #include "boids.hpp"
 
-int sign(){
+int sign(){ //questa possiamo spostarla fuori dal main, ma la lascerei qui anyway
   std::srand(time(0));
   int result{};
   if(((std::rand()%10)+1)%2 == 0){
@@ -36,10 +36,10 @@ auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   return boids.TotalBoids();
 }
 
-auto simulate(Boids& b, double duration, int step_evolution, int prescale){
+auto simulate(Boids& b, double duration, int steps, int prescale){ //non la terrei nel main
     std::vector<std::string> b_states;
-    double delta_t{duration/step_evolution};
-    for (int step = 0; step != step_evolution; ++step){
+    double delta_t{duration/steps};
+    for (int step = 0; step != steps; ++step){
       if (step % prescale == 0){
         b_states.push_back(state(b, delta_t)); //state of the chain after delta_t
       }
@@ -110,7 +110,7 @@ int main() {
   // int const prescale{10}; //width of time interval between a measurment and
   // the following
 
-  auto const b_states = simulate(boids, 60.0, 3000, 100);
+  auto const b_states = simulate(boids, 120., 1200, 20);
 
   std::for_each(b_states.begin(), b_states.end(),
                 [](std::string const& state) { std::cout << state << '\n'; });

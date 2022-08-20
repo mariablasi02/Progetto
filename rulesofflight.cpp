@@ -21,29 +21,6 @@ Components SeparationRule::operator()(std::vector<BoidState> const& b, BoidState
   return {-s_ * sum.x, -s_ * sum.y};
 }
 
-/*Components SeparationRule::operator()(std::vector<BoidState> const& b,
-                                      BoidState const& b1) const {
-  assert(size(b) > 1);
-  assert(check_ownership(b, b1));
-  auto boids = NeighborsControl(b, b1, distance_s_);
-  auto boid_it = boids.begin();
-
-  std::vector<double> boidsdiff_x;
-  std::vector<double> boidsdiff_y;
-
-  for (; boid_it != boids.end(); ++boid_it) {
-    auto diff_x = (b1.x - boid_it->x);
-    auto diff_y = (b1.y - boid_it->y);
-
-    boidsdiff_x.push_back(diff_x);
-    boidsdiff_y.push_back(diff_y);
-  }
-
-  auto sum_x = std::accumulate(boidsdiff_x.begin(), boidsdiff_x.end(), 0.);
-  auto sum_y = std::accumulate(boidsdiff_y.begin(), boidsdiff_y.end(), 0.);
-
-  return Components{-s_ * sum_x, -s_ * sum_y};
-}*/
 
 double AlignmentRule::get_a() const { return a_; }
 
