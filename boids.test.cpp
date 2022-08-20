@@ -1,3 +1,11 @@
+// Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp
+// rulesofflight.cpp boids.test.cpp 
+// Execute with: ./a.out
+// Build using cmake in debug mode: cmake --build build
+// Build using cmake in release mode: cmake --build build_release
+// Execute using cmake in debug mode (suggested): build/boids.t
+// Execute using cmake in release mode: build_release/boids.t
+// Execute using cmake: cmake --build build --target test
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "boids.hpp"

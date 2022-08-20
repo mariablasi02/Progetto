@@ -1,6 +1,11 @@
 // Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp
-// rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system close
-// the window from sfml button parameters: s ~ 1, a ~ 0.5, c ~ 1 for 1 s
+// rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system
+// Execute with: ./a.out
+// Build using cmake in debug mode: cmake --build build
+// Build using cmake in release mode: cmake --build build_release
+// Execute using cmake in debug mode: build/boids-sfml
+// Execute using cmake in release mode (suggested): build_release/boids-sfml
+// close the window from sfml button parameters: s ~ 1, a ~ 0.5, c ~ 1 for 1 s
 // parameters: s= 0.001, a = 0.9, c= 0.03  for 1 ms
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>

@@ -155,7 +155,20 @@ void Boids::setvector(std::vector<BoidState> const& b) {  // prova
   boids_ = b;
 }
 
-std::string state(Boids& b, double const delta_t) {
+
+
+
+
+/* struct pos_vel{
+  double mean_position;
+  double std_dev_position;
+  double mean_velocity;
+  double std_dev_velocity;
+};
+
+
+
+pos_vel calcoli(Boids& b, double const delta_t){
   b.evolution(delta_t);
   auto vec = b.TotalBoids();
 
@@ -198,12 +211,18 @@ std::string state(Boids& b, double const delta_t) {
   auto std_dev_velocity =
       std::sqrt(sums_vel2_med - mean_velocity * mean_velocity) /
       std::sqrt(static_cast<int>(velocity.size()));
+      return {mean_position, std_dev_position, mean_velocity, std_dev_velocity};
+}
 
-  auto pos = std::to_string(mean_position);
-  auto pos_stdev = std::to_string(std_dev_position);
-  auto speed = std::to_string(mean_velocity);
-  auto speed_stdev = std::to_string(std_dev_velocity);
+
+
+std::string state(Boids& b, double const delta_t) {
+  auto value = calcoli(b, delta_t);
+  auto pos = std::to_string(value.mean_position);
+  auto pos_stdev = std::to_string(value.std_dev_position);
+  auto speed = std::to_string(value.mean_velocity);
+  auto speed_stdev = std::to_string(value.std_dev_velocity);
   return "Mean position and standard deviation: " + pos + " +/- " + pos_stdev +
          '\n' + "Mean velocity and standard deviation: " + speed + " +/- " +
          speed_stdev + '\n';
-}
+} */
