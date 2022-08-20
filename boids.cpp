@@ -62,20 +62,20 @@ bool same_pos_check(std::vector<BoidState> const& boid) {
 std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec) {
   std::transform(boidsvec.begin(), boidsvec.end(), boidsvec.begin(),
                  [](BoidState& b) {
-                   if (b.v_x > 1.3) {
-                     b.v_x = 1.3;
+                   if (b.v_x > 2.) {
+                     b.v_x = 2.;
                    }
 
-                   if (b.v_y > 1.) {
-                     b.v_y = 1.;
+                   if (b.v_y > 2.) {
+                     b.v_y = 2.;
                    }
 
-                   if (b.v_x < -1.) {
-                     b.v_x = -1.;
+                   if (b.v_x < -2.) {
+                     b.v_x = -2.;
                    }
 
-                   if (b.v_y < -1.) {
-                     b.v_y = -1.;
+                   if (b.v_y < -2.) {
+                     b.v_y = -2.;
                    }
                    return BoidState{b.x, b.y, b.v_x, b.v_y};
                  });
@@ -101,27 +101,6 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
   return v;
 }
 
-/*std::vector<BoidState> velocity_limit(std::vector<BoidState>& b) {
-  std::transform(b.begin(), b.end(), b.begin(), [](BoidState& b_) {
-    if (b_.v_x > 1.3) {
-      b_.v_x = 1.3;
-    }
-
-    if (b_.v_y > 1.) {
-      b_.v_y = 1.;
-    }
-
-    if (b_.v_x < -1.) {
-      b_.v_x = -1.;
-    }
-
-    if (b_.v_y < -1.) {
-      b_.v_y = -1.;
-    }
-    return BoidState{b_.x, b_.y, b_.v_x, b_.v_y};
-  });
-  return b;
-}*/
 
 BoidState Boids::singleboid(std::vector<BoidState> const& vec,
                             BoidState const& b1, double const delta_t) const {
@@ -169,11 +148,11 @@ void Boids::evolution(double const delta_t) {
   }
 
   borders(fishes);
-  // velocity_limit(fishes);
+  //velocity_limit(fishes);
 
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
-  // assert(same_pos_check(boids_));
+  assert(same_pos_check(boids_));
 }
 
 void Boids::setvector(std::vector<BoidState> const& b) {  // prova

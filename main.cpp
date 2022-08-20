@@ -1,6 +1,5 @@
 
-// Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp
-// rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system
+// Compile with: g++ -Wall -Wextra -fsanitize=address operators.cpp boids.cpp rulesofflight.cpp main.cpp -lsfml-graphics -lsfml-window -lsfml-system
 // Execute with: ./a.out
 // Build using cmake in debug mode: cmake --build build
 // Build using cmake in release mode: cmake --build build_release
@@ -31,9 +30,9 @@ int sign(){
 
 auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   double const unit_of_t{delta_t.asSeconds()};
-  //for (int i{0}; i != step_evolution; ++i) {  // attenzione!!!! potrebbe esserci problema di velocità
+  for (int i{0}; i != step_evolution; ++i) {  // attenzione!!!! potrebbe esserci problema di velocità
     boids.evolution(unit_of_t);
- // }
+ }
   return boids.TotalBoids();
 }
 
@@ -54,9 +53,9 @@ int main() {
   std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> pos_x(0, 1179);
   std::uniform_real_distribution<double> pos_y(0, 690);
-  std::uniform_real_distribution<double> speed(100, 150);
+  std::uniform_real_distribution<double> speed(300, 400);
 
-  std::cout << "Insert number of boids (at least 2): " << '\n';
+  std::cout << "Insert number of boids (at least 2): " << '\n'; //fino a 100 tutto ok, poi comincia a laggare
   int n;
   std::cin >> n;
   if (std::cin.fail() || n <= 1) {
@@ -64,7 +63,7 @@ int main() {
     return EXIT_FAILURE;
   }
   std::cout
-      << "Insert separation const, alignment const ( < 1 ), cohesion const: "
+      << "Insert separation const [0,2[, alignment const [0,1[, cohesion const [0, 0.1[: "
       << '\n';  // valori di n ottimali: intorno a 20 per il momento
   double s;
   double a;
@@ -72,7 +71,7 @@ int main() {
 
   std::cin >> s >> a >> c;
 
-  Boids boids{n, 250., SeparationRule{s, 25.}, AlignmentRule{a},
+  Boids boids{n, 150., SeparationRule{s, 15.}, AlignmentRule{a},
               CohesionRule{c}};
 
   auto vec_boids = boids.TotalBoids();
@@ -105,9 +104,9 @@ int main() {
 
   boids.setvector(vec_boids);
 
-  auto const delta_t{sf::seconds(0.5)};  
+  auto const delta_t{sf::seconds(0.1)};  
   int const fps{30};
-  int const step_evolution{3000 / fps};
+  int const step_evolution{1000 / fps}; //quanti step devo fare per star dentro a 30 fps
   // int const prescale{10}; //width of time interval between a measurment and
   // the following
 
