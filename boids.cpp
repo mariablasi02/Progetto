@@ -169,7 +169,7 @@ void Boids::evolution(double const delta_t) {
   }
 
   borders(fishes);
-  // velocity_limit(fishes);
+  velocity_limit(fishes);
 
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
