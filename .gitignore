@@ -1,5 +1,16 @@
 *.out
 
+boidstest
+
+main
+
+mainoptimized
+
+mainfullyoptimized
+
 build/
 
 build_release/
+
+
+
