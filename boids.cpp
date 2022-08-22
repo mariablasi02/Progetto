@@ -77,7 +77,7 @@ std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec) {
                    if (b.v_y < -2.) {
                      b.v_y = -2.;
                    }
-                   assert(b.v_x < 2. && b.v_x >-2. && b.v_y < 2. && b.v_y > -2.);
+                   assert(b.v_x <= 2. && b.v_x >= -2. && b.v_y <= 2. && b.v_y >= -2.);
                    return BoidState{b.x, b.y, b.v_x, b.v_y};
                    
                  });
