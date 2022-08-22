@@ -145,7 +145,7 @@ void Boids::evolution(double const delta_t) {
   for (auto fish : boids_) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
     fishes.push_back(
-        singleboid(nearfishes, fish, delta_t));  // prima era b.singleboid(...)
+        singleboid(nearfishes, fish, delta_t)); 
   }
 
   borders(fishes);
@@ -207,10 +207,10 @@ Stats statistic(Boids& b, double const delta_t) {
 std::string state(Boids& b, double const delta_t) {
   auto data = statistic(b, delta_t);
 
-  return "Mean position and standard deviation: " +
+  return "Mean distance and standard deviation: " +
          std::to_string(data.mean_distance) + " +/- " +
          std::to_string(data.std_distance) + '\n' +
-         "Mean velocity and standard deviation: " +
+         "Mean speed and standard deviation: " +
          std::to_string(data.mean_speed) + " +/- " +
          std::to_string(data.std_speed) + '\n';
 }

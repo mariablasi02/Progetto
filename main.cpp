@@ -3,7 +3,7 @@
 // Build using cmake in release mode: cmake --build build_release
 // Execute using cmake in debug mode: build/boids-sfml
 // Execute using cmake in release mode (suggested): build_release/boids-sfml
-// close the window from sfml button parameters: s ~ 1, a ~ 0.5, c ~ 1 for 1 s
+// close the window from sfml button parameters: s ~ 0.5, a ~ 0.9, c ~ 0.003 for 1 s
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
@@ -16,7 +16,9 @@
 
 #include "boids.hpp"
 
-int sign() {
+int sign() {  // questa possiamo spostarla fuori dal main, ma la lascerei qui
+              // anyway
+
   std::srand(time(0));
   int result{};
   if (((std::rand() % 10) + 1) % 2 == 0) {
@@ -112,7 +114,7 @@ int main() {
   // int const prescale{10}; //width of time interval between a measurment and
   // the following
 
-  auto const b_states = simulate(boids, 60.0, 3000, 100);
+  auto const b_states = simulate(boids, 120., 1200, 20);
 
   std::for_each(b_states.begin(), b_states.end(),
                 [](std::string const& state) { std::cout << state << '\n'; });
@@ -158,10 +160,15 @@ int main() {
 
     window.clear();
     window.draw(sprite);
-    for (auto& b : boidscopy) {
+    // trasformato for in algoritmo -> poi vediamo cosa lasciare
+    std::for_each(boidscopy.begin(), boidscopy.end(), [&](BoidState const& b) {
       triangle.setPosition(b.x, b.y);
       window.draw(triangle);
-    }
+    });
+    /* for (auto& b : boidscopy) {
+      triangle.setPosition(b.x, b.y);
+      window.draw(triangle);
+    } */
     window.draw(rect);
     window.draw(stats);
 
