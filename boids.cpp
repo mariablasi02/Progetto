@@ -62,22 +62,24 @@ bool same_pos_check(std::vector<BoidState> const& boid) {
 std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec) {
   std::transform(boidsvec.begin(), boidsvec.end(), boidsvec.begin(),
                  [](BoidState& b) {
-                   if (b.v_x > 1.3) {
-                     b.v_x = 1.3;
+                   if (b.v_x > 2.) {
+                     b.v_x = 2.;
                    }
 
-                   if (b.v_y > 1.) {
-                     b.v_y = 1.;
+                   if (b.v_y > 2.) {
+                     b.v_y = 2.;
                    }
 
-                   if (b.v_x < -1.) {
-                     b.v_x = -1.;
+                   if (b.v_x < -2.) {
+                     b.v_x = -2.;
                    }
 
-                   if (b.v_y < -1.) {
-                     b.v_y = -1.;
+                   if (b.v_y < -2.) {
+                     b.v_y = -2.;
                    }
+                   assert(b.v_x < 2. && b.v_x >-2. && b.v_y < 2. && b.v_y > -2.);
                    return BoidState{b.x, b.y, b.v_x, b.v_y};
+                   
                  });
   return boidsvec;
 }
@@ -101,27 +103,6 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
   return v;
 }
 
-/*std::vector<BoidState> velocity_limit(std::vector<BoidState>& b) {
-  std::transform(b.begin(), b.end(), b.begin(), [](BoidState& b_) {
-    if (b_.v_x > 1.3) {
-      b_.v_x = 1.3;
-    }
-
-    if (b_.v_y > 1.) {
-      b_.v_y = 1.;
-    }
-
-    if (b_.v_x < -1.) {
-      b_.v_x = -1.;
-    }
-
-    if (b_.v_y < -1.) {
-      b_.v_y = -1.;
-    }
-    return BoidState{b_.x, b_.y, b_.v_x, b_.v_y};
-  });
-  return b;
-}*/
 
 BoidState Boids::singleboid(std::vector<BoidState> const& vec,
                             BoidState const& b1, double const delta_t) const {
@@ -131,15 +112,14 @@ BoidState Boids::singleboid(std::vector<BoidState> const& vec,
     auto v_2 = a_(vec, b1);
     auto v_3 = c_(vec, b1);
     auto v_new = v_old + v_1 + v_2 + v_3;
-    if (std::abs(v_new.val_x) > 10.) {
+     if (std::abs(v_new.val_x) > 10.) {
       auto x = 2 / std::abs(v_new.val_x);
       v_new.val_x *= x;
     }
     if (std::abs(v_new.val_y) > 10.) {
       auto y = 2 / std::abs(v_new.val_y);
-      v_new.val_y *= y;
+       v_new.val_y *= y;
     }
-
     return {b1.x + v_new.val_x * delta_t, b1.y + v_new.val_y * delta_t,
             v_new.val_x, v_new.val_y};
   } else {
@@ -169,11 +149,12 @@ void Boids::evolution(double const delta_t) {
   }
 
   borders(fishes);
+
   velocity_limit(fishes);
 
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
-  // assert(same_pos_check(boids_));
+  assert(same_pos_check(boids_));
 }
 
 void Boids::setvector(std::vector<BoidState> const& b) {  // prova

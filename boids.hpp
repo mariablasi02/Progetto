@@ -140,7 +140,7 @@ class Boids {
   void setvector(std::vector<BoidState> const& b);
 };
 
-struct Stats{
+struct Stats {
   double mean_distance;
   double std_distance;
   double mean_speed;
@@ -148,7 +148,5 @@ struct Stats{
 };
 Stats statistic(Boids& b, double const delta_t);
 std::string state(Boids& b, double const delta_t);
-
-
 
 #endif

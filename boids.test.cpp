@@ -366,7 +366,7 @@ TEST_CASE("Testing same_pos_check") {
 }
 
 TEST_CASE("Testing singleboid function") {
-  SUBCASE("boid in a group of three") {
+  SUBCASE("Boids in a group of three") {
     BoidState b1{0., 1., 2., 3.};
     BoidState b2{-1., 2., 3., 2.};
     BoidState b3{3., -1., 5., 2.};
@@ -376,10 +376,10 @@ TEST_CASE("Testing singleboid function") {
     std::vector<BoidState> v1{b1, b2, b3};
     Boids b{3, 10., s, a, c};
     double const delta_t{0.1};
-    CHECK(((b.singleboid(v1, b1, delta_t)).x) == 1.1);
-    CHECK(((b.singleboid(v1, b1, delta_t)).y) == 0.85);
-    CHECK(((b.singleboid(v1, b1, delta_t)).v_x) == 11.);
-    CHECK(((b.singleboid(v1, b1, delta_t)).v_y) == -1.5);
+    CHECK(((b.singleboid(v1, b1, delta_t)).x) == doctest::Approx(0.3).epsilon(0.01));
+    CHECK(((b.singleboid(v1, b1, delta_t)).y) == 1.25);
+    CHECK(((b.singleboid(v1, b1, delta_t)).v_x) == 3);
+    CHECK(((b.singleboid(v1, b1, delta_t)).v_y) == 2.5);
   }
 }
 
@@ -398,12 +398,12 @@ TEST_CASE("Testing evolution function") {
     bb.push_back(b3);
     CHECK(bb.TotalBoids().size() == 3);
     auto b_new = bb.singleboid(bb.TotalBoids(), b1, 0.5);
-    CHECK(b_new.v_x == 21.75);
+    CHECK(b_new.v_x == 1.75);
     bb.evolution(0.5);
-    CHECK((bb.TotalBoids())[0].x == 12.875);
+    CHECK((bb.TotalBoids())[0].x == 2.875);
     CHECK((bb.TotalBoids())[0].y == 2.25);
-    CHECK((bb.TotalBoids())[0].v_x == 1.3);
-    CHECK((bb.TotalBoids())[0].v_y == -1.0);
+    CHECK((bb.TotalBoids())[0].v_x == 1.75);
+    CHECK((bb.TotalBoids())[0].v_y == -1.5);
   }
 
   SUBCASE("Testing velocity_limits") {
@@ -418,10 +418,10 @@ TEST_CASE("Testing evolution function") {
     boid.push_back(b2);
     boid.push_back(b3);
     boid.evolution(0.3);
-    CHECK((boid.TotalBoids())[0].v_x == -1.0);
-    CHECK((boid.TotalBoids())[0].v_y == 1.0);
-    CHECK((boid.TotalBoids())[1].v_x == doctest::Approx(1.16));
-    CHECK((boid.TotalBoids())[1].v_y == 1.0);
+    CHECK((boid.TotalBoids())[0].v_x == doctest::Approx(-0.96).epsilon(0.01));
+    CHECK((boid.TotalBoids())[0].v_y == doctest::Approx(2.705).epsilon(0.01));
+    CHECK((boid.TotalBoids())[1].v_x == doctest::Approx(1.16).epsilon(0.01));
+    CHECK((boid.TotalBoids())[1].v_y == doctest::Approx(1.22).epsilon(0.01));
   }
   SUBCASE("Testing borders") {
     BoidState b1{1179., 3., 4., 2.};
