@@ -223,7 +223,7 @@ std::vector<std::string> simulate(Boids& b, double duration, int steps, int pres
       b_states.push_back(state(b, delta_t));  // state of the chain after
                                               // delta_t
     }
-  b.evolution(delta_t);
+  else {b.evolution(delta_t);}
   }
   return b_states;
 }
