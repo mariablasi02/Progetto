@@ -39,17 +39,6 @@ auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   return boids.TotalBoids();
 }
 
-auto simulate(Boids& b, double duration, int step_evolution, int prescale) {
-  std::vector<std::string> b_states;
-  double delta_t{duration / step_evolution};
-  for (int step = 0; step != step_evolution; ++step) {
-    if (step % prescale == 0) {
-      b_states.push_back(state(b, delta_t));  // state of the chain after
-                                              // delta_t
-    }
-  }
-  return b_states;
-}
 
 int main() {
   std::random_device rd;

@@ -149,4 +149,6 @@ struct Stats {
 Stats statistic(Boids& b, double const delta_t);
 std::string state(Boids& b, double const delta_t);
 
+std::vector<std::string> simulate(Boids& b, double duration, int step_evolution, int prescale);
+
 #endif
