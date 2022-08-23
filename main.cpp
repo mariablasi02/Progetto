@@ -1,4 +1,4 @@
-#include "boids.hpp"
+
 // Execute with: ./a.out
 // Build using cmake in debug mode: cmake --build build
 // Build using cmake in release mode: cmake --build build_release
@@ -15,15 +15,34 @@
 #include <iostream>
 #include <random>
 
-auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
-  double const unit_of_t{delta_t.asSeconds()};
+#include "boids.hpp"
 
-  for (int i{0}; i != step_evolution; ++i) {  // attenzione!!!! potrebbe
-    // esserci problema di velocità
+auto evolve(Boids& boids, int step_evolution,
+            sf::Time delta_t)  // delta-t = 0.001 secondi
+{
+  double const unit_of_t{
+      delta_t.asMilliseconds() /
+      10.};  // delta_t.asMilli() = 1 -> double unit_of_t = 0.1
+
+  for (int i{0}; i != step_evolution; ++i) {
     boids.evolution(unit_of_t);
-   }
-
+  }
   return boids.TotalBoids();
+}
+
+std::vector<std::string> simulate(Boids& b, double duration, int steps,
+                                  int prescale) {
+  std::vector<std::string> b_states;
+  double delta_t{(duration / steps) * 100};  // conversione da secondi a
+  for (int step = 0; step != steps; ++step) {
+    if (step % prescale == 0) {
+      b_states.push_back(state(b, delta_t));  // state of the chain after
+                                              // delta_t
+    } else {
+      b.evolution(delta_t);
+    }
+  }
+  return b_states;
 }
 
 int main() {
@@ -82,14 +101,13 @@ int main() {
   assert(same_pos_check(vec_boids));
   boids.setvector(vec_boids);
 
-  auto const delta_t{sf::seconds(0.1)};
-  int const fps{30};
-  int const step_evolution{
-      1000 / fps};  // quanti step devo fare per star dentro a 30 fps
-  // int const prescale{10}; //width of time interval between a measurment and
-  // the following
+  auto const delta_t{sf::seconds(0.001)};
+  int const fps{30};  // circa 0.03
+  int const step_evolution{1000 /
+                           fps};  // quante volte devo chiamare evolution in
+                                  // 1/30 di secondi = 1/30 * 1/0.001 = 1000/30
 
-  auto const b_states = simulate(boids, 120., 1200, 20);
+  auto const b_states = simulate(boids, 120., 120000, 2000);
 
   std::for_each(b_states.begin(), b_states.end(),
                 [](std::string const& state) { std::cout << state << '\n'; });
@@ -131,11 +149,10 @@ int main() {
       }
     }
     auto boidscopy = evolve(boids, step_evolution, delta_t);
-    stats.setString(state(boids, delta_t.asSeconds()));
+    stats.setString(state(boids, delta_t.asSeconds() * 100));
 
     window.clear();
     window.draw(sprite);
-    // trasformato for in algoritmo -> poi vediamo cosa lasciare
     std::for_each(boidscopy.begin(), boidscopy.end(), [&](BoidState const& b) {
       triangle.setPosition(b.x, b.y);
       window.draw(triangle);

@@ -1,8 +1,7 @@
+#include "boids.hpp"
 #include <algorithm>
 #include <cmath>
 #include <numeric>
-
-#include "boids.hpp"
 
 bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
   if (!cont.empty()) {
