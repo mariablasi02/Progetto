@@ -6,6 +6,7 @@
 // Execute using cmake in release mode (suggested): build_release/boids-sfml
 // close the window from sfml button parameters: s ~ 0.5, a ~ 0.9, c ~ 0.003 for
 // 1 s
+
 #include "boids.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
@@ -14,8 +15,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <random>
-
-
 
 auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   double const unit_of_t{delta_t.asSeconds()};
