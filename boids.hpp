@@ -67,8 +67,7 @@ class SeparationRule {
   // valutare un valore che viene deciso da noi
 
  public:
-  SeparationRule(double const s, double d_s) : s_{s}, distance_s_{d_s} {
-  }
+  SeparationRule(double const s, double d_s) : s_{s}, distance_s_{d_s} {}
   Components operator()(std::vector<BoidState> const& b,
                         BoidState const& b1) const;
 };
@@ -96,9 +95,7 @@ class CohesionRule {
   double const cohesion_const_;
 
  public:
-  CohesionRule(double const c) : cohesion_const_{c} {
-    
-  }
+  CohesionRule(double const c) : cohesion_const_{c} {}
 
   Components operator()(std::vector<BoidState> const& cboids,
                         BoidState const& b1) const;
@@ -152,6 +149,7 @@ struct Stats {
 Stats statistic(Boids& b, double const delta_t);
 std::string state(Boids& b, double const delta_t);
 
-std::vector<std::string> simulate(Boids& b, double duration, int step_evolution, int prescale);
+std::vector<std::string> simulate(Boids& b, double duration, int step_evolution,
+                                  int prescale);
 
 #endif
