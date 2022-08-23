@@ -84,7 +84,9 @@ int main() {
     }
   }
 
+  assert(same_pos_check(vec_boids));
   boids.setvector(vec_boids);
+  
 
   auto const delta_t{sf::seconds(0.1)};
   int const fps{30};

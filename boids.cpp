@@ -17,14 +17,14 @@ int size(std::vector<double> const& v) {
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
                                         BoidState const& b1, double const d) {
   auto p = pesci;
-  auto n = size(pesci);
+  
 
   p.erase(std::remove_if(p.begin(), p.end(),
                          [&b1, d](BoidState const& b) {
                            return (norm(b1, b) > d);
                          }),  // provato a sistemare by ref by value, funzia?
           p.end());
-  assert(size(pesci) == n);
+  
 
   return p;
 }
@@ -154,7 +154,6 @@ void Boids::evolution(double const delta_t) {
 
   assert(size(fishes) == size(boids_));
   boids_ = fishes;
-  assert(same_pos_check(boids_));
 }
 
 void Boids::setvector(std::vector<BoidState> const& b) {  // prova
