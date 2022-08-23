@@ -19,7 +19,7 @@
 int sign() {  // questa possiamo spostarla fuori dal main, ma la lascerei qui
               // anyway
 
-  std::srand(time(0));
+  
   int result{};
   if (((std::rand() % 10) + 1) % 2 == 0) {
     result = 1;
@@ -45,7 +45,8 @@ int main() {
   std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> pos_x(0, 1179);
   std::uniform_real_distribution<double> pos_y(0, 690);
-  std::uniform_real_distribution<double> speed(300, 400);
+  std::uniform_real_distribution<double> speed(-10, 10);
+
 
   std::cout << "Insert number of boids (at least 2): "
             << '\n';  // fino a 100 tutto ok, poi comincia a laggare
@@ -74,6 +75,7 @@ int main() {
 
   vec_boids.resize(n);
 
+  std::srand(time(0));
   std::generate(vec_boids.begin(), vec_boids.end(),
                 [&gen, &pos_x, &pos_y, &speed]() -> BoidState {
                   return {pos_x(gen), pos_y(gen), speed(gen) * sign(),

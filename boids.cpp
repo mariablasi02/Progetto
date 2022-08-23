@@ -7,11 +7,11 @@
 #include <string>
 
 int size(std::vector<BoidState> const& v) {
-  // if (static_cast<int>(v.size()) > 1) {
-  return (static_cast<int>(v.size()));  // risolvere problema eccezione
-  //} else {
-  //  throw std::runtime_error{"Error: n must be > 1"};
-  // }
+  return (static_cast<int>(v.size())); 
+}
+
+int size(std::vector<double> const& v) {
+  return (static_cast<int>(v.size())); 
 }
 
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
@@ -62,22 +62,30 @@ bool same_pos_check(std::vector<BoidState> const& boid) {
 std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec) {
   std::transform(boidsvec.begin(), boidsvec.end(), boidsvec.begin(),
                  [](BoidState& b) {
-                   if (b.v_x > 2.) {
-                     b.v_x = 2.;
+                   if (b.v_x > 5.) {
+                     b.v_x = 5.;
                    }
+                   else if (b.v_x < -5.){
+                    b.v_x = -5.;
+                   }
+                   else if (b.v_x > -0.5 && b.v_x < 0.)
+                   {b.v_x = -0.5;}
+                   else if (b.v_x > 0. && b.v_x < 0.5)
+                   {b.v_x = 0.5;}
 
-                   if (b.v_y > 2.) {
-                     b.v_y = 2.;
+                   if (b.v_y > 5.) {
+                     b.v_y = 5.;
                    }
+                   else if (b.v_y < -5.){
+                    b.v_y = -5.;
+                   }
+                   else if(b.v_y > -0.5 && b.v_y < 0.)
+                   {b.v_y = -0.5;}
+                   else if(b.v_y > 0. && b.v_y < 0.5)
+                   {b.v_y = 0.5;}                 
 
-                   if (b.v_x < -2.) {
-                     b.v_x = -2.;
-                   }
-
-                   if (b.v_y < -2.) {
-                     b.v_y = -2.;
-                   }
-                   assert(b.v_x <= 2. && b.v_x >= -2. && b.v_y <= 2. && b.v_y >= -2.);
+              
+                   assert(b.v_x <= 5. && b.v_x >= -5. && b.v_y <= 5. && b.v_y >= -5.);
                    return BoidState{b.x, b.y, b.v_x, b.v_y};
                    
                  });
@@ -112,14 +120,6 @@ BoidState Boids::singleboid(std::vector<BoidState> const& vec,
     auto v_2 = a_(vec, b1);
     auto v_3 = c_(vec, b1);
     auto v_new = v_old + v_1 + v_2 + v_3;
-     if (std::abs(v_new.val_x) > 10.) {
-      auto x = 2 / std::abs(v_new.val_x);
-      v_new.val_x *= x;
-    }
-    if (std::abs(v_new.val_y) > 10.) {
-      auto y = 2 / std::abs(v_new.val_y);
-       v_new.val_y *= y;
-    }
     return {b1.x + v_new.val_x * delta_t, b1.y + v_new.val_y * delta_t,
             v_new.val_x, v_new.val_y};
   } else {
@@ -174,17 +174,20 @@ Stats statistic(Boids& b, double const delta_t) {
       ;
     }
   }
-  auto mean_dist = (std::accumulate(distances.begin(), distances.end(), 0.)) /
-                   static_cast<int>(distances.size());
+  assert(size(distances)!= 0);
+
+  auto mean_dist = (std::accumulate(distances.begin(), distances.end(), 0.)) / size(distances);
+                   
 
   auto mean_dist2 = (std::inner_product(distances.begin(), distances.end(),
-                                        distances.begin(), 0.)) /
-                    static_cast<int>(distances.size());
+                                        distances.begin(), 0.)) / size(distances);
+                    
   auto std_dist = std::sqrt(mean_dist2 - mean_dist * mean_dist) /
-                  std::sqrt(static_cast<int>(distances.size()));
+                  std::sqrt(size(distances));
 
   auto sum =
       std::accumulate(vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
+      assert(size(vec)!= 0);
   Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
 
   std::vector<double> velocities{};
@@ -196,10 +199,9 @@ Stats statistic(Boids& b, double const delta_t) {
                               mean_vel.val_y * mean_vel.val_y);
 
   auto mean_speed2 = (std::inner_product(velocities.begin(), velocities.end(),
-                                         velocities.begin(), 0.)) /
-                     static_cast<int>(velocities.size());
+                                         velocities.begin(), 0.)) / size(velocities);
   auto std_speed = std::sqrt(mean_speed2 - mean_speed * mean_speed) /
-                   std::sqrt(static_cast<int>(velocities.size()));
+                   std::sqrt(size(velocities));
   Stats data{mean_dist, std_dist, mean_speed, std_speed};
   return data;
 }
