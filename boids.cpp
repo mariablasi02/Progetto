@@ -7,24 +7,20 @@
 #include <string>
 
 int size(std::vector<BoidState> const& v) {
-  return (static_cast<int>(v.size())); 
+  return (static_cast<int>(v.size()));
 }
 
-int size(std::vector<double> const& v) {
-  return (static_cast<int>(v.size())); 
-}
+int size(std::vector<double> const& v) { return (static_cast<int>(v.size())); }
 
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
                                         BoidState const& b1, double const d) {
   auto p = pesci;
-  
 
   p.erase(std::remove_if(p.begin(), p.end(),
                          [&b1, d](BoidState const& b) {
                            return (norm(b1, b) > d);
                          }),  // provato a sistemare by ref by value, funzia?
           p.end());
-  
 
   return p;
 }
@@ -60,35 +56,31 @@ bool same_pos_check(std::vector<BoidState> const& boid) {
   }
 }
 std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec) {
-  std::transform(boidsvec.begin(), boidsvec.end(), boidsvec.begin(),
-                 [](BoidState& b) {
-                   if (b.v_x > 5.) {
-                     b.v_x = 5.;
-                   }
-                   else if (b.v_x < -5.){
-                    b.v_x = -5.;
-                   }
-                   else if (b.v_x > -0.5 && b.v_x < 0.)
-                   {b.v_x = -0.5;}
-                   else if (b.v_x > 0. && b.v_x < 0.5)
-                   {b.v_x = 0.5;}
+  std::transform(
+      boidsvec.begin(), boidsvec.end(), boidsvec.begin(), [](BoidState& b) {
+        if (b.v_x > 5.) {
+          b.v_x = 5.;
+        } else if (b.v_x < -5.) {
+          b.v_x = -5.;
+        } else if (b.v_x > -0.5 && b.v_x < 0.) {
+          b.v_x = -0.5;
+        } else if (b.v_x > 0. && b.v_x < 0.5) {
+          b.v_x = 0.5;
+        }
 
-                   if (b.v_y > 5.) {
-                     b.v_y = 5.;
-                   }
-                   else if (b.v_y < -5.){
-                    b.v_y = -5.;
-                   }
-                   else if(b.v_y > -0.5 && b.v_y < 0.)
-                   {b.v_y = -0.5;}
-                   else if(b.v_y > 0. && b.v_y < 0.5)
-                   {b.v_y = 0.5;}                 
+        if (b.v_y > 5.) {
+          b.v_y = 5.;
+        } else if (b.v_y < -5.) {
+          b.v_y = -5.;
+        } else if (b.v_y > -0.5 && b.v_y < 0.) {
+          b.v_y = -0.5;
+        } else if (b.v_y > 0. && b.v_y < 0.5) {
+          b.v_y = 0.5;
+        }
 
-              
-                   assert(b.v_x <= 5. && b.v_x >= -5. && b.v_y <= 5. && b.v_y >= -5.);
-                   return BoidState{b.x, b.y, b.v_x, b.v_y};
-                   
-                 });
+        assert(b.v_x <= 5. && b.v_x >= -5. && b.v_y <= 5. && b.v_y >= -5.);
+        return BoidState{b.x, b.y, b.v_x, b.v_y};
+      });
   return boidsvec;
 }
 
@@ -110,7 +102,6 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
   });
   return v;
 }
-
 
 BoidState Boids::singleboid(std::vector<BoidState> const& vec,
                             BoidState const& b1, double const delta_t) const {
@@ -144,8 +135,7 @@ void Boids::evolution(double const delta_t) {
   std::vector<BoidState> fishes;
   for (auto fish : boids_) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
-    fishes.push_back(
-        singleboid(nearfishes, fish, delta_t)); 
+    fishes.push_back(singleboid(nearfishes, fish, delta_t));
   }
 
   borders(fishes);
@@ -173,20 +163,21 @@ Stats statistic(Boids& b, double const delta_t) {
       ;
     }
   }
-  assert(size(distances)!= 0);
+  assert(size(distances) != 0);
 
-  auto mean_dist = (std::accumulate(distances.begin(), distances.end(), 0.)) / size(distances);
-                   
+  auto mean_dist = (std::accumulate(distances.begin(), distances.end(), 0.)) /
+                   size(distances);
 
   auto mean_dist2 = (std::inner_product(distances.begin(), distances.end(),
-                                        distances.begin(), 0.)) / size(distances);
-                    
+                                        distances.begin(), 0.)) /
+                    size(distances);
+
   auto std_dist = std::sqrt(mean_dist2 - mean_dist * mean_dist) /
                   std::sqrt(size(distances));
 
   auto sum =
       std::accumulate(vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
-      assert(size(vec)!= 0);
+  assert(size(vec) != 0);
   Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
 
   std::vector<double> velocities{};
@@ -198,7 +189,8 @@ Stats statistic(Boids& b, double const delta_t) {
                               mean_vel.val_y * mean_vel.val_y);
 
   auto mean_speed2 = (std::inner_product(velocities.begin(), velocities.end(),
-                                         velocities.begin(), 0.)) / size(velocities);
+                                         velocities.begin(), 0.)) /
+                     size(velocities);
   auto std_speed = std::sqrt(mean_speed2 - mean_speed * mean_speed) /
                    std::sqrt(size(velocities));
   Stats data{mean_dist, std_dist, mean_speed, std_speed};
@@ -216,15 +208,17 @@ std::string state(Boids& b, double const delta_t) {
          std::to_string(data.std_speed) + '\n';
 }
 
-std::vector<std::string> simulate(Boids& b, double duration, int steps, int prescale) {
+std::vector<std::string> simulate(Boids& b, double duration, int steps,
+                                  int prescale) {
   std::vector<std::string> b_states;
   double delta_t{duration / steps};
   for (int step = 0; step != steps; ++step) {
     if (step % prescale == 0) {
       b_states.push_back(state(b, delta_t));  // state of the chain after
                                               // delta_t
+    } else {
+      b.evolution(delta_t);
     }
-  else {b.evolution(delta_t);}
   }
   return b_states;
 }
