@@ -68,12 +68,6 @@ class SeparationRule {
 
  public:
   SeparationRule(double const s, double d_s) : s_{s}, distance_s_{d_s} {
-    if (s == 2. || s > 2.) {
-      throw std::runtime_error{"s must be < than 2"};
-    }
-    if (s < 0.){
-      throw std::runtime_error{"s must be a positive value"};
-    }
   }
   Components operator()(std::vector<BoidState> const& b,
                         BoidState const& b1) const;
@@ -86,9 +80,6 @@ class AlignmentRule {
   AlignmentRule(double const a) : a_{a} {
     if (a == 1. || a > 1.) {
       throw std::runtime_error{"a must be < than 1"};
-    }
-    if (a < 0.){
-      throw std::runtime_error{"a must be a positive value"};
     }
   }
 
@@ -106,12 +97,7 @@ class CohesionRule {
 
  public:
   CohesionRule(double const c) : cohesion_const_{c} {
-    if (c == 0.1 || c > 0.1) {
-      throw std::runtime_error{"c must be < than 0.1"};
-    }
-    if (c < 0.){
-      throw std::runtime_error{"c must be a positive value"};
-    }
+    
   }
 
   Components operator()(std::vector<BoidState> const& cboids,
