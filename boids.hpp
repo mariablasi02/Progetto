@@ -65,8 +65,7 @@ class SeparationRule {
   double const distance_s_;
 
  public:
-  SeparationRule(double const s, double d_s) : s_{s}, distance_s_{d_s} {
-  }
+  SeparationRule(double const s, double d_s) : s_{s}, distance_s_{d_s} {}
   Components operator()(std::vector<BoidState> const& b,
                         BoidState const& b1) const;
 };
@@ -94,9 +93,7 @@ class CohesionRule {
   double const cohesion_const_;
 
  public:
-  CohesionRule(double const c) : cohesion_const_{c} {
-    
-  }
+  CohesionRule(double const c) : cohesion_const_{c} {}
 
   Components operator()(std::vector<BoidState> const& cboids,
                         BoidState const& b1) const;
@@ -108,8 +105,7 @@ bool same_pos_check(std::vector<BoidState> const& boid);
 
 std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec);
 
-std::vector<BoidState> borders(
-    std::vector<BoidState>& v);
+std::vector<BoidState> borders(std::vector<BoidState>& v);
 
 class Boids {
   int const n_;
@@ -148,6 +144,7 @@ struct Stats {
 Stats statistic(Boids& b, double const delta_t);
 std::string state(Boids& b, double const delta_t);
 
-std::vector<std::string> simulate(Boids& b, double duration, int step_evolution, int prescale);
+std::vector<std::string> simulate(Boids& b, double duration, int step_evolution,
+                                  int prescale);
 
 #endif
