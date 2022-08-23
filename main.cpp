@@ -4,18 +4,16 @@
 // Build using cmake in release mode: cmake --build build_release
 // Execute using cmake in debug mode: build/boids-sfml
 // Execute using cmake in release mode (suggested): build_release/boids-sfml
-// close the window from sfml button parameters: s ~ 0.5, a ~ 0.9, c ~ 0.003 for 1 s
+// close the window from sfml button parameters: s ~ 0.5, a ~ 0.9, c ~ 0.003 for
+// 1 s
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/Window.hpp>
 #include <algorithm>
 #include <cstdlib>
-#include <random>
 #include <iostream>
-
-
-
+#include <random>
 
 auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   double const unit_of_t{delta_t.asSeconds()};
@@ -28,14 +26,12 @@ auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   return boids.TotalBoids();
 }
 
-
 int main() {
   std::random_device rd;
   std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> pos_x(0, 1179);
   std::uniform_real_distribution<double> pos_y(0, 690);
   std::uniform_real_distribution<double> speed(-10, 10);
-
 
   std::cout << "Insert number of boids (at least 2): "
             << '\n';  // fino a 100 tutto ok, poi comincia a laggare
@@ -47,7 +43,7 @@ int main() {
   }
   std::cout << "Insert separation const [0,2[, alignment const [0,1[, cohesion "
                "const [0, 0.1[: "
-            << '\n'; 
+            << '\n';
   double s;
   double a;
   double c;
@@ -66,8 +62,7 @@ int main() {
 
   std::generate(vec_boids.begin(), vec_boids.end(),
                 [&gen, &pos_x, &pos_y, &speed]() -> BoidState {
-                  return {pos_x(gen), pos_y(gen), speed(gen),
-                          speed(gen)};
+                  return {pos_x(gen), pos_y(gen), speed(gen), speed(gen)};
                 });
 
   auto it = vec_boids.begin();
@@ -84,6 +79,7 @@ int main() {
     }
   }
 
+  assert(same_pos_check(vec_boids));
   boids.setvector(vec_boids);
 
   auto const delta_t{sf::seconds(0.1)};
@@ -144,10 +140,7 @@ int main() {
       triangle.setPosition(b.x, b.y);
       window.draw(triangle);
     });
-    /* for (auto& b : boidscopy) {
-      triangle.setPosition(b.x, b.y);
-      window.draw(triangle);
-    } */
+
     window.draw(rect);
     window.draw(stats);
 
