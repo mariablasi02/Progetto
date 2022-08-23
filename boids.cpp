@@ -205,17 +205,4 @@ std::string state(Boids& b, double const delta_t) {
          std::to_string(data.std_speed) + '\n';
 }
 
-std::vector<std::string> simulate(Boids& b, double duration, int steps,
-                                  int prescale) {
-  std::vector<std::string> b_states;
-  double delta_t{duration / steps};
-  for (int step = 0; step != steps; ++step) {
-    if (step % prescale == 0) {
-      b_states.push_back(state(b, delta_t));  // state of the chain after
-                                              // delta_t
-    } else {
-      b.evolution(delta_t);
-    }
-  }
-  return b_states;
-}
+
