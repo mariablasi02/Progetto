@@ -1,3 +1,4 @@
+#include "boids.hpp"
 // Execute with: ./a.out
 // Build using cmake in debug mode: cmake --build build
 // Build using cmake in release mode: cmake --build build_release
@@ -10,23 +11,11 @@
 #include <SFML/Window.hpp>
 #include <algorithm>
 #include <cstdlib>
-#include <ctime>
-#include <iostream>
 #include <random>
+#include <iostream>
 
-#include "boids.hpp"
 
-int sign() {  // questa possiamo spostarla fuori dal main, ma la lascerei qui
-              // anyway
 
-  
-  int result{};
-  if (((std::rand() % 10) + 1) % 2 == 0) {
-    result = 1;
-  } else
-    result = -1;
-  return result;
-}
 
 auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   double const unit_of_t{delta_t.asSeconds()};
@@ -58,7 +47,7 @@ int main() {
   }
   std::cout << "Insert separation const [0,2[, alignment const [0,1[, cohesion "
                "const [0, 0.1[: "
-            << '\n';  // valori di n ottimali: intorno a 20 per il momento
+            << '\n'; 
   double s;
   double a;
   double c;
@@ -75,11 +64,10 @@ int main() {
 
   vec_boids.resize(n);
 
-  std::srand(time(0));
   std::generate(vec_boids.begin(), vec_boids.end(),
                 [&gen, &pos_x, &pos_y, &speed]() -> BoidState {
-                  return {pos_x(gen), pos_y(gen), speed(gen) * sign(),
-                          speed(gen) * sign()};
+                  return {pos_x(gen), pos_y(gen), speed(gen),
+                          speed(gen)};
                 });
 
   auto it = vec_boids.begin();
