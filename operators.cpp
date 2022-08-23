@@ -1,6 +1,5 @@
-#include <cmath>
-
 #include "boids.hpp"
+#include <cmath>
 
 BoidState& BoidState::operator+=(BoidState const& other) {
   x += other.x;
