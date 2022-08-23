@@ -21,7 +21,7 @@ auto evolve(Boids& boids, int step_evolution, sf::Time delta_t) {
   for (int i{0}; i != step_evolution; ++i) {  // attenzione!!!! potrebbe
     // esserci problema di velocità
     boids.evolution(unit_of_t);
-  }
+   }
 
   return boids.TotalBoids();
 }
