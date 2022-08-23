@@ -2,5 +2,8 @@
         "cmake.configureOnEdit": false,
         "cmake.configureOnOpen": false,
         "cmake.generator": "Unix Makefiles",
+        "files.associations": {
+                "algorithm": "cpp"
+        },
         
 }

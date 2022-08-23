@@ -7,11 +7,7 @@
 #include <string>
 
 int size(std::vector<BoidState> const& v) {
-  // if (static_cast<int>(v.size()) > 1) {
-  return (static_cast<int>(v.size()));  // risolvere problema eccezione
-  //} else {
-  //  throw std::runtime_error{"Error: n must be > 1"};
-  // }
+  return (static_cast<int>(v.size()));
 }
 
 std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
@@ -59,27 +55,25 @@ bool same_pos_check(std::vector<BoidState> const& boid) {
     return true;
   }
 }
+
 std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec) {
   std::transform(boidsvec.begin(), boidsvec.end(), boidsvec.begin(),
                  [](BoidState& b) {
-                   if (b.v_x > 2.) {
-                     b.v_x = 2.;
+                   if (b.v_x < -5.) {
+                     b.v_x = -5;
+                   } else if (b.v_x > 5.) {
+                     b.v_x = 5;
+                   } else if (b.v_x > -0.5 || b.v_x < 0.5) {
+                     b.v_x = 0.5;
                    }
-
-                   if (b.v_y > 2.) {
-                     b.v_y = 2.;
+                   if (b.v_y < -5.) {
+                     b.v_y = -5;
+                   } else if (b.v_y > 5) {
+                     b.v_y = 5;
+                   } else if (b.v_y > -0.5 || b.v_y < 0.5) {
+                     b.v_y = 0.5;
                    }
-
-                   if (b.v_x < -2.) {
-                     b.v_x = -2.;
-                   }
-
-                   if (b.v_y < -2.) {
-                     b.v_y = -2.;
-                   }
-                   assert(b.v_x <= 2. && b.v_x >= -2. && b.v_y <= 2. && b.v_y >= -2.);
                    return BoidState{b.x, b.y, b.v_x, b.v_y};
-                   
                  });
   return boidsvec;
 }
@@ -103,7 +97,6 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
   return v;
 }
 
-
 BoidState Boids::singleboid(std::vector<BoidState> const& vec,
                             BoidState const& b1, double const delta_t) const {
   if (size(vec) > 1) {
@@ -112,13 +105,13 @@ BoidState Boids::singleboid(std::vector<BoidState> const& vec,
     auto v_2 = a_(vec, b1);
     auto v_3 = c_(vec, b1);
     auto v_new = v_old + v_1 + v_2 + v_3;
-     if (std::abs(v_new.val_x) > 10.) {
+    if (std::abs(v_new.val_x) > 10.) {
       auto x = 2 / std::abs(v_new.val_x);
       v_new.val_x *= x;
     }
     if (std::abs(v_new.val_y) > 10.) {
       auto y = 2 / std::abs(v_new.val_y);
-       v_new.val_y *= y;
+      v_new.val_y *= y;
     }
     return {b1.x + v_new.val_x * delta_t, b1.y + v_new.val_y * delta_t,
             v_new.val_x, v_new.val_y};
@@ -144,8 +137,7 @@ void Boids::evolution(double const delta_t) {
   std::vector<BoidState> fishes;
   for (auto fish : boids_) {
     auto nearfishes = NeighborsControl(boids_, fish, d_);
-    fishes.push_back(
-        singleboid(nearfishes, fish, delta_t)); 
+    fishes.push_back(singleboid(nearfishes, fish, delta_t));
   }
 
   borders(fishes);
@@ -165,7 +157,7 @@ Stats statistic(Boids& b, double const delta_t) {
   b.evolution(delta_t);
   auto vec = b.TotalBoids();
   std::vector<double> distances{};
-
+  assert(vec.size() != 0);
   auto it = vec.begin();
   for (; it != vec.end(); ++it) {
     auto it_2 = std::next(it);
@@ -174,6 +166,7 @@ Stats statistic(Boids& b, double const delta_t) {
       ;
     }
   }
+  assert(distances.size() != 0);
   auto mean_dist = (std::accumulate(distances.begin(), distances.end(), 0.)) /
                    static_cast<int>(distances.size());
 
@@ -192,6 +185,8 @@ Stats statistic(Boids& b, double const delta_t) {
   for (auto i : vec) {
     velocities.push_back(velocity_norm(i));
   }
+
+  assert(velocities.size() != 0);
   auto mean_speed = std::sqrt(mean_vel.val_x * mean_vel.val_x +
                               mean_vel.val_y * mean_vel.val_y);
 
@@ -215,15 +210,17 @@ std::string state(Boids& b, double const delta_t) {
          std::to_string(data.std_speed) + '\n';
 }
 
-std::vector<std::string> simulate(Boids& b, double duration, int steps, int prescale) {
+std::vector<std::string> simulate(Boids& b, double duration, int steps,
+                                  int prescale) {
   std::vector<std::string> b_states;
   double delta_t{duration / steps};
   for (int step = 0; step != steps; ++step) {
     if (step % prescale == 0) {
       b_states.push_back(state(b, delta_t));  // state of the chain after
                                               // delta_t
+    } else {
+      b.evolution(delta_t);
     }
-  else {b.evolution(delta_t);}
   }
   return b_states;
 }

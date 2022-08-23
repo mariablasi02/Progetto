@@ -45,7 +45,7 @@ int main() {
   std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> pos_x(0, 1179);
   std::uniform_real_distribution<double> pos_y(0, 690);
-  std::uniform_real_distribution<double> speed(300, 400);
+  std::uniform_real_distribution<double> speed(-10, 10);
 
   std::cout << "Insert number of boids (at least 2): "
             << '\n';  // fino a 100 tutto ok, poi comincia a laggare
