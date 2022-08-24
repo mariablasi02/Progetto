@@ -1,9 +1,10 @@
-#include "boids.hpp"
 #include <algorithm>
 #include <cmath>
 #include <numeric>
 
-//check if c belongs to cont
+#include "boids.hpp"
+
+// check if c belongs to cont
 bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
   if (!cont.empty()) {
     auto it = std::find(cont.begin(), cont.end(), c);
@@ -12,7 +13,7 @@ bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
     return false;
   }
 }
-//calculates v_1 
+// calculates v_1
 Components SeparationRule::operator()(std::vector<BoidState> const& b,
                                       BoidState const& b1) const {
   assert(size(b) > 1);
@@ -27,7 +28,7 @@ Components SeparationRule::operator()(std::vector<BoidState> const& b,
 }
 
 double AlignmentRule::get_a() const { return a_; }
-//calculates v_2
+// calculates v_2
 Components AlignmentRule::operator()(std::vector<BoidState> const& boids,
                                      BoidState const& b1) const {
   assert(size(boids) > 1);
@@ -47,7 +48,7 @@ Components centre_of_mass(std::vector<BoidState> const& vec,
 
   return {sum.x / den, sum.y / den};
 }
-//calculates v_3
+// calculates v_3
 Components CohesionRule::operator()(std::vector<BoidState> const& cboids,
                                     BoidState const& b1) const {
   assert(size(cboids) > 1);

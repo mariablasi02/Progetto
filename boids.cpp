@@ -1,4 +1,5 @@
 #include "boids.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -15,20 +16,18 @@ std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
                                         BoidState const& b1, double const d) {
   auto p = pesci;
 
-  p.erase(std::remove_if(p.begin(), p.end(),
-                         [&b1, d](BoidState const& b) {
-                           return (norm(b1, b) > d);
-                         }), 
+  p.erase(std::remove_if(
+              p.begin(), p.end(),
+              [&b1, d](BoidState const& b) { return (norm(b1, b) > d); }),
           p.end());
 
   return p;
 }
 
 bool same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids) {
-  auto same_position_it =
-      std::find_if(boids.begin(), boids.end(), [&b1](BoidState const& b) {
-        return b.x == b1.x && b.y == b1.y;
-      });  
+  auto same_position_it = std::find_if(
+      boids.begin(), boids.end(),
+      [&b1](BoidState const& b) { return b.x == b1.x && b.y == b1.y; });
   if (same_position_it != boids.end()) {
     return false;
   } else {
@@ -57,8 +56,8 @@ bool same_pos_check(std::vector<BoidState> const& boid) {
 
 std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec) {
   std::transform(
-      boidsvec.begin(), boidsvec.end(), boidsvec.begin(), [](BoidState& b) {        
-        if (b.v_x > 5.) { 
+      boidsvec.begin(), boidsvec.end(), boidsvec.begin(), [](BoidState& b) {
+        if (b.v_x > 5.) {
           b.v_x = 5.;
         } else if (b.v_x < -5.) {
           b.v_x = -5.;
@@ -103,7 +102,8 @@ std::vector<BoidState> borders(std::vector<BoidState>& v) {
   return v;
 }
 
-//calculates the new coordinates of position and velocity of a boid using law of motion
+// calculates the new coordinates of position and velocity of a boid using law
+// of motion
 BoidState Boids::singleboid(std::vector<BoidState> const& vec,
                             BoidState const& b1, double const delta_t) const {
   if (size(vec) > 1) {
@@ -144,14 +144,14 @@ void Boids::evolution(double const delta_t) {
   velocity_limit(fishes);
 
   assert(size(fishes) == size(boids_));
-  boids_ = fishes;}
+  boids_ = fishes;
+}
 
-void Boids::setvector(std::vector<BoidState> const& b) { 
-  boids_ = b;}
+void Boids::setvector(std::vector<BoidState> const& b) { boids_ = b; }
 
 Stats statistic(Boids& b, double const delta_t) {
   b.evolution(delta_t);
-  auto const& vec = b.TotalBoids(); 
+  auto const& vec = b.TotalBoids();
   std::vector<double> distances{};
   assert(vec.size() != 0);
   auto it = vec.begin();
@@ -171,8 +171,8 @@ Stats statistic(Boids& b, double const delta_t) {
   auto mean_dist2 = (std::inner_product(distances.begin(), distances.end(),
                                         distances.begin(), 0.)) /
                     size(distances);
-                    
-  //mean standard deviation
+
+  // mean standard deviation
   auto std_dist = std::sqrt(mean_dist2 - mean_dist * mean_dist) /
                   std::sqrt(size(distances));
 
@@ -210,5 +210,3 @@ std::string state(Boids& b, double const delta_t) {
          std::to_string(data.mean_speed) + " +/- " +
          std::to_string(data.std_speed) + '\n';
 }
-
-
