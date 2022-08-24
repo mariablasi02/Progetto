@@ -427,10 +427,10 @@ TEST_CASE("Testing state function") {
   bb.pushback(n2);
   bb.pushback(n3);
   auto data = statistic(bb, 0.2);
-  CHECK(data.mean_distance == doctest::Approx(25.26).epsilon(0.01));
-  CHECK(data.std_distance == doctest::Approx(3.99).epsilon(0.01));
-  CHECK(data.mean_speed == doctest::Approx(0.94).epsilon(0.01));
-  CHECK(data.std_speed == doctest::Approx(1.54).epsilon(0.01));
+  CHECK(data.mean_distance == doctest::Approx(2.62).epsilon(0.01));
+  CHECK(data.std_distance == doctest::Approx(0.39).epsilon(0.01));
+  CHECK(data.mean_speed == doctest::Approx(2.36).epsilon(0.01));
+  CHECK(data.std_speed == doctest::Approx(3.85).epsilon(0.01));
 
   BoidState b1{0., 0., 0., 0.};
   BoidState b2{0., 10., 0., 1.};
@@ -440,8 +440,8 @@ TEST_CASE("Testing state function") {
   b.pushback(b2);
   b.pushback(b3);
   auto value = statistic(b, 0.2);
-  CHECK(value.mean_distance == doctest::Approx(19.46).epsilon(0.01));
-  CHECK(value.std_distance == doctest::Approx(4.53).epsilon(0.01));
-  CHECK(value.mean_speed == doctest::Approx(0.67).epsilon(0.01));
-  CHECK(value.std_speed == doctest::Approx(1.09).epsilon(0.01));
+  CHECK(value.mean_distance == doctest::Approx(2.03).epsilon(0.01));
+  CHECK(value.std_distance == doctest::Approx(0.48).epsilon(0.01));
+  CHECK(value.mean_speed == doctest::Approx(1.67).epsilon(0.01));
+  CHECK(value.std_speed == doctest::Approx(2.72).epsilon(0.01));
 }
