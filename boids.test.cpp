@@ -230,7 +230,7 @@ TEST_CASE("Testing function cente_of_mass") {
 
     CHECK(centre_of_mass(vec, b2) == Components{0.0, 3.5});
     CHECK(centre_of_mass(vec, b2).val_y == 3.5);
-  } 
+  }
 }
 
 TEST_CASE("Testing Cohesion rule") {

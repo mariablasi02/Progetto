@@ -1,5 +1,6 @@
-#include "boids.hpp"
 #include <cmath>
+
+#include "boids.hpp"
 
 BoidState& BoidState::operator+=(BoidState const& other) {
   x += other.x;
@@ -30,8 +31,7 @@ bool operator==(BoidState const& b1, BoidState const& b2) {
 }
 
 bool operator!=(BoidState const& b1, BoidState const& b2) {
-  return {b1.x != b2.x || b1.y != b2.y || b1.v_x != b2.v_x ||
-          b1.v_y != b2.v_y};  
+  return {b1.x != b2.x || b1.y != b2.y || b1.v_x != b2.v_x || b1.v_y != b2.v_y};
 }
 
 BoidState operator+(BoidState const& b1, BoidState const& b2) {
