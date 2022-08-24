@@ -105,8 +105,7 @@ bool same_pos_check(std::vector<BoidState> const& boid);
 
 std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec);
 
-std::vector<BoidState> borders(
-    std::vector<BoidState>& v);
+std::vector<BoidState> borders(std::vector<BoidState>& v);
 
 class Boids {
   int const n_;

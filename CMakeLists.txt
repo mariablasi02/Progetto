@@ -1,38 +1,35 @@
 cmake_minimum_required(VERSION 3.16)
 project(boids VERSION 0.1.0)
 
-# abilita il supporto per i test, tra cui l'opzione BUILD_TESTING usata sotto
+# enabled test support
 include(CTest)
 
-# richiedi l'uso di C++17, senza estensioni non-standard offerte dal compilatore usato 
+# requested the use of the Standard 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
-# compila sempre con i warning abilitati
+# enabled warnings
 string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra")
 
-# abilita l'address sanitizer in debug mode
+# enabled sanitizer 
 string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address -fno-omit-frame-pointer")
 string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address -fno-omit-frame-pointer")
 
-# richiedi il componente graphics della libreria SFML, versione 2.5
-#   le dipendenze vengono identificate automaticamente
+# requested SFML graphics 
 find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
-# aggiungi l'eseguibile boids-sfml, da produrre a partire dai sorgenti indicati
-#   notare l'assenza degli header file, che pero' possono essere indicati
+# added executable boids-sfml
 add_executable(boids-sfml main.cpp boids.cpp operators.cpp rulesofflight.cpp)
-# l'eseguibile dipende dalla libreria sfml-graphics e sue dipendenze
+# dependencies from sfml.graphics
 target_link_libraries(boids-sfml PRIVATE sfml-graphics)
 
-# se il testing e' abilitato...
-#   per disabilitare il testing, passare -DBUILD_TESTING=OFF a cmake durante la fase di configurazione
+#  if testing is enabled
 if (BUILD_TESTING)
 
-  # aggiungi l'eseguibile boids.t, da produrre a partire dai sorgenti indicati
+  # added executable boids.t
   add_executable(boids.t boids.test.cpp boids.cpp operators.cpp rulesofflight.cpp)
-  # aggiungi l'eseguibile boids.t alla lista dei test, con nome boids.t
+  # added executable boids.t to test list
   add_test(NAME boids.t COMMAND boids.t)
 
 endif()
