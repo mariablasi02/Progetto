@@ -4,7 +4,6 @@
 #include <cassert>
 #include <stdexcept>
 #include <vector>
-// manca il controllo degli errori su tutto
 
 struct BoidState {
   double x{};
@@ -64,7 +63,6 @@ bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c);
 class SeparationRule {
   double const s_;
   double const distance_s_;
-  // valutare un valore che viene deciso da noi
 
  public:
   SeparationRule(double const s, double d_s) : s_{s}, distance_s_{d_s} {}
@@ -108,9 +106,7 @@ bool same_pos_check(std::vector<BoidState> const& boid);
 std::vector<BoidState> velocity_limit(std::vector<BoidState>& boidsvec);
 
 std::vector<BoidState> borders(
-    std::vector<BoidState>& v);  // è una prova la definizione è in boids.cpp
-                                 // non si muovono come dico io il problema è il
-// commento nel main-> modificato anche evolve
+    std::vector<BoidState>& v);
 
 class Boids {
   int const n_;
@@ -133,7 +129,7 @@ class Boids {
 
   std::vector<BoidState> TotalBoids() const;
 
-  void push_back(BoidState const& boid);
+  void pushback(BoidState const& boid);
 
   void evolution(double const delta_t);
 

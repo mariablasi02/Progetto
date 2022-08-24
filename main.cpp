@@ -1,12 +1,3 @@
-
-// Execute with: ./a.out
-// Build using cmake in debug mode: cmake --build build
-// Build using cmake in release mode: cmake --build build_release
-// Execute using cmake in debug mode: build/boids-sfml
-// Execute using cmake in release mode (suggested): build_release/boids-sfml
-// close the window from sfml button parameters: s ~ 0.5, a ~ 0.9, c ~ 0.003 for
-// 1 s
-
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/Window.hpp>
@@ -18,12 +9,10 @@
 #include "boids.hpp"
 
 auto evolve(Boids& boids, int step_evolution,
-            sf::Time delta_t)  // delta-t = 0.001 secondi
-{
-  double const unit_of_t{
-      delta_t.asMilliseconds() /
-      10.};  // delta_t.asMilli() = 1 -> double unit_of_t = 0.1
-
+            sf::Time delta_t) {  // delta_t = 0.001 s
+  double const unit_of_t{delta_t.asMilliseconds() /
+                         10.};  // conversion of time from seconds to double
+                                // (0.001 s == 0.1 double)
   for (int i{0}; i != step_evolution; ++i) {
     boids.evolution(unit_of_t);
   }
@@ -33,11 +22,10 @@ auto evolve(Boids& boids, int step_evolution,
 std::vector<std::string> simulate(Boids& b, double duration, int steps,
                                   int prescale) {
   std::vector<std::string> b_states;
-  double delta_t{(duration / steps) * 100};  // conversione da secondi a
+  double delta_t{(duration / steps) * 100};  // conversion of time 
   for (int step = 0; step != steps; ++step) {
-    if (step % prescale == 0) {
-      b_states.push_back(state(b, delta_t));  // state of the chain after
-                                              // delta_t
+    if (step % prescale == 0) {  // sampling
+      b_states.push_back(state(b, delta_t));
     } else {
       b.evolution(delta_t);
     }
@@ -46,14 +34,13 @@ std::vector<std::string> simulate(Boids& b, double duration, int steps,
 }
 
 int main() {
-  std::random_device rd;
+  std::random_device rd;  // set seed
   std::default_random_engine gen(rd());
   std::uniform_real_distribution<double> pos_x(0, 1179);
   std::uniform_real_distribution<double> pos_y(0, 690);
   std::uniform_real_distribution<double> speed(-10, 10);
 
-  std::cout << "Insert number of boids (at least 2): "
-            << '\n';  // fino a 100 tutto ok, poi comincia a laggare
+  std::cout << "Insert number of boids (at least 2): " << '\n';
   int n;
   std::cin >> n;
   if (std::cin.fail() || n <= 1) {
@@ -74,16 +61,14 @@ int main() {
 
   auto vec_boids = boids.TotalBoids();
 
-  // controllo boids stassa posizione -> capire come fare controllo sulla
-  // posizione
-
   vec_boids.resize(n);
-
+  // fill vector of BoidState using random generation
   std::generate(vec_boids.begin(), vec_boids.end(),
                 [&gen, &pos_x, &pos_y, &speed]() -> BoidState {
                   return {pos_x(gen), pos_y(gen), speed(gen), speed(gen)};
                 });
 
+  // check if there are boids with the same position and replace them
   auto it = vec_boids.begin();
   for (; it != vec_boids.end(); ++it) {
     auto c = *it;
@@ -102,33 +87,36 @@ int main() {
   boids.setvector(vec_boids);
 
   auto const delta_t{sf::seconds(0.001)};
-  int const fps{30};  // circa 0.03
-  int const step_evolution{1000 /
-                           fps};  // quante volte devo chiamare evolution in
-                                  // 1/30 di secondi = 1/30 * 1/0.001 = 1000/30
+  int const fps{30};
+  int const step_evolution{1000 / fps};  // how many steps I have to do to
+                                         // "synchronize" evolution with fps
 
+  // simulation of 120 s, sampling every two seconds
   auto const b_states = simulate(boids, 120., 120000, 2000);
 
   std::for_each(b_states.begin(), b_states.end(),
                 [](std::string const& state) { std::cout << state << '\n'; });
 
   std::cout << "State of the boids summary: "
-            << state(boids, delta_t.asSeconds()) << '\n';  // at delta_t
+            << state(boids, delta_t.asSeconds() * 100) << '\n';
 
   sf::RenderWindow window(sf::VideoMode(1179, 691), "Sea");
   window.setFramerateLimit(fps);
+  // cosmetic
   sf::Texture texture;
   if (!texture.loadFromFile("sfondomare.png")) {
-    // sollevare un'eccezione eventualmente
+    std::cout << "Failed to load texture" << '\n';
   }
   sf::Sprite sprite;
   sprite.setTexture(texture);
 
+  // creating "fish"
   sf::CircleShape triangle;
   triangle.setRadius(7.f);
   triangle.setPointCount(3);
   triangle.setFillColor(sf::Color(245, 152, 66));
 
+  // box statistic and cosmetic
   sf::Font font;
   font.loadFromFile("cmuntt.ttf");
   sf::Text stats;

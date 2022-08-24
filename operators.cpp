@@ -31,8 +31,7 @@ bool operator==(BoidState const& b1, BoidState const& b2) {
 
 bool operator!=(BoidState const& b1, BoidState const& b2) {
   return {b1.x != b2.x || b1.y != b2.y || b1.v_x != b2.v_x ||
-          b1.v_y != b2.v_y};  // così basta che solo una delle quattro
-                              // condizioni non sia vera
+          b1.v_y != b2.v_y};  
 }
 
 BoidState operator+(BoidState const& b1, BoidState const& b2) {
@@ -59,7 +58,7 @@ double norm(BoidState const& b1, BoidState const& b2) {
   assert(!(result < 0));
   return std::sqrt(result);
 }
-
+// magnitude of velocity
 double velocity_norm(BoidState const& b) {
   auto result = (b.v_x * b.v_x + b.v_y * b.v_y);
   return std::sqrt(result);

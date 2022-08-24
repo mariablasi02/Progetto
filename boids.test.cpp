@@ -109,30 +109,13 @@ TEST_CASE("Boid already in the group") {
   AlignmentRule a{0.5};
   CohesionRule c{3};
   Boids boids = {4, 3., s, a, c};
-  boids.push_back(b1);
-  boids.push_back(b2);
-  boids.push_back(b3);
-  CHECK_THROWS_AS(boids.push_back(b);, std::runtime_error);
+  boids.pushback(b1);
+  boids.pushback(b2);
+  boids.pushback(b3);
+  CHECK_THROWS_AS(boids.pushback(b);, std::runtime_error);
 }
 
 TEST_CASE("Testing Separation rule") {
-  // PARTE L'ASSERT, GIUSTO COSI'
-  /*SUBCASE("General test ") {
-    BoidState b1{0., 1., 2., 3.};
-    BoidState b2{0., 3., 5., 1.};
-    BoidState b3{2., 3., -2., 3.};
-    std::vector<BoidState> a{b1, b2, b3};
-    BoidState b{2., 3., 1., 2.};
-    SeparationRule sr{0.5, 6.};
-
-    CHECK(sr(a, b).val_x == doctest::Approx(-2.));
-    CHECK(sr(a, b).val_y == doctest::Approx(-1.));
-
-    BoidState b_{0., 0., 0., 0.};
-
-    CHECK(sr(a, b_).val_x == doctest::Approx(1.));
-    CHECK(sr(a, b_).val_y == doctest::Approx(3.5));
-  }*/
   SUBCASE("Testing whit a boid of the vector") {
     BoidState b1{0., 1., 2., 3.};
     BoidState b2{0., 3., 5., 1.};
@@ -180,7 +163,7 @@ TEST_CASE("Testing Separation rule") {
     CHECK(sr(v, b3).val_x == doctest::Approx(0.0));
     CHECK(sr(v, b3).val_y == doctest::Approx(0.0));
   }
-  SUBCASE("Boids very close") {
+  SUBCASE("Boids really close") {
     BoidState n1{5., 10., 0., -1.};
     BoidState n2{5., 9.9, 0., 1.};
     std::vector<BoidState> c{n1, n2};
@@ -191,7 +174,7 @@ TEST_CASE("Testing Separation rule") {
 }
 
 TEST_CASE("Testing alignment rule") {
-  SUBCASE("General tests") {
+  SUBCASE("Boids in the same position") {
     // It is a choice to have all four boids in the same position: the formula
     // of this rule depends only on the velocity of the boids.
     BoidState b1 = {0., 0., 2., 3.};
@@ -233,10 +216,6 @@ TEST_CASE("Testing alignment rule") {
     CHECK_THROWS(AlignmentRule{5.9});
     CHECK_THROWS_AS(AlignmentRule{3.2}, std::runtime_error);
   }
-  SUBCASE("Trying to break the code") {
-    // si rompe il codice se il boid che passiamo non fa parte del vettore-> da
-    // mettere assert
-  }
 }
 
 TEST_CASE("Testing function cente_of_mass") {
@@ -251,23 +230,7 @@ TEST_CASE("Testing function cente_of_mass") {
 
     CHECK(centre_of_mass(vec, b2) == Components{0.0, 3.5});
     CHECK(centre_of_mass(vec, b2).val_y == 3.5);
-  }
-
-  // in questo caso parte l'assert, giusto così
-
-  /* SUBCASE("Testing with a empty vector") {
-    BoidState b1{2., 3., 6., 1.5};
-    std::vector<BoidState> v1{};
-    CHECK(centre_of_mass(v1, b1).val_x == 2.0);
-    CHECK(centre_of_mass(v1, b1).val_y == 3.0);
-  }
-
-  SUBCASE("Testing with a single boid") {
-    BoidState b1{2.7, 3.9, 6.1, 1.5};
-    std::vector<BoidState> v1{b1};
-    CHECK(centre_of_mass(v1, b1).val_x == 2.7);
-    CHECK(centre_of_mass(v1, b1).val_y == 3.9);
-  } */
+  } 
 }
 
 TEST_CASE("Testing Cohesion rule") {
@@ -330,17 +293,17 @@ TEST_CASE("Testing Neighbor-Control function") {
   AlignmentRule a{0.5};
   CohesionRule c{3};
   Boids pesci = {4, 3., s, a, c};
-  pesci.push_back(b1);
-  pesci.push_back(b2);
-  pesci.push_back(b3);
-  pesci.push_back(b4);
+  pesci.pushback(b1);
+  pesci.pushback(b2);
+  pesci.pushback(b3);
+  pesci.pushback(b4);
   auto n = NeighborsControl(pesci.TotalBoids(), b1, 3.);
   SUBCASE("Testing with a vector of four boids") {
     CHECK(static_cast<int>(n.size()) == 2);
   }
   SUBCASE("Testing with a boid on the border") {
     BoidState b5{1., 5., 0., 0.};
-    pesci.push_back(b5);
+    pesci.pushback(b5);
     auto n = NeighborsControl(pesci.TotalBoids(), b1, 3.);
     CHECK(static_cast<int>(n.size()) == 3);
   }
@@ -386,11 +349,10 @@ TEST_CASE("Testing evolution function") {
     SeparationRule s{5, 3.};
     AlignmentRule a{0.5};
     CohesionRule c{3};
-    // std::vector<BoidState> vec{b1, b2, b3};
     Boids bb{3, 6., s, a, c};
-    bb.push_back(b1);
-    bb.push_back(b2);
-    bb.push_back(b3);
+    bb.pushback(b1);
+    bb.pushback(b2);
+    bb.pushback(b3);
     CHECK(bb.TotalBoids().size() == 3);
     auto b_new = bb.singleboid(bb.TotalBoids(), b1, 0.5);
     CHECK(b_new.v_x == 1.75);
@@ -409,9 +371,9 @@ TEST_CASE("Testing evolution function") {
     AlignmentRule a{0.3};
     CohesionRule c{1.3};
     Boids boid{3, 40., s, a, c};
-    boid.push_back(b1);
-    boid.push_back(b2);
-    boid.push_back(b3);
+    boid.pushback(b1);
+    boid.pushback(b2);
+    boid.pushback(b3);
     boid.evolution(0.3);
     CHECK((boid.TotalBoids())[0].v_x == doctest::Approx(-0.96).epsilon(0.01));
     CHECK((boid.TotalBoids())[0].v_y == doctest::Approx(2.705).epsilon(0.01));
@@ -426,12 +388,11 @@ TEST_CASE("Testing evolution function") {
     SeparationRule s{0., 3.};
     AlignmentRule a{0.};
     CohesionRule c{0.};
-    // std::vector<BoidState> vec{b1, b2, b3};
     Boids bb{3, 6., s, a, c};
-    bb.push_back(b1);
-    bb.push_back(b2);
-    bb.push_back(b3);
-    bb.push_back(b4);
+    bb.pushback(b1);
+    bb.pushback(b2);
+    bb.pushback(b3);
+    bb.pushback(b4);
     CHECK(bb.TotalBoids().size() == 4);
     bb.evolution(0.5);
     CHECK((bb.TotalBoids())[0].x == 0.);
@@ -447,9 +408,9 @@ TEST_CASE("Testing evolution function") {
     AlignmentRule a{0.3};
     CohesionRule c{0.9};
     Boids flock{3, 300., s, a, c};
-    flock.push_back(n1);
-    flock.push_back(n2);
-    flock.push_back(n3);
+    flock.pushback(n1);
+    flock.pushback(n2);
+    flock.pushback(n3);
     CHECK_THROWS(flock.evolution(-0.5));
   }
 }
@@ -462,9 +423,9 @@ TEST_CASE("Testing state function") {
   AlignmentRule a{0.5};
   CohesionRule c{3};
   Boids bb{3, 60., s, a, c};
-  bb.push_back(n1);
-  bb.push_back(n2);
-  bb.push_back(n3);
+  bb.pushback(n1);
+  bb.pushback(n2);
+  bb.pushback(n3);
   auto data = statistic(bb, 0.2);
   CHECK(data.mean_distance == doctest::Approx(25.26).epsilon(0.01));
   CHECK(data.std_distance == doctest::Approx(3.99).epsilon(0.01));
@@ -475,9 +436,9 @@ TEST_CASE("Testing state function") {
   BoidState b2{0., 10., 0., 1.};
   BoidState b3{0., 30., 0., 1.};
   Boids b{3, 60., s, a, c};
-  b.push_back(b1);
-  b.push_back(b2);
-  b.push_back(b3);
+  b.pushback(b1);
+  b.pushback(b2);
+  b.pushback(b3);
   auto value = statistic(b, 0.2);
   CHECK(value.mean_distance == doctest::Approx(19.46).epsilon(0.01));
   CHECK(value.std_distance == doctest::Approx(4.53).epsilon(0.01));
