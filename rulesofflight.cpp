@@ -41,7 +41,7 @@ Components AlignmentRule::operator()(std::vector<BoidState> const& boids,
 Components centre_of_mass(std::vector<BoidState> const& vec,
                           BoidState const& b1) {
   assert((size(vec)) > 1);
-  auto den = (static_cast<double>(size(vec)) - 1.);
+  auto den = (/* static_cast<double> */(size(vec)) - 1.);
   auto sum =
       std::accumulate(vec.begin(), vec.end(), BoidState{0., 0., 0., 0.}) - b1;
 

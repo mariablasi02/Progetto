@@ -22,7 +22,7 @@ auto evolve(Boids& boids, int step_evolution,
 std::vector<std::string> simulate(Boids& b, double duration, int steps,
                                   int prescale) {
   std::vector<std::string> b_states;
-  double delta_t{(duration / steps) * 100};  // conversion of time
+  double delta_t{(duration / steps) * 100};  // conversion of time 
   for (int step = 0; step != steps; ++step) {
     if (step % prescale == 0) {  // sampling
       b_states.push_back(state(b, delta_t));
