@@ -55,7 +55,7 @@ bool operator!=(Components const& c1, Components const& c2);
 
 int size(std::vector<BoidState> const& v);
 
-std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
+std::vector<BoidState> neighborscontrol(std::vector<BoidState> const& pesci,
                                         BoidState const& b1, double const d);
 
 bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c);
@@ -126,7 +126,7 @@ class Boids {
   BoidState singleboid(std::vector<BoidState> const& vec, BoidState const& b1,
                        double const delta_t) const;
 
-  std::vector<BoidState> TotalBoids() const;
+  std::vector<BoidState> totalboids() const;
 
   void pushback(BoidState const& boid);
 

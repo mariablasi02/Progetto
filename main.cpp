@@ -16,13 +16,13 @@ auto evolve(Boids& boids, int step_evolution,
   for (int i{0}; i != step_evolution; ++i) {
     boids.evolution(unit_of_t);
   }
-  return boids.TotalBoids();
+  return boids.totalboids();
 }
 
 std::vector<std::string> simulate(Boids& b, double duration, int steps,
                                   int prescale) {
   std::vector<std::string> b_states;
-  double delta_t{(duration / steps) * 100};  // conversion of time 
+  double delta_t{(duration / steps) * 100};  // conversion of time
   for (int step = 0; step != steps; ++step) {
     if (step % prescale == 0) {  // sampling
       b_states.push_back(state(b, delta_t));
@@ -59,7 +59,7 @@ int main() {
   Boids boids{n, 150., SeparationRule{s, 15.}, AlignmentRule{a},
               CohesionRule{c}};
 
-  auto vec_boids = boids.TotalBoids();
+  auto vec_boids = boids.totalboids();
 
   vec_boids.resize(n);
   // fill vector of BoidState using random generation

@@ -19,7 +19,7 @@ Components SeparationRule::operator()(std::vector<BoidState> const& b,
   assert(size(b) > 1);
   assert(check_ownership(b, b1));
 
-  auto vec = NeighborsControl(b, b1, distance_s_);
+  auto vec = neighborscontrol(b, b1, distance_s_);
   std::transform(vec.begin(), vec.end(), vec.begin(),
                  [&b1](BoidState& j) { return (j - b1); });
 

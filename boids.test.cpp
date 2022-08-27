@@ -129,7 +129,7 @@ TEST_CASE("Testing Separation rule") {
     CHECK(sr(a, b4).val_x == doctest::Approx(2.8));
     CHECK(sr(a, b4).val_y == doctest::Approx(-2.8));
   }
-  SUBCASE("Testing NeighborsControl in SeparationRule") {
+  SUBCASE("Testing neighborscontrol in SeparationRule") {
     BoidState b1{0., 1., 2., 3.};
     BoidState b2{0., 3., 5., 1.};
     BoidState b3{2., 3., -2., 3.};
@@ -284,7 +284,7 @@ TEST_CASE("Testing Cohesion rule") {
   }
 }
 
-TEST_CASE("Testing Neighbor-Control function") {
+TEST_CASE("Testing neighborcontrol function") {
   BoidState b1{1., 2., 3., 4.};
   BoidState b2{2., 3., 4., 5.};
   BoidState b3{-1., -1., -1., -1.};
@@ -297,14 +297,14 @@ TEST_CASE("Testing Neighbor-Control function") {
   pesci.pushback(b2);
   pesci.pushback(b3);
   pesci.pushback(b4);
-  auto n = NeighborsControl(pesci.TotalBoids(), b1, 3.);
+  auto n = neighborscontrol(pesci.totalboids(), b1, 3.);
   SUBCASE("Testing with a vector of four boids") {
     CHECK(static_cast<int>(n.size()) == 2);
   }
   SUBCASE("Testing with a boid on the border") {
     BoidState b5{1., 5., 0., 0.};
     pesci.pushback(b5);
-    auto n = NeighborsControl(pesci.TotalBoids(), b1, 3.);
+    auto n = neighborscontrol(pesci.totalboids(), b1, 3.);
     CHECK(static_cast<int>(n.size()) == 3);
   }
 }
@@ -353,14 +353,14 @@ TEST_CASE("Testing evolution function") {
     bb.pushback(b1);
     bb.pushback(b2);
     bb.pushback(b3);
-    CHECK(bb.TotalBoids().size() == 3);
-    auto b_new = bb.singleboid(bb.TotalBoids(), b1, 0.5);
+    CHECK(bb.totalboids().size() == 3);
+    auto b_new = bb.singleboid(bb.totalboids(), b1, 0.5);
     CHECK(b_new.v_x == 1.75);
     bb.evolution(0.5);
-    CHECK((bb.TotalBoids())[0].x == 2.875);
-    CHECK((bb.TotalBoids())[0].y == 2.25);
-    CHECK((bb.TotalBoids())[0].v_x == 1.75);
-    CHECK((bb.TotalBoids())[0].v_y == -1.5);
+    CHECK((bb.totalboids())[0].x == 2.875);
+    CHECK((bb.totalboids())[0].y == 2.25);
+    CHECK((bb.totalboids())[0].v_x == 1.75);
+    CHECK((bb.totalboids())[0].v_y == -1.5);
   }
 
   SUBCASE("Testing velocity_limits") {
@@ -375,10 +375,10 @@ TEST_CASE("Testing evolution function") {
     boid.pushback(b2);
     boid.pushback(b3);
     boid.evolution(0.3);
-    CHECK((boid.TotalBoids())[0].v_x == doctest::Approx(-0.96).epsilon(0.01));
-    CHECK((boid.TotalBoids())[0].v_y == doctest::Approx(2.705).epsilon(0.01));
-    CHECK((boid.TotalBoids())[1].v_x == doctest::Approx(1.16).epsilon(0.01));
-    CHECK((boid.TotalBoids())[1].v_y == doctest::Approx(1.22).epsilon(0.01));
+    CHECK((boid.totalboids())[0].v_x == doctest::Approx(-0.96).epsilon(0.01));
+    CHECK((boid.totalboids())[0].v_y == doctest::Approx(2.705).epsilon(0.01));
+    CHECK((boid.totalboids())[1].v_x == doctest::Approx(1.16).epsilon(0.01));
+    CHECK((boid.totalboids())[1].v_y == doctest::Approx(1.22).epsilon(0.01));
   }
   SUBCASE("Testing borders") {
     BoidState b1{1179., 3., 4., 2.};
@@ -393,12 +393,12 @@ TEST_CASE("Testing evolution function") {
     bb.pushback(b2);
     bb.pushback(b3);
     bb.pushback(b4);
-    CHECK(bb.TotalBoids().size() == 4);
+    CHECK(bb.totalboids().size() == 4);
     bb.evolution(0.5);
-    CHECK((bb.TotalBoids())[0].x == 0.);
-    CHECK((bb.TotalBoids())[1].x == 1179.);
-    CHECK((bb.TotalBoids())[2].y == 0.);
-    CHECK((bb.TotalBoids())[3].y == 691.);
+    CHECK((bb.totalboids())[0].x == 0.);
+    CHECK((bb.totalboids())[1].x == 1179.);
+    CHECK((bb.totalboids())[2].y == 0.);
+    CHECK((bb.totalboids())[3].y == 691.);
   }
   SUBCASE("Testing with a negative value of time") {
     BoidState n1{1.507, 1.655, 2.414, 1.31};

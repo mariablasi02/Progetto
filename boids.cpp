@@ -12,7 +12,7 @@ int size(std::vector<BoidState> const& v) {
 
 int size(std::vector<double> const& v) { return (static_cast<int>(v.size())); }
 
-std::vector<BoidState> NeighborsControl(std::vector<BoidState> const& pesci,
+std::vector<BoidState> neighborscontrol(std::vector<BoidState> const& pesci,
                                         BoidState const& b1, double const d) {
   auto p = pesci;
 
@@ -119,7 +119,7 @@ BoidState Boids::singleboid(std::vector<BoidState> const& vec,
   }
 }
 
-std::vector<BoidState> Boids::TotalBoids() const { return boids_; }
+std::vector<BoidState> Boids::totalboids() const { return boids_; }
 
 void Boids::pushback(BoidState const& boid) {
   if (same_pos_check(boid, boids_) == true) {
@@ -135,7 +135,7 @@ void Boids::evolution(double const delta_t) {
   }
   std::vector<BoidState> fishes;
   for (auto fish : boids_) {
-    auto nearfishes = NeighborsControl(boids_, fish, d_);
+    auto nearfishes = neighborscontrol(boids_, fish, d_);
     fishes.push_back(singleboid(nearfishes, fish, delta_t));
   }
 
@@ -151,7 +151,7 @@ void Boids::setvector(std::vector<BoidState> const& b) { boids_ = b; }
 
 Stats statistic(Boids& b, double const delta_t) {
   b.evolution(delta_t);
-  auto const& vec = b.TotalBoids();
+  auto const& vec = b.totalboids();
   std::vector<double> distances{};
   assert(vec.size() != 0);
   auto it = vec.begin();
