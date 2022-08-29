@@ -20,7 +20,7 @@ string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address -fno-omit-frame-
 find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
 # added executable boids-sfml
-add_executable(boids-sfml main.cpp boids.cpp operators.cpp rulesofflight.cpp)
+add_executable(boids-sfml main.cpp boids.cpp operators.cpp rulesofswim.cpp)
 # dependencies from sfml.graphics
 target_link_libraries(boids-sfml PRIVATE sfml-graphics)
 
@@ -28,7 +28,7 @@ target_link_libraries(boids-sfml PRIVATE sfml-graphics)
 if (BUILD_TESTING)
 
   # added executable boids.t
-  add_executable(boids.t boids.test.cpp boids.cpp operators.cpp rulesofflight.cpp)
+  add_executable(boids.t boids.test.cpp boids.cpp operators.cpp rulesofswim.cpp)
   # added executable boids.t to test list
   add_test(NAME boids.t COMMAND boids.t)
 
