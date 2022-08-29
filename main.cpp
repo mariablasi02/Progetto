@@ -97,8 +97,6 @@ int main() {
   std::for_each(b_states.begin(), b_states.end(),
                 [](std::string const& state) { std::cout << state << '\n'; });
 
-  std::cout << "State of the boids summary: "
-            << state(boids, delta_t.asSeconds() * 100) << '\n';
 
   sf::RenderWindow window(sf::VideoMode(1179, 691), "Sea");
   window.setFramerateLimit(fps);
