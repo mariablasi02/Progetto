@@ -18,7 +18,7 @@ BoidState& BoidState::operator*=(double const other) {
   return *this;
 }
 
-BoidState& BoidState::operator*=(BoidState const other) {
+BoidState& BoidState::operator*=(BoidState const& other) {
   x *= other.x;
   y *= other.y;
   v_x *= other.v_x;
@@ -95,5 +95,5 @@ bool operator==(Components const& c1, Components const& c2) {
 }
 
 bool operator!=(Components const& c1, Components const& c2) {
-  return {c1.val_x != c2.val_x && c1.val_y != c2.val_y};
+  return {c1.val_x != c2.val_x || c1.val_y != c2.val_y};
 }

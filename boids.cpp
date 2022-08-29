@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 #include <numeric>
 #include <string>
 
@@ -145,7 +144,7 @@ Stats statistic(Boids& b, double const delta_t) {
   b.evolution(delta_t);
   auto const& vec = b.totalboids();
   std::vector<double> distances{};
-  assert(vec.size() != 0);
+  assert(size(vec) != 0);
   auto it = vec.begin();
   for (; it != vec.end(); ++it) {
     auto it_2 = std::next(it);
@@ -170,7 +169,6 @@ Stats statistic(Boids& b, double const delta_t) {
 
   auto sum =
       std::accumulate(vec.begin(), vec.end(), BoidState{0.0, 0.0, 0.0, 0.0});
-  assert(size(vec) != 0);
   Components mean_vel{sum.v_x / size(vec), sum.v_y / size(vec)};
 
   std::vector<double> velocities{};

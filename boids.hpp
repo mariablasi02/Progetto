@@ -15,7 +15,7 @@ struct BoidState {
 
   BoidState& operator*=(double const other);
 
-  BoidState& operator*=(BoidState const other);
+  BoidState& operator*=(BoidState const& other);
 };
 
 bool operator==(BoidState const& b1, BoidState const& b2);
@@ -110,9 +110,9 @@ std::vector<BoidState> borders(std::vector<BoidState>& v);
 class Boids {
   int const n_;
   double const d_;
-  SeparationRule s_;
-  AlignmentRule a_;
-  CohesionRule c_;
+  SeparationRule const s_;
+  AlignmentRule const a_;
+  CohesionRule const c_;
   std::vector<BoidState> boids_;
 
  public:
