@@ -9,6 +9,7 @@ bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
   auto it = std::find(cont.begin(), cont.end(), c);
   return it != cont.end();
 }
+
 // calculates v_1
 Components SeparationRule::operator()(std::vector<BoidState> const& sboids,
                                       BoidState const& b1) const {
