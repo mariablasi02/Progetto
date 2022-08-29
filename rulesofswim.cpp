@@ -6,20 +6,16 @@
 
 // check if c belongs to cont
 bool check_ownership(std::vector<BoidState> const& cont, BoidState const& c) {
-  if (!cont.empty()) {
-    auto it = std::find(cont.begin(), cont.end(), c);
-    return it != cont.end();
-  } else {
-    return false;
-  }
+  auto it = std::find(cont.begin(), cont.end(), c);
+  return it != cont.end();
 }
 // calculates v_1
-Components SeparationRule::operator()(std::vector<BoidState> const& b,
+Components SeparationRule::operator()(std::vector<BoidState> const& sboids,
                                       BoidState const& b1) const {
-  assert(size(b) > 1);
-  assert(check_ownership(b, b1));
+  assert(size(sboids) > 1);
+  assert(check_ownership(sboids, b1));
 
-  auto vec = neighborscontrol(b, b1, distance_s_);
+  auto vec = neighborscontrol(sboids, b1, distance_s_);
   std::transform(vec.begin(), vec.end(), vec.begin(),
                  [&b1](BoidState& j) { return (j - b1); });
 
@@ -29,14 +25,14 @@ Components SeparationRule::operator()(std::vector<BoidState> const& b,
 
 double AlignmentRule::get_a() const { return a_; }
 // calculates v_2
-Components AlignmentRule::operator()(std::vector<BoidState> const& boids,
+Components AlignmentRule::operator()(std::vector<BoidState> const& aboids,
                                      BoidState const& b1) const {
-  assert(size(boids) > 1);
-  assert(check_ownership(boids, b1));
-  auto sum = std::accumulate(boids.begin(), boids.end(),
+  assert(size(aboids) > 1);
+  assert(check_ownership(aboids, b1));
+  auto sum = std::accumulate(aboids.begin(), aboids.end(),
                              BoidState{0., 0., 0., 0.} - b1);
-  return Components{((sum.v_x / (size(boids) - 1)) - b1.v_x) * a_,
-                    ((sum.v_y / (size(boids) - 1)) - b1.v_y) * a_};
+  return Components{((sum.v_x / (size(aboids) - 1)) - b1.v_x) * a_,
+                    ((sum.v_y / (size(aboids) - 1)) - b1.v_y) * a_};
 }
 
 Components centre_of_mass(std::vector<BoidState> const& vec,

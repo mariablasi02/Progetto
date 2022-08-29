@@ -97,7 +97,6 @@ int main() {
   std::for_each(b_states.begin(), b_states.end(),
                 [](std::string const& state) { std::cout << state << '\n'; });
 
-
   sf::RenderWindow window(sf::VideoMode(1179, 691), "Sea");
   window.setFramerateLimit(fps);
   // cosmetic
