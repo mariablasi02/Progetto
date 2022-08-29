@@ -28,7 +28,7 @@ bool same_pos_check(BoidState const& b1, std::vector<BoidState> const& boids) {
   auto same_position_it = std::find_if(
       boids.begin(), boids.end(),
       [&b1](BoidState const& b) { return b.x == b1.x && b.y == b1.y; });
-      return same_position_it != boids.end() ? false : true;
+  return same_position_it != boids.end() ? false : true;
 }
 
 bool same_pos_check(std::vector<BoidState> const& boid) {
